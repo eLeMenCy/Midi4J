@@ -4,7 +4,8 @@ import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 
-/** The type of a RtMidi callback function.
+/**
+ * RtMidiIn callback function.
  * See ref RtMidiIn::RtMidiCallback.
  * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/RtMidi/rtmidi_c.h</i>
  */
