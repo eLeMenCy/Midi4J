@@ -1,4 +1,4 @@
-package com.elemency.VertxRtMidi;
+package com.elemency.VertxRtMidi.RtMidiLib;
 
 /**
  * brief Defined RtMidiError types. See \ref RtMidiError::Type.<br>

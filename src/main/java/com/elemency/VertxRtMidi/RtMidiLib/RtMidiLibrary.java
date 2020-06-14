@@ -1,5 +1,7 @@
-package com.elemency.VertxRtMidi;
+package com.elemency.VertxRtMidi.RtMidiLib;
 
+import com.elemency.VertxRtMidi.MidiDevice;
+import com.elemency.VertxRtMidi.MidiIn;
 import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -16,10 +18,10 @@ import java.nio.IntBuffer;
  * It was then, rearranged into convenient categories.
  * @author eLeMenCy
  */
-public interface RtMidiLbrary extends Library {
-	String JNA_LIBRARY_NAME = "RtMidiLbrary";
-	NativeLibrary JNA_NATIVE_LIB = NativeLibrary.getInstance(RtMidiLbrary.JNA_LIBRARY_NAME);
-	RtMidiLbrary INSTANCE = (RtMidiLbrary)Native.loadLibrary(RtMidiLbrary.JNA_LIBRARY_NAME, RtMidiLbrary.class);
+public interface RtMidiLibrary extends Library {
+	String JNA_LIBRARY_NAME = "RtMidiLibrary";
+	NativeLibrary JNA_NATIVE_LIB = NativeLibrary.getInstance(RtMidiLibrary.JNA_LIBRARY_NAME);
+	RtMidiLibrary INSTANCE = (RtMidiLibrary)Native.loadLibrary(RtMidiLibrary.JNA_LIBRARY_NAME, RtMidiLibrary.class);
 
 /* *********************************************************************************************************************
  * 											           MidiDevice API
@@ -71,6 +73,10 @@ public interface RtMidiLbrary extends Library {
 	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:129</i>
 	 */
 	void rtmidi_error(int type, String errorString);
+
+/* *********************************************************************************************************************
+ * 											           MidiDevice Port API
+ **********************************************************************************************************************/
 
 	/**
 	 * Open a MIDI port.<br>
@@ -173,7 +179,7 @@ public interface RtMidiLbrary extends Library {
 	 * Original signature : <code>void rtmidi_in_set_callback(RtMidiInPtr, RtMidiCCallback, void*)</code><br>
 	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:191</i>
 	 */
-	void rtmidi_in_set_callback(MidiDevice device, MidiInCallback callback, Pointer userData);
+	void rtmidi_in_set_callback(MidiDevice device, MidiIn.MidiInCallback callback, Pointer userData);
 
 	/**
 	 * Cancel use of the current callback function (if one exists).<br>

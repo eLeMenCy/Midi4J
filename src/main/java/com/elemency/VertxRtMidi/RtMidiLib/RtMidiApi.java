@@ -1,4 +1,4 @@
-package com.elemency.VertxRtMidi;
+package com.elemency.VertxRtMidi.RtMidiLib;
 
 import com.sun.jna.NativeLong;
 
