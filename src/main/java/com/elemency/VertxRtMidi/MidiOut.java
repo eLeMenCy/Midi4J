@@ -1,9 +1,12 @@
 package com.elemency.VertxRtMidi;
 
 import com.elemency.VertxRtMidi.RtMidiLib.RtMidiLibrary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MidiOut extends MidiBase {
-    private final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
+    private final RtMidiLibrary lib = super.lib;
+    protected final Logger logger = LoggerFactory.getLogger(MidiOut.class);
 
     public MidiOut() throws Exception {
         try {
@@ -54,9 +57,17 @@ public class MidiOut extends MidiBase {
     /**
      *
      */
-    public void free(MidiDevice device) throws Exception {
+    public void free() throws Exception {
+            logger.info("Freeing memory...");
+            lib.rtmidi_out_free(midiDevice);
+    }
+
+    /**
+     *
+     */
+    public int getCurrentApi() throws Exception {
         try {
-            lib.rtmidi_out_free(device);
+            return lib.rtmidi_out_get_current_api(midiDevice);
         } catch (Throwable e) {
             throw new Exception(e);
         }
@@ -65,20 +76,9 @@ public class MidiOut extends MidiBase {
     /**
      *
      */
-    public int getCurrentApi(MidiDevice device) throws Exception {
+    public int sendMessage(byte[] message, int length) throws Exception {
         try {
-            return lib.rtmidi_out_get_current_api(device);
-        } catch (Throwable e) {
-            throw new Exception(e);
-        }
-    }
-
-    /**
-     *
-     */
-    public int sendMessage(MidiDevice device, byte[] message, int length) throws Exception {
-        try {
-            return lib.rtmidi_out_send_message(device, message, length);
+            return lib.rtmidi_out_send_message(midiDevice, message, length);
         } catch (Throwable e) {
             throw new Exception(e);
         }

@@ -43,11 +43,13 @@ repositories {
 }
 
 dependencies {
-    implementation("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
+
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("junit:junit:4.12")
 
     // These dependencies are used internally, and not exposed to consumers on their own compile classpath.
+    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
     implementation("com.google.guava:guava:28.1-jre")
     implementation("net.java.dev.jna:jna:4.1.0")
 //    implementation ("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
