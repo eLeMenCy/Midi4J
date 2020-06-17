@@ -136,5 +136,4 @@ public class MidiIn extends MidiBase {
          */
         void process(double timeStamp, Pointer message, NativeSize messageSize, Pointer userData);
     }
-
 }

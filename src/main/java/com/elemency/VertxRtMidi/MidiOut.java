@@ -4,9 +4,9 @@ import com.elemency.VertxRtMidi.RtMidiLib.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MidiOut extends MidiBase{
-    private final RtMidiLibrary lib = super.lib;
+public class MidiOut extends MidiBase {
     protected final Logger logger = LoggerFactory.getLogger(MidiOut.class);
+    private final RtMidiLibrary lib = super.lib;
 
     public MidiOut() throws Exception {
         try {
@@ -73,5 +73,4 @@ public class MidiOut extends MidiBase{
             throw new Exception(e);
         }
     }
-
 }
