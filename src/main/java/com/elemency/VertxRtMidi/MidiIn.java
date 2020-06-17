@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 
 public class MidiIn extends MidiBase {
-    private final RtMidiLibrary lib = super.lib;
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
+    private final RtMidiLibrary lib = super.lib;
 
     public MidiIn() throws Exception {
         try {
@@ -32,28 +32,11 @@ public class MidiIn extends MidiBase {
         }
     }
 
-    /**
-     *
-     */
     @Override
-    public MidiDevice getMidiDevice() {
-        return super.midiDevice;
-    }
-
-    /**
-     * RtMidiIn callback function.
-     * See ref RtMidiIn::RtMidiCallback.
-     * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/RtMidi/rtmidi_c.h</i>
-     */
-    public interface MidiInCallback extends Callback {
-
-        /**
-         * @param timeStamp     The time at which the message has been received.
-         * @param message       The midi message.
-         * @param messageSize   Size of the Midi message.
-         * @param userData      Additional user data for the callback.
-         */
-        void process(double timeStamp, Pointer message, NativeSize messageSize, Pointer userData);
+    public void close() throws Exception {
+        cancelCallback();
+        closePort();
+        free();
     }
 
     /**
@@ -76,14 +59,6 @@ public class MidiIn extends MidiBase {
         } catch (Throwable e) {
             throw new Exception(e);
         }
-    }
-
-    /**
-     *
-     */
-    public void free() {
-            logger.info("Freeing memory...");
-            lib.rtmidi_in_free(midiDevice);
     }
 
     /**
@@ -116,7 +91,6 @@ public class MidiIn extends MidiBase {
         }
     }
 
-
     /**
      *
      */
@@ -133,7 +107,7 @@ public class MidiIn extends MidiBase {
      *
      */
     public void ignoreTypes(MidiDevice device, byte midiSysex, byte midiTime, byte midiSense) {
-            lib.rtmidi_in_ignore_types(device, midiSysex, midiTime, midiSense);
+        lib.rtmidi_in_ignore_types(device, midiSysex, midiTime, midiSense);
     }
 
     /**
@@ -145,6 +119,22 @@ public class MidiIn extends MidiBase {
         } catch (Throwable e) {
             throw new Exception(e);
         }
+    }
+
+    /**
+     * RtMidiIn callback function.
+     * See ref RtMidiIn::RtMidiCallback.
+     * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/RtMidi/rtmidi_c.h</i>
+     */
+    public interface MidiInCallback extends Callback {
+
+        /**
+         * @param timeStamp   The time at which the message has been received.
+         * @param message     The midi message.
+         * @param messageSize Size of the Midi message.
+         * @param userData    Additional user data for the callback.
+         */
+        void process(double timeStamp, Pointer message, NativeSize messageSize, Pointer userData);
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class MidiDevice extends Structure {
 	/** The wrapped RtMidi object. (C type : void*) */
-	public Pointer ptr;
+	public Pointer api;
 	/** C type : void* */
 	public Pointer data;
 
@@ -19,25 +19,25 @@ public class MidiDevice extends Structure {
 	public byte ok;
 
 	/** If an error occured (ok != true), set to an error message. (C type : const char*) */
-	public Pointer msg;
+	public Pointer errorMsg;
 
 	public MidiDevice() {
 		super();
 	}
 	protected List<? > getFieldOrder() {
-		return Arrays.asList("ptr", "data", "ok", "msg");
+		return Arrays.asList("api", "data", "ok", "errorMsg");
 	}
 	/**
-	 * @param ptr C type : void*<br>
+	 * @param api C type : void*<br>
 	 * @param data C type : void*<br>
-	 * @param msg C type : const char*
+	 * @param errorMsg C type : const char*
 	 */
-	public MidiDevice(Pointer ptr, Pointer data, byte ok, Pointer msg) {
+	public MidiDevice(Pointer api, Pointer data, byte ok, Pointer errorMsg) {
 		super();
-		this.ptr = ptr;
+		this.api = api;
 		this.data = data;
 		this.ok = ok;
-		this.msg = msg;
+		this.errorMsg = errorMsg;
 	}
 
 	public MidiDevice(Pointer peer) {
@@ -45,10 +45,10 @@ public class MidiDevice extends Structure {
 	}
 
 	public static class ByReference extends MidiDevice implements Structure.ByReference {
-		
+
 	}
 
 	public static class ByValue extends MidiDevice implements Structure.ByValue {
-		
+
 	}
 }

@@ -4,7 +4,7 @@ import com.elemency.VertxRtMidi.RtMidiLib.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MidiOut extends MidiBase {
+public class MidiOut extends MidiBase{
     private final RtMidiLibrary lib = super.lib;
     protected final Logger logger = LoggerFactory.getLogger(MidiOut.class);
 
@@ -24,12 +24,10 @@ public class MidiOut extends MidiBase {
         }
     }
 
-    /**
-     *
-     */
     @Override
-    public MidiDevice getMidiDevice() {
-        return super.midiDevice;
+    public void close() throws Exception {
+        closePort();
+        free();
     }
 
     /**
@@ -57,14 +55,6 @@ public class MidiOut extends MidiBase {
     /**
      *
      */
-    public void free() throws Exception {
-            logger.info("Freeing memory...");
-            lib.rtmidi_out_free(midiDevice);
-    }
-
-    /**
-     *
-     */
     public int getCurrentApi() throws Exception {
         try {
             return lib.rtmidi_out_get_current_api(midiDevice);
@@ -83,4 +73,5 @@ public class MidiOut extends MidiBase {
             throw new Exception(e);
         }
     }
+
 }
