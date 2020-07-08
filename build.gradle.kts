@@ -51,8 +51,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
     implementation("com.google.guava:guava:28.1-jre")
-    implementation("net.java.dev.jna:jna:4.1.0")
-//    implementation ("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
+    implementation("net.java.dev.jna:jna:5.5.0")
     implementation("junit:junit:4.12")
 
     // Use JUnit test framework

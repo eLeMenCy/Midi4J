@@ -1,66 +1,55 @@
 package com.elemency.VertxRtMidi;
 
-import com.elemency.VertxRtMidi.RtMidiLib.RtMidiLibrary;
+import com.elemency.VertxRtMidi.RtMidiDriver.RtMidi;
+import com.elemency.VertxRtMidi.RtMidiDriver.RtMidiLibrary;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.IntBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public abstract class MidiBase implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
     private final Logger logger = LoggerFactory.getLogger(MidiBase.class);
     protected MidiDevice midiDevice = null;
+    protected String clientName = "Midi4J";
 
 /* *********************************************************************************************************************
- * 											           MidiDevice API
+ * 											           MidiDevice
  **********************************************************************************************************************/
 
     /**
      *
      */
-    public int getCompiledApi(IntBuffer apis, int apis_size) {
-        return lib.rtmidi_get_compiled_api(apis, apis_size);
-    }
+    public void free() {
+        try {
+            if (getDeviceClassName().compareTo("MidiIn") == 0) {
+                lib.rtmidi_in_free(midiDevice);
 
-    /**
-     *
-     */
-    public String apiName(int api) {
-        return lib.rtmidi_api_name(api);
-    }
-
-    /**
-     *
-     */
-    public String apiDisplayName(int api) {
-        return lib.rtmidi_api_display_name(api);
-    }
-
-    /**
-     *
-     */
-    public int compiledApiByName(String name) {
-        return lib.rtmidi_compiled_api_by_name(name);
-    }
-
-    /**
-     *
-     */
-    public void free() throws Exception {
-        if (getDeviceType().compareTo("MidiIn") == 0) {
-            lib.rtmidi_in_free(midiDevice);
-        } else {
-            lib.rtmidi_out_free(midiDevice);
+            } else {
+                lib.rtmidi_out_free(midiDevice);
+            }
+            if (midiDevice.ok == 0) throw new MidiException();
+            logger.info(getDeviceClassName() + " memory ... freed");
+        } catch (Throwable throwable) {
         }
-        logger.info(getDeviceType() + " memory ... freed");
     }
 
     /**
      *
      */
-    private String getDeviceType() {
-        String deviceType = this.getClass().getTypeName();
-        return deviceType.substring(deviceType.lastIndexOf(".") + 1);
+    private String getDeviceClassName() {
+        String deviceClassName = this.getClass().getTypeName();
+        return deviceClassName.substring(deviceClassName.lastIndexOf(".") + 1);
+    }
+
+    /**
+     *
+     */
+    private String getTargetDeviceType() {
+        return getDeviceClassName().equals("MidiIn") ? "Out" : "In";
     }
 
     /**
@@ -70,63 +59,191 @@ public abstract class MidiBase implements AutoCloseable {
         lib.rtmidi_error(type, errorString);
     }
 
+    /**
+     *
+     */
+    public int getCurrentApiId() {
+        return lib.rtmidi_out_get_current_api(midiDevice);
+    }
+
+    /**
+     *
+     */
+    public String getCurrentApiName() {
+        return new RtMidi().apiDisplayName(getCurrentApiId());
+    }
+
 /* *********************************************************************************************************************
- * 											           MidiDevice Port API
+ * 											           MidiDevice Port
  **********************************************************************************************************************/
 
     /**
      *
      */
-    public void openPort(String fromPortName, int toPortNumber) throws Exception {
-        try {
-            lib.rtmidi_open_port(midiDevice, toPortNumber, fromPortName);
-        } catch (Throwable e) {
-            throw new Exception(e);
-        }
+    public boolean isPortOpen() {
+        return lib.rtmidi_is_port_open(this.midiDevice);
     }
 
     /**
      *
      */
-    public void openVirtualPort(String portName) throws Exception {
-        try {
+    public void displayErrorFromNative() {
+        String msgRaw = "";
+        String msg = "";
+
+        byte[] bbuf = this.midiDevice.errorMsg.getByteArray(0, 128);
+        msgRaw = new String(bbuf, StandardCharsets.UTF_8);
+        System.out.println("errorMsg raw: " + msgRaw);
+
+        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
+        msg = new String(bbuf, StandardCharsets.UTF_8);
+        msg = msg.substring(0, msg.indexOf('\0'));
+
+        System.out.println("errorMsg cleaned: " + msg + "\nlength: " + msg.length());
+    }
+
+    /**
+     *
+     */
+    public boolean openPort(String fromPortName, int toPortId, boolean autoConnect) {
+
+        System.out.println("");
+        logger.info("Trying to connect " + getClientName(toPortId) + "'s " + getTargetDeviceType() + " port (id " + toPortId + ") to " +
+                clientName + "'s " + fromPortName + " port...");
+
+        if (toPortId < 0 || toPortId > getPortCount() - 1) {
+            logger.warn(getTargetDeviceType() + " port (id " + toPortId + ") doesn't exist, " +
+                    "please select another one or check that the " + getCurrentApiName() + " Midi API is active!");
+            return false;
+        }
+
+        lib.rtmidi_open_port(this.midiDevice, toPortId, fromPortName, autoConnect);
+
+        if (this.midiDevice.ok != 0) {
+            String msg3 = clientName + "'s " + fromPortName +
+                    " port and " + getClientName(toPortId) + "'s " + getTargetDeviceType() +
+                    " port (id " + toPortId + ") have been opened succesfully" +
+                    (autoConnect ? " and, at your request, connected together!" : " but, at your request, were left disconnected!");
+
+            logger.info(msg3);
+
+            return true;
+        }
+        else {
+            showNativeMsg();
+        }
+
+        return false;
+    }
+
+
+    /**
+     *
+     */
+    public boolean openVirtualPort(String portName) {
+        if (midiDevice.ok != 0) {
             lib.rtmidi_open_virtual_port(midiDevice, portName);
-        } catch (Throwable e) {
-            throw new Exception(e);
+        } else {
+            System.out.println("Virtual Port not connected");
         }
+        return midiDevice.ok != 0;
     }
 
     /**
      *
      */
-    public void closePort() throws Exception {
+    public boolean closePort() {
         try {
             lib.rtmidi_close_port(midiDevice);
-            logger.info(getDeviceType() + " port ... closed");
+            if (midiDevice.ok == 0) throw new MidiException();
+            logger.info(getDeviceClassName() + " port ... closed");
+
         } catch (Throwable e) {
-            throw new Exception(e);
+            if (midiDevice.ok != 0) {
+                System.out.println("Device not found - unable to close its port.");
+            }
         }
+        return midiDevice.ok != 0;
     }
 
     /**
      *
      */
-    public int getPortCount() throws Exception {
-        try {
-            return lib.rtmidi_get_port_count(midiDevice);
-        } catch (Throwable e) {
-            throw new Exception(e);
-        }
+    public int getPortCount() {
+        int ports = lib.rtmidi_get_port_count(midiDevice);
+        return ports;
     }
 
     /**
      *
      */
-    public String getPortName(int portNumber) throws Exception {
-        try {
-            return lib.rtmidi_get_port_name(midiDevice, portNumber);
-        } catch (Throwable e) {
-            throw new Exception(e);
+    public String getFullPortName(int portNumber) {
+        String deviceName = "Unknown";
+//        if (midiDevice.ok != 0) {
+        deviceName = lib.rtmidi_get_port_name(this.midiDevice, portNumber);
+//        }
+//        else {
+//            System.out.println("Device not found - unable to provide its name.");
+//        }
+        return deviceName;
+    }
+
+    /**
+     *
+     */
+    private String getClientName(int portNumber) {
+        String fullPortName = getFullPortName(portNumber);
+
+        if (fullPortName.equals("")) return "Unknown";
+
+        int stop = fullPortName.indexOf(":");
+        return fullPortName.substring(0, stop);
+    }
+
+    /**
+     *
+     */
+    private String getPortName(int portNumber) {
+        String fullPortName = getFullPortName(portNumber);
+
+        if (fullPortName.equals("")) return "Unknown";
+
+        int start = fullPortName.indexOf(":") + 1;
+        int stop = fullPortName.lastIndexOf(" ");
+
+        return fullPortName.substring(start, stop);
+    }
+
+    /**
+     *
+     */
+    public void listConnectablePorts() {
+        int ports = getPortCount();
+
+        System.out.println("");
+        logger.info("There " + (ports > 1 ? "are " : "is ") +
+                (ports == 0 ? "no" : ports) + " " + getCurrentApiName() + " Midi " +
+                getTargetDeviceType() + " port" + (ports > 1 ? "s" : "") + " available." +
+                (ports == 0 ? " Is " + getCurrentApiName()  + " running?" : ""));
+
+        if (ports < 1) return;
+
+        for (int i = 0; i < ports; i++) {
+            logger.info(getTargetDeviceType() + " port id(" + i + ") full name: " + getFullPortName(i));
         }
     }
+
+    protected void showNativeMsg() {
+        String msg;
+        byte[] bbuf = midiDevice.errorMsg.getByteArray(0,128);
+        String msgRaw = new String(bbuf, StandardCharsets.UTF_8);
+        System.out.println("errorMsg raw: " + msgRaw);
+
+        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
+        msg = new String(bbuf, StandardCharsets.UTF_8);
+        msg = msg.substring(0, msg.indexOf('\0'));
+
+        System.out.println("errorMsg cleaned: " + msg + "\nlength: " + msg.length());
+    }
+
 }

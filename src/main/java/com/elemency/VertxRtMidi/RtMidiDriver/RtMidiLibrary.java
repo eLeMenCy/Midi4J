@@ -1,4 +1,4 @@
-package com.elemency.VertxRtMidi.RtMidiLib;
+package com.elemency.VertxRtMidi.RtMidiDriver;
 
 import com.elemency.VertxRtMidi.MidiDevice;
 import com.elemency.VertxRtMidi.MidiIn;
@@ -21,7 +21,7 @@ import java.nio.IntBuffer;
 public interface RtMidiLibrary extends Library {
 	String JNA_LIBRARY_NAME = "RtMidiLibrary";
 	NativeLibrary JNA_NATIVE_LIB = NativeLibrary.getInstance(RtMidiLibrary.JNA_LIBRARY_NAME);
-	RtMidiLibrary INSTANCE = (RtMidiLibrary)Native.loadLibrary(RtMidiLibrary.JNA_LIBRARY_NAME, RtMidiLibrary.class);
+	RtMidiLibrary INSTANCE = (RtMidiLibrary) Native.load(RtMidiLibrary.JNA_LIBRARY_NAME, RtMidiLibrary.class);
 
 /* *********************************************************************************************************************
  * 											           MidiDevice API
@@ -87,7 +87,7 @@ public interface RtMidiLibrary extends Library {
 	 * Original signature : <code>void rtmidi_open_port(RtMidiPtr, unsigned int, const char*)</code><br>
 	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:138</i>
 	 */
-	void rtmidi_open_port(MidiDevice device, int portNumber, String portName);
+	void rtmidi_open_port(MidiDevice device, int portNumber, String portName, boolean autoConnect);
 
 	/**
 	 * Creates a virtual MIDI port to which other software applications can<br>
@@ -110,6 +110,15 @@ public interface RtMidiLibrary extends Library {
 	void rtmidi_close_port(MidiDevice device);
 
 	/**
+	 * Check a MIDI port connexion <br>
+	 * @param device Must be a valid device<br>
+	 *               See RtMidi::isPortOpen().<br>
+	 *               Original signature : <code>void rtmidi_close_port(RtMidiPtr)</code><br>
+	 *               <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:152</i>
+	 */
+	boolean rtmidi_is_port_open(MidiDevice device);
+
+	/**
 	 * Return the number of available MIDI ports.<br>
 	 * @param device  	  Must be a valid device<br>
 	 * See RtMidi::getPortCount().<br>
@@ -128,7 +137,41 @@ public interface RtMidiLibrary extends Library {
 	 */
 	String rtmidi_get_port_name(MidiDevice device, int portNumber);
 
-/* *********************************************************************************************************************
+	// TODO: add these functions to the native wrapper.
+//	/**
+//	 * Return a string identifier for the specified MIDI input port number.<br>
+//	 * @param device  	  Must be a valid device<br>
+//	 * @param portNumber  Must be greater then 0<br>
+//	 * See RtMidi::getPortName().<br>
+//	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
+//	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
+//	 */
+//	String rtmidi_set_port_name(MidiDevice device, int portNumber);
+//
+//	/**
+//	 * Return a string identifier for the specified MIDI input port number.<br>
+//	 * @param device  	  Must be a valid device<br>
+//	 * @param portNumber  Must be greater then 0<br>
+//	 * See RtMidi::getPortName().<br>
+//	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
+//	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
+//	 */
+//	String rtmidi_get_client_name(MidiDevice device, int portNumber);
+//
+//	/**
+//	 * Return a string identifier for the specified MIDI input port number.<br>
+//	 * @param device  	  Must be a valid device<br>
+//	 * @param portNumber  Must be greater then 0<br>
+//	 * See RtMidi::getPortName().<br>
+//	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
+//	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
+//	 */
+//	String rtmidi_set_client_name(MidiDevice device, int portNumber);
+
+
+
+
+	/* *********************************************************************************************************************
  * 											           MidiDevice IN API
  **********************************************************************************************************************/
 

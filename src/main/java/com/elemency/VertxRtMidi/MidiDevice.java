@@ -11,10 +11,11 @@ import java.util.List;
  * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/RtMidi/rtmidi_c.h:40</i><br>
  */
 public class MidiDevice extends Structure {
+
     /**
      * The wrapped RtMidi object. (C type : void*)
      */
-    public Pointer api;
+    public Pointer instance;
     /**
      * C type : void*
      */
@@ -35,13 +36,13 @@ public class MidiDevice extends Structure {
     }
 
     /**
-     * @param api      C type : void*<br>
+     * @param instance C type : void*<br>
      * @param data     C type : void*<br>
      * @param errorMsg C type : const char*
      */
-    public MidiDevice(Pointer api, Pointer data, byte ok, Pointer errorMsg) {
+    public MidiDevice(Pointer instance, Pointer data, byte ok, Pointer errorMsg) {
         super();
-        this.api = api;
+        this.instance = instance;
         this.data = data;
         this.ok = ok;
         this.errorMsg = errorMsg;
@@ -49,10 +50,11 @@ public class MidiDevice extends Structure {
 
     public MidiDevice(Pointer peer) {
         super(peer);
+
     }
 
-    protected List<?> getFieldOrder() {
-        return Arrays.asList("api", "data", "ok", "errorMsg");
+    protected List<String> getFieldOrder() {
+        return Arrays.asList("instance", "data", "ok", "errorMsg");
     }
 
     public static class ByReference extends MidiDevice implements Structure.ByReference {
