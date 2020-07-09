@@ -137,41 +137,28 @@ public interface RtMidiLibrary extends Library {
 	 */
 	String rtmidi_get_port_name(MidiDevice device, int portNumber);
 
-	// TODO: add these functions to the native wrapper.
-//	/**
-//	 * Return a string identifier for the specified MIDI input port number.<br>
-//	 * @param device  	  Must be a valid device<br>
-//	 * @param portNumber  Must be greater then 0<br>
-//	 * See RtMidi::getPortName().<br>
-//	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
-//	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
-//	 */
-//	String rtmidi_set_port_name(MidiDevice device, int portNumber);
-//
-//	/**
-//	 * Return a string identifier for the specified MIDI input port number.<br>
-//	 * @param device  	  Must be a valid device<br>
-//	 * @param portNumber  Must be greater then 0<br>
-//	 * See RtMidi::getPortName().<br>
-//	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
-//	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
-//	 */
-//	String rtmidi_get_client_name(MidiDevice device, int portNumber);
-//
-//	/**
-//	 * Return a string identifier for the specified MIDI input port number.<br>
-//	 * @param device  	  Must be a valid device<br>
-//	 * @param portNumber  Must be greater then 0<br>
-//	 * See RtMidi::getPortName().<br>
-//	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
-//	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
-//	 */
-//	String rtmidi_set_client_name(MidiDevice device, int portNumber);
+	/**
+	 * Return a string identifier for the specified MIDI input port number.<br>
+	 * @param device  	  Must be a valid device<br>
+	 * @param portName  Must be greater then 0<br>
+	 * See RtMidi::getPortName().<br>
+	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
+	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
+	 */
+	void rtmidi_set_port_name(MidiDevice device, String portName);
+
+	/**
+	 * Return a string identifier for the specified MIDI input port number.<br>
+	 * @param device  	  Must be a valid device<br>
+	 * @param clientName  Must be greater then 0<br>
+	 * See RtMidi::getPortName().<br>
+	 * Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
+	 * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:162</i>
+	 */
+	void rtmidi_set_client_name(MidiDevice device, String clientName);
 
 
-
-
-	/* *********************************************************************************************************************
+/* *********************************************************************************************************************
  * 											           MidiDevice IN API
  **********************************************************************************************************************/
 

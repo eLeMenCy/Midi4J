@@ -9,6 +9,9 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     `java-library`
+
+    // Apply the application plugin to add support for building a CLI application.
+    application
 }
 
 group = "com.elemency"
@@ -99,3 +102,9 @@ tasks {
         }
     }
 }
+
+application {
+    // Define the main class for the application.
+    mainClassName = "com.elemency.VertxRtMidi.examples.App"
+}
+

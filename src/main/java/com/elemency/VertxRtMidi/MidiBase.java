@@ -191,7 +191,7 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    private String getClientName(int portNumber) {
+    public String getClientName(int portNumber) {
         String fullPortName = getFullPortName(portNumber);
 
         if (fullPortName.equals("")) return "Unknown";
@@ -203,7 +203,7 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    private String getPortName(int portNumber) {
+    public String getPortName(int portNumber) {
         String fullPortName = getFullPortName(portNumber);
 
         if (fullPortName.equals("")) return "Unknown";
@@ -212,6 +212,22 @@ public abstract class MidiBase implements AutoCloseable {
         int stop = fullPortName.lastIndexOf(" ");
 
         return fullPortName.substring(start, stop);
+    }
+
+    /**
+     *
+     */
+    public void setPortName(String portName) {
+        // TODO: throw exception
+        lib.rtmidi_set_port_name(this.midiDevice, portName);
+    }
+
+    /**
+     *
+     */
+    public void setClientName(String clientName) {
+        // TODO: exception.
+        lib.rtmidi_set_client_name(this.midiDevice, clientName);
     }
 
     /**
