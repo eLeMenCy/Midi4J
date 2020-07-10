@@ -1,7 +1,7 @@
-package com.elemency.VertxRtMidi.RtMidiDriver;
+package com.elemency.Midi4J.RtMidiDriver;
 
-import com.elemency.VertxRtMidi.MidiDevice;
-import com.elemency.VertxRtMidi.MidiIn;
+import com.elemency.Midi4J.MidiDevice;
+import com.elemency.Midi4J.MidiIn;
 import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
 import com.sun.jna.Library;
 import com.sun.jna.Native;

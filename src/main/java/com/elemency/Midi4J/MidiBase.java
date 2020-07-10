@@ -1,9 +1,7 @@
-package com.elemency.VertxRtMidi;
+package com.elemency.Midi4J;
 
-import com.elemency.VertxRtMidi.RtMidiDriver.RtMidi;
-import com.elemency.VertxRtMidi.RtMidiDriver.RtMidiLibrary;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
+import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +71,36 @@ public abstract class MidiBase implements AutoCloseable {
         return new RtMidi().apiDisplayName(getCurrentApiId());
     }
 
+    /**
+     *
+     */
+    public void setClientName(String clientName) {
+        // TODO: exception.
+        try {
+            if (clientName.isEmpty()) {
+                throw new MidiException("setClientName() -> Client name cannot be empty!");
+            }
+
+            lib.rtmidi_set_client_name(this.midiDevice, clientName);
+
+        }
+        catch (MidiException msg) {
+            logger.warn(msg.getMessage());
+        }
+    }
+
+    /**
+     *
+     */
+    public String getClientName(int portNumber) {
+        String fullPortName = getFullPortName(portNumber);
+
+        if (fullPortName.equals("")) return "Unknown";
+
+        int stop = fullPortName.indexOf(":");
+        return fullPortName.substring(0, stop);
+    }
+
 /* *********************************************************************************************************************
  * 											           MidiDevice Port
  **********************************************************************************************************************/
@@ -82,24 +110,6 @@ public abstract class MidiBase implements AutoCloseable {
      */
     public boolean isPortOpen() {
         return lib.rtmidi_is_port_open(this.midiDevice);
-    }
-
-    /**
-     *
-     */
-    public void displayErrorFromNative() {
-        String msgRaw = "";
-        String msg = "";
-
-        byte[] bbuf = this.midiDevice.errorMsg.getByteArray(0, 128);
-        msgRaw = new String(bbuf, StandardCharsets.UTF_8);
-        System.out.println("errorMsg raw: " + msgRaw);
-
-        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
-        msg = new String(bbuf, StandardCharsets.UTF_8);
-        msg = msg.substring(0, msg.indexOf('\0'));
-
-        System.out.println("errorMsg cleaned: " + msg + "\nlength: " + msg.length());
     }
 
     /**
@@ -129,9 +139,9 @@ public abstract class MidiBase implements AutoCloseable {
 
             return true;
         }
-        else {
-            showNativeMsg();
-        }
+//        else {
+//            System.out.println(getNativeMsg());
+//        }
 
         return false;
     }
@@ -191,19 +201,15 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getClientName(int portNumber) {
-        String fullPortName = getFullPortName(portNumber);
-
-        if (fullPortName.equals("")) return "Unknown";
-
-        int stop = fullPortName.indexOf(":");
-        return fullPortName.substring(0, stop);
+    public void setPortName(String portName) {
+        // TODO: throw exception
+        lib.rtmidi_set_port_name(this.midiDevice, portName);
     }
 
     /**
      *
      */
-    public String getPortName(int portNumber) {
+    public String getComplementalPortName(int portNumber) {
         String fullPortName = getFullPortName(portNumber);
 
         if (fullPortName.equals("")) return "Unknown";
@@ -217,23 +223,7 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public void setPortName(String portName) {
-        // TODO: throw exception
-        lib.rtmidi_set_port_name(this.midiDevice, portName);
-    }
-
-    /**
-     *
-     */
-    public void setClientName(String clientName) {
-        // TODO: exception.
-        lib.rtmidi_set_client_name(this.midiDevice, clientName);
-    }
-
-    /**
-     *
-     */
-    public void listConnectablePorts() {
+    public void listComplementalPorts() {
         int ports = getPortCount();
 
         System.out.println("");
@@ -249,17 +239,34 @@ public abstract class MidiBase implements AutoCloseable {
         }
     }
 
-    protected void showNativeMsg() {
-        String msg;
-        byte[] bbuf = midiDevice.errorMsg.getByteArray(0,128);
-        String msgRaw = new String(bbuf, StandardCharsets.UTF_8);
-        System.out.println("errorMsg raw: " + msgRaw);
+//    /**
+//     *
+//     */
+//    public void displayErrorFromNative() {
+//        String msgRaw = "";
+//        String msg = "";
+//
+//        byte[] bbuf = this.midiDevice.errorMsg.getByteArray(0, 128);
+//        msgRaw = new String(bbuf, StandardCharsets.UTF_8);
+//        System.out.println("errorMsg raw: " + msgRaw);
+//
+//        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
+//        msg = new String(bbuf, StandardCharsets.UTF_8);
+//        msg = msg.substring(0, msg.indexOf('\0'));
+//
+//        System.out.println("errorMsg cleaned: " + msg + "\nlength: " + msg.length());
+//    }
 
-        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
-        msg = new String(bbuf, StandardCharsets.UTF_8);
-        msg = msg.substring(0, msg.indexOf('\0'));
-
-        System.out.println("errorMsg cleaned: " + msg + "\nlength: " + msg.length());
-    }
-
+//    /**
+//     *
+//     */
+//    protected String getNativeMsg() {
+//        String msg;
+//        byte[] bbuf = this.midiDevice.errorMsg.getByteArray(0,128);
+//        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
+//
+//        msg = new String(bbuf, StandardCharsets.UTF_8);
+////        return msg.substring(0, msg.indexOf('\0'));
+//        return msg;
+//    }
 }

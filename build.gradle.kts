@@ -16,8 +16,8 @@ plugins {
 
 group = "com.elemency"
 version = "1.0-SNAPSHOT"
-description = "- Vert.x Midi library -\n" +
-        "Vert.x Midi provides client/server facility for Midi messages\n" +
+description = "- Midi for java library (Midi4J) -\n" +
+        "Midi4J provides client/server facility for Midi messages\n" +
         "The server is able to handle connections, communication and messages exchange with remote MIDI clients.\n" +
         "Requires Jack Audio to be installed on user's machine."
 
@@ -105,6 +105,6 @@ tasks {
 
 application {
     // Define the main class for the application.
-    mainClassName = "com.elemency.VertxRtMidi.examples.App"
+    mainClassName = "com.elemency.Midi4J.examples.App"
 }
 

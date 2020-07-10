@@ -1,6 +1,6 @@
-package com.elemency.VertxRtMidi.RtMidiDriver;
+package com.elemency.Midi4J.RtMidiDriver;
 
-import com.elemency.VertxRtMidi.MidiBase;
+import com.elemency.Midi4J.MidiBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

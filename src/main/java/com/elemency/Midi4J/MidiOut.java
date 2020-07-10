@@ -1,7 +1,7 @@
-package com.elemency.VertxRtMidi;
+package com.elemency.Midi4J;
 
-import com.elemency.VertxRtMidi.RtMidiDriver.RtMidi;
-import com.elemency.VertxRtMidi.RtMidiDriver.RtMidiLibrary;
+import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,15 +10,14 @@ public class MidiOut extends MidiBase {
     private final RtMidiLibrary lib = super.lib;
 
     public MidiOut() {
-//        super.midiDevice = createDefault();
-
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
-//        super.clientName += " Output";
         super.midiDevice = create(api, super.clientName);
     }
 
     public MidiOut(int api, String clientName) {
-        super.clientName = clientName;
+        if (!clientName.isEmpty()) {
+            super.clientName = clientName;
+        }
         super.midiDevice = create(api, clientName);
     }
 
@@ -26,15 +25,6 @@ public class MidiOut extends MidiBase {
     public void close() {
         closePort();
         free();
-    }
-
-    /**
-     *
-     */
-    private MidiDevice createDefault() {
-        MidiDevice midiDevice = lib.rtmidi_out_create_default();
-//        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
-        return midiDevice;
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.elemency.VertxRtMidi.examples;
+package com.elemency.Midi4J.examples;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

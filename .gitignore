@@ -1,7 +1,6 @@
 /shelf/
 */workspace.xml
 */libraries/
-.vertx/
 .idea/
 
 ### maven ###

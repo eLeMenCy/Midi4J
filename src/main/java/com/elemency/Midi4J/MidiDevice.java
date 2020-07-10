@@ -1,4 +1,4 @@
-package com.elemency.VertxRtMidi;
+package com.elemency.Midi4J;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;

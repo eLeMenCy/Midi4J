@@ -1,7 +1,7 @@
-package com.elemency.VertxRtMidi;
+package com.elemency.Midi4J;
 
-import com.elemency.VertxRtMidi.RtMidiDriver.RtMidi;
-import com.elemency.VertxRtMidi.RtMidiDriver.RtMidiLibrary;
+import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
 import com.sun.jna.*;
@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class MidiIn extends MidiBase {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
@@ -22,8 +20,10 @@ public class MidiIn extends MidiBase {
     }
 
     public MidiIn(int api, String clientName, int queueSizeLimit) throws MidiException {
-        super.clientName = clientName;
-        super.midiDevice = create(api, clientName, queueSizeLimit);
+        if (!clientName.isEmpty()) {
+            super.clientName = clientName;
+        }
+        super.midiDevice = create(api, super.clientName, queueSizeLimit);
     }
 
     @Override
@@ -31,15 +31,6 @@ public class MidiIn extends MidiBase {
         cancelCallback();
         closePort();
         free();
-    }
-
-    /**
-     *
-     */
-    private MidiDevice createDefault() {
-        MidiDevice midiDevice = lib.rtmidi_in_create_default();
-//        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
-        return midiDevice;
     }
 
     /**
