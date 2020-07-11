@@ -5,9 +5,6 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
 public abstract class MidiBase implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
     private final Logger logger = LoggerFactory.getLogger(MidiBase.class);
@@ -82,6 +79,7 @@ public abstract class MidiBase implements AutoCloseable {
             }
 
             lib.rtmidi_set_client_name(this.midiDevice, clientName);
+            this.clientName = clientName;
 
         }
         catch (MidiException msg) {
@@ -92,13 +90,20 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getClientName(int portNumber) {
-        String fullPortName = getFullPortName(portNumber);
+    public String getClientName(int portId) {
+        String fullPortName = getPortDetails(portId);
 
         if (fullPortName.equals("")) return "Unknown";
 
         int stop = fullPortName.indexOf(":");
         return fullPortName.substring(0, stop);
+    }
+
+    /**
+     *
+     */
+    public String getClientName() {
+        return clientName;
     }
 
 /* *********************************************************************************************************************
@@ -116,6 +121,10 @@ public abstract class MidiBase implements AutoCloseable {
      *
      */
     public boolean openPort(String fromPortName, int toPortId, boolean autoConnect) {
+
+        if (getPortCount() < 1) {
+            return false;
+        }
 
         System.out.println("");
         logger.info("Trying to connect " + getClientName(toPortId) + "'s " + getTargetDeviceType() + " port (id " + toPortId + ") to " +
@@ -162,23 +171,6 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public boolean closePort() {
-        try {
-            lib.rtmidi_close_port(midiDevice);
-            if (midiDevice.ok == 0) throw new MidiException();
-            logger.info(getDeviceClassName() + " port ... closed");
-
-        } catch (Throwable e) {
-            if (midiDevice.ok != 0) {
-                System.out.println("Device not found - unable to close its port.");
-            }
-        }
-        return midiDevice.ok != 0;
-    }
-
-    /**
-     *
-     */
     public int getPortCount() {
         int ports = lib.rtmidi_get_port_count(midiDevice);
         return ports;
@@ -187,15 +179,15 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getFullPortName(int portNumber) {
-        String deviceName = "Unknown";
+    public String getPortDetails(int portId) {
+        String name = "??";
 //        if (midiDevice.ok != 0) {
-        deviceName = lib.rtmidi_get_port_name(this.midiDevice, portNumber);
+        name = lib.rtmidi_get_port_name(this.midiDevice, portId);
 //        }
 //        else {
 //            System.out.println("Device not found - unable to provide its name.");
 //        }
-        return deviceName;
+        return name;
     }
 
     /**
@@ -209,10 +201,13 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getComplementalPortName(int portNumber) {
-        String fullPortName = getFullPortName(portNumber);
+    public String getPortName(int portId) {
+        if (getPortCount() < 1) {
+            return "No such a port";
+        }
 
-        if (fullPortName.equals("")) return "Unknown";
+        String fullPortName = getPortDetails(portId);
+        if (fullPortName.equals("")) return "??";
 
         int start = fullPortName.indexOf(":") + 1;
         int stop = fullPortName.lastIndexOf(" ");
@@ -223,22 +218,38 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public void listComplementalPorts() {
+    public void ListPorts() {
         int ports = getPortCount();
 
         System.out.println("");
-        logger.info("There " + (ports > 1 ? "are " : "is ") +
-                (ports == 0 ? "no" : ports) + " " + getCurrentApiName() + " Midi " +
-                getTargetDeviceType() + " port" + (ports > 1 ? "s" : "") + " available." +
-                (ports == 0 ? " Is " + getCurrentApiName()  + " running?" : ""));
-
-        if (ports < 1) return;
+        if (ports < 1) {
+            logger.warn("There are no " + getCurrentApiName() + " Midi " +
+                    getTargetDeviceType() + " ports" + (ports > 1 ? "s" : "") + " available." +
+                    (ports == 0 ? " Is " + getCurrentApiName()  + " running?" : ""));
+            return;
+        }
 
         for (int i = 0; i < ports; i++) {
-            logger.info(getTargetDeviceType() + " port id(" + i + ") full name: " + getFullPortName(i));
+            logger.info(getTargetDeviceType() + " port id(" + i + ") full name: " + getPortDetails(i));
         }
     }
 
+    /**
+     *
+     */
+    public boolean closePort() {
+        try {
+            lib.rtmidi_close_port(midiDevice);
+            if (midiDevice.ok == 0) throw new MidiException();
+            logger.info(getDeviceClassName() + " port ... closed");
+
+        } catch (Throwable e) {
+            if (midiDevice.ok != 0) {
+                System.out.println("Device not found - unable to close its port.");
+            }
+        }
+        return midiDevice.ok != 0;
+    }
 //    /**
 //     *
 //     */

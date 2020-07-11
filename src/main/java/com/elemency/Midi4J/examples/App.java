@@ -69,24 +69,29 @@ public class App extends KeepAppRunning {
 //                MidiIn midi4jIn = new MidiIn();
         ) {
 
+
             this.midi4jIn = midi4jIn;
             this.midi4jOut = midi4jOut;
 
-            this.midi4jIn.listComplementalPorts();
+            System.out.println("Out port count: "+ this.midi4jIn.getPortCount());
+            System.out.println("In port count: "+ this.midi4jOut.getPortCount());
+
+            this.midi4jIn.ListPorts();
             this.midi4jIn.openPort("IN", 1, true);
 
-            this.midi4jOut.listComplementalPorts();
-            this.midi4jOut.openPort("OUT", 0, false);
+            this.midi4jOut.ListPorts();
+            this.midi4jOut.openPort("OUT", 0, true);
 
-            this.midi4jIn.setClientName("");
+            this.midi4jIn.setClientName("Tester In");
             this.midi4jIn.setPortName("My IN");
-            this.midi4jOut.setClientName("Tester");
+            this.midi4jOut.setClientName("Tester Out");
             this.midi4jOut.setPortName("My OUT");
 //            this.midi4jOut.openPort("OUT", 0, true);
 
+            System.out.println("In Client name : " + this.midi4jIn.getClientName());
 
-            System.out.println("Name of Midi In complemental PortName id(" + 1 + ") is: " + this.midi4jIn.getComplementalPortName(1));
-            System.out.println("Name of Midi out complemental PortName id(" + 0 + ") is: " +  this.midi4jOut.getComplementalPortName(0));
+            System.out.println("Name of Out port id(" + 1 + ") is: " + this.midi4jIn.getPortName(1));
+            System.out.println("Name of In port id(" + 0 + ") is: " +  this.midi4jOut.getPortName(0));
 
             this.midi4jIn.setCallback(process, "native", null);
 
