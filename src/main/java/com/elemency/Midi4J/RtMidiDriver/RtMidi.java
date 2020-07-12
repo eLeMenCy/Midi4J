@@ -14,13 +14,13 @@ public class RtMidi {
 
     /**
      * MIDI API specifier arguments.  See ref: RtMidi::Api.<br>
-     * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/tMidi/rtmidi_c.h:62</i><br>
+     * <i>native declaration : RtMidi/rtmidi_c.h:62</i><br>
      * enum values
      */
     public enum Api {
         /**
          * < Search for a working compiled API.<br>
-         * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:63</i>
+         * <i>native declaration : RtMidi/rtmidi_c.h:63</i>
          * api name:         unspecified
          * api display name: Unknown
          */
@@ -28,7 +28,7 @@ public class RtMidi {
 
         /**
          * < Macintosh OS-X CoreMIDI API.<br>
-         * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:64</i>
+         * <i>native declaration : RtMidi/rtmidi_c.h:64</i>
          * api name:         core
          * api display name: CoreMidi
          */
@@ -36,7 +36,7 @@ public class RtMidi {
 
         /**
          * < The Advanced Linux Sound Architecture API.<br>
-         * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:65</i>
+         * <i>native declaration : RtMidi/rtmidi_c.h:65</i>
          * api name:         alsa
          * api display name: ALSA
          */
@@ -44,7 +44,7 @@ public class RtMidi {
 
         /**
          * < The Jack Low-Latency MIDI Server API.<br>
-         * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:66</i>
+         * <i>native declaration : RtMidi/rtmidi_c.h:66</i>
          * api name:         jack
          * api display name: JACK
          */
@@ -52,7 +52,7 @@ public class RtMidi {
 
         /**
          * < The Microsoft Multimedia MIDI API.<br>
-         * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:67</i>
+         * <i>native declaration : RtMidi/rtmidi_c.h:67</i>
          * api name:         winmm
          * api display name: Windows MultiMedia
          */
@@ -60,7 +60,7 @@ public class RtMidi {
 
         /**
          * < A compilable but non-functional API.<br>
-         * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/MidiDevice/rtmidi_c.h:68</i>
+         * <i>native declaration : RtMidi/rtmidi_c.h:68</i>
          * api name:         dummy
          * api display name: Dummy
          */

@@ -1,5 +1,6 @@
 package com.elemency.Midi4J;
 
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
@@ -8,11 +9,11 @@ import org.slf4j.LoggerFactory;
 public abstract class MidiBase implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
     private final Logger logger = LoggerFactory.getLogger(MidiBase.class);
-    protected MidiDevice midiDevice = null;
+    protected RtMidiDevice midiDevice = null;
     protected String clientName = "Midi4J";
 
 /* *********************************************************************************************************************
- * 											           MidiDevice
+ * 											           RtMidiDevice
  **********************************************************************************************************************/
 
     /**
@@ -107,7 +108,7 @@ public abstract class MidiBase implements AutoCloseable {
     }
 
 /* *********************************************************************************************************************
- * 											           MidiDevice Port
+ * 											           RtMidiDevice Port
  **********************************************************************************************************************/
 
     /**

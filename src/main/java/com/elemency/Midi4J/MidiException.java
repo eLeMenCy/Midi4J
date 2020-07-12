@@ -1,5 +1,6 @@
 package com.elemency.Midi4J;
 
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,7 @@ public class MidiException extends  Exception {
     /**
      * <code>MidiException</code> instance created without detailed message.
      */
-    public String getMessage(MidiDevice device) {
+    public String getMessage(RtMidiDevice device) {
         byte[] buffer = device.errorMsg.getByteArray(0,128);
         buffer = Arrays.copyOfRange(buffer, 16, 128);
         String msg = new String(buffer, StandardCharsets.UTF_8);
@@ -29,7 +30,7 @@ public class MidiException extends  Exception {
     /**
      * <code>MidiException</code> instance created with detailed native message.
      */
-    public MidiException(MidiDevice device) {
+    public MidiException(RtMidiDevice device) {
         logger.info(getMessage(device));
     }
 

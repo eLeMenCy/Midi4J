@@ -1,5 +1,6 @@
 package com.elemency.Midi4J;
 
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
@@ -30,8 +31,8 @@ public class MidiOut extends MidiBase {
     /**
      *
      */
-    private MidiDevice create(int api, String clientName) {
-        MidiDevice midiDevice = lib.rtmidi_out_create(api, clientName);
+    private RtMidiDevice create(int api, String clientName) {
+        RtMidiDevice midiDevice = lib.rtmidi_out_create(api, clientName);
 //        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
         return midiDevice;
     }

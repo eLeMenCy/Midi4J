@@ -1,4 +1,4 @@
-package com.elemency.Midi4J;
+package com.elemency.Midi4J.RtMidiDriver;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -8,9 +8,9 @@ import java.util.List;
 
 /**
  * Wraps an RtMidi object for C function return statuses.<br>
- * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/RtMidi/rtmidi_c.h:40</i><br>
+ * <i>native declaration : RtMidi/rtmidi_c.h:40</i><br>
  */
-public class MidiDevice extends Structure {
+public class RtMidiDevice extends Structure {
 
     /**
      * The wrapped RtMidi object. (C type : void*)
@@ -31,7 +31,7 @@ public class MidiDevice extends Structure {
      */
     public Pointer errorMsg;
 
-    public MidiDevice() {
+    public RtMidiDevice() {
         super();
     }
 
@@ -40,7 +40,7 @@ public class MidiDevice extends Structure {
      * @param data     C type : void*<br>
      * @param errorMsg C type : const char*
      */
-    public MidiDevice(Pointer instance, Pointer data, byte ok, Pointer errorMsg) {
+    public RtMidiDevice(Pointer instance, Pointer data, byte ok, Pointer errorMsg) {
         super();
         this.instance = instance;
         this.data = data;
@@ -48,7 +48,7 @@ public class MidiDevice extends Structure {
         this.errorMsg = errorMsg;
     }
 
-    public MidiDevice(Pointer peer) {
+    public RtMidiDevice(Pointer peer) {
         super(peer);
 
     }
@@ -57,11 +57,11 @@ public class MidiDevice extends Structure {
         return Arrays.asList("instance", "data", "ok", "errorMsg");
     }
 
-    public static class ByReference extends MidiDevice implements Structure.ByReference {
+    public static class ByReference extends RtMidiDevice implements Structure.ByReference {
 
     }
 
-    public static class ByValue extends MidiDevice implements Structure.ByValue {
+    public static class ByValue extends RtMidiDevice implements Structure.ByValue {
 
     }
 }

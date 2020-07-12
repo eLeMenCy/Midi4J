@@ -1,5 +1,6 @@
 package com.elemency.Midi4J;
 
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
@@ -36,8 +37,8 @@ public class MidiIn extends MidiBase {
     /**
      *
      */
-    private MidiDevice create(int api, String clientName, int queueSizeLimit) throws MidiException {
-        MidiDevice midiDevice = lib.rtmidi_in_create(api, clientName, queueSizeLimit);
+    private RtMidiDevice create(int api, String clientName, int queueSizeLimit) throws MidiException {
+        RtMidiDevice midiDevice = lib.rtmidi_in_create(api, clientName, queueSizeLimit);
         return midiDevice;
     }
 
