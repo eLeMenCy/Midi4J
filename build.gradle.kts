@@ -55,6 +55,7 @@ dependencies {
     implementation("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
     implementation("com.google.guava:guava:28.1-jre")
     implementation("net.java.dev.jna:jna:5.5.0")
+    //implementation("com.google.guava:guava:29.0-jre")
     implementation("junit:junit:4.12")
 
     // Use JUnit test framework

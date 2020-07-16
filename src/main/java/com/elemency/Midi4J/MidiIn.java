@@ -17,20 +17,24 @@ public class MidiIn extends MidiBase {
 
     public MidiIn() throws MidiException {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
-        super.midiDevice = create(api, super.clientName, 100);
+        super.rtMidiDevice = create(api, super.clientName, 100);
     }
 
     public MidiIn(int api, String clientName, int queueSizeLimit) throws MidiException {
         if (!clientName.isEmpty()) {
+
+            // Remove the eventual semicolon form client name.
+            // The semicolon is generally used as a separator between client and port name and id).
+            clientName = clientName.replaceAll(":"," ");
             super.clientName = clientName;
         }
-        super.midiDevice = create(api, super.clientName, queueSizeLimit);
+        super.rtMidiDevice = create(api, super.clientName, queueSizeLimit);
     }
 
     @Override
     public void close()/* throws MidiException*/ {
         cancelCallback();
-        closePort();
+        closeDevice();
         free();
     }
 
@@ -38,6 +42,7 @@ public class MidiIn extends MidiBase {
      *
      */
     private RtMidiDevice create(int api, String clientName, int queueSizeLimit) throws MidiException {
+
         RtMidiDevice midiDevice = lib.rtmidi_in_create(api, clientName, queueSizeLimit);
         return midiDevice;
     }
@@ -54,9 +59,9 @@ public class MidiIn extends MidiBase {
         CallbackThreadInitializer cti = new CallbackThreadInitializer(false, false, threadName);
         Native.setCallbackThreadInitializer(callback, cti);
 
-        lib.rtmidi_in_set_callback(midiDevice, callback, userData);
+        lib.rtmidi_in_set_callback(rtMidiDevice, callback, userData);
 //        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
-        return midiDevice.ok != 0;
+        return rtMidiDevice.ok != 0;
     }
 
     /**
@@ -64,23 +69,23 @@ public class MidiIn extends MidiBase {
      */
     public boolean cancelCallback() {
         logger.info("Cancelling IN callback...");
-        lib.rtmidi_in_cancel_callback(midiDevice);
+        lib.rtmidi_in_cancel_callback(rtMidiDevice);
 //        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
-        return midiDevice.ok != 0;
+        return rtMidiDevice.ok != 0;
     }
 
     /**
      *
      */
     public void ignoreTypes(byte midiSysex, byte midiTime, byte midiSense) {
-        lib.rtmidi_in_ignore_types(midiDevice, midiSysex, midiTime, midiSense);
+        lib.rtmidi_in_ignore_types(rtMidiDevice, midiSysex, midiTime, midiSense);
     }
 
     /**
      *
      */
     public double getMessage(ByteBuffer message, NativeSizeByReference size) {
-        double midiMessage = lib.rtmidi_in_get_message(midiDevice, message, size);
+        double midiMessage = lib.rtmidi_in_get_message(rtMidiDevice, message, size);
 //        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
         return midiMessage;
     }

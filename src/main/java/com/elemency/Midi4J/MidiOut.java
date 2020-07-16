@@ -12,19 +12,24 @@ public class MidiOut extends MidiBase {
 
     public MidiOut() {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
-        super.midiDevice = create(api, super.clientName);
+        super.rtMidiDevice = create(api, super.clientName);
     }
 
     public MidiOut(int api, String clientName) {
+
         if (!clientName.isEmpty()) {
+
+            // Remove the eventual semicolon form client name.
+            // The semicolon is generally used as a separator between client and port name and id).
+            clientName = clientName.replaceAll(":"," ");
             super.clientName = clientName;
         }
-        super.midiDevice = create(api, clientName);
+        super.rtMidiDevice = create(api, clientName);
     }
 
     @Override
     public void close() {
-        closePort();
+        closeDevice();
         free();
     }
 
@@ -43,8 +48,8 @@ public class MidiOut extends MidiBase {
     public int sendMessage(byte[] message, int length) {
         int result = 0;
 
-        if (midiDevice.ok != 0) {
-            result = lib.rtmidi_out_send_message(midiDevice, message, length);
+        if (rtMidiDevice.ok != 0) {
+            result = lib.rtmidi_out_send_message(rtMidiDevice, message, length);
         }
         else {
             System.out.println("No out device found - Received data cannot be sent!");

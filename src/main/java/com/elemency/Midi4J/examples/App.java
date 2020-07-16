@@ -32,6 +32,8 @@ public class App extends KeepAppRunning {
             // Read native memory data into our data byte array.
             message.read(0, data, 0, messageSize.intValue());
 
+            //data -> Byte 0 = 144, Byte 1 = 77, Byte 2 = 0, stamp = 0.107015
+
             if ((data[0] & 0xFF) == 144 && data[1] == 39) {
                 logger.info("quitting...");
                 doQuit();
@@ -40,15 +42,17 @@ public class App extends KeepAppRunning {
 
             midi4jOut.sendMessage(data, messageSize.intValue());
 
-            String log = valueOf(timeStamp);
+            String log = "";
             for (int i = 0; i < messageSize.intValue(); i++) {
                 if (i == 0) {
                     int status = data[i] & 0xFF;
-                    log += ", 0x" + Integer.toHexString(status) + "(" + status + ")";
+                    log += "Byte 0 = 0x" + Integer.toHexString(status) + "(" + status + "), ";
                 } else {
-                    log += ", " + data[i];
+                    log += "Byte " + i + " = " + data[i] + ", ";
                 }
             }
+            log += "Stamp = " + String.format("%1.10s", timeStamp);
+
             logger.debug(log);
         }
     };
@@ -63,30 +67,23 @@ public class App extends KeepAppRunning {
 
 
         try (
-                MidiOut midi4jOut = new MidiOut(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J");
+                MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
                 MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100)
 //                MidiOut midi4jOut = new MidiOut();
 //                MidiIn midi4jIn = new MidiIn();
         ) {
 
-
             this.midi4jIn = midi4jIn;
             this.midi4jOut = midi4jOut;
 
-            System.out.println("Out port count: "+ this.midi4jIn.getPortCount());
-            System.out.println("In port count: "+ this.midi4jOut.getPortCount());
+            System.out.println("Out device count: "+ this.midi4jIn.getDeviceCount());
+            System.out.println("In device count: "+ this.midi4jOut.getDeviceCount());
 
-            this.midi4jIn.ListPorts();
-            this.midi4jIn.openPort("IN", 1, true);
+            this.midi4jIn.listDevices();
+            this.midi4jIn.connectDevices("IN", 2, true);
 
-            this.midi4jOut.ListPorts();
-            this.midi4jOut.openPort("OUT", 0, true);
-
-            this.midi4jIn.setClientName("Tester In");
-            this.midi4jIn.setPortName("My IN");
-            this.midi4jOut.setClientName("Tester Out");
-            this.midi4jOut.setPortName("My OUT");
-//            this.midi4jOut.openPort("OUT", 0, true);
+            this.midi4jOut.listDevices();
+            this.midi4jOut.connectDevices("OUT", 1, true);
 
             System.out.println("In Client name : " + this.midi4jIn.getClientName());
 
@@ -95,16 +92,19 @@ public class App extends KeepAppRunning {
 
             this.midi4jIn.setCallback(process, "native", null);
 
-            System.out.println("\nis cltTesterIn Port Open: " + midi4jIn.isPortOpen());
-            System.out.println("is cltTesterOut Port Open: " + midi4jOut.isPortOpen());
+            System.out.println("\nis midi4jIn device Open: " + midi4jIn.isDeviceOpen());
+            System.out.println("is midi4jOut device Open: " + midi4jOut.isDeviceOpen());
+
+            System.out.println("MidiDevice[0]: " + midi4jOut.getMidiDevice(0, false).getClientName());
+            System.out.println("MidiDevice[0]: " + midi4jIn.getMidiDevice(5, false).getClientName());
 
             keepRunning();
 
         } catch( MidiException me) {
             logger.error(String.valueOf(me));
 
-        } catch( Exception e) {
-            logger.error("An unrecoverable error occurred:\n e\n - quitting...");
+//        } catch( Exception e) {
+//            logger.error("An unrecoverable error occurred:\n e\n - quitting...");
         }
     }
 }

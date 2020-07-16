@@ -1,19 +1,20 @@
 <!--
 http://logback.qos.ch/documentation.html
 https://www.baeldung.com/logback
+http://logback.qos.ch/manual/layouts.html
 -->
 
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
     <encoder>
-      <pattern>%level [%thread] %logger{0} - %msg%n</pattern>
-      <!--pattern>%d{HH:mm:ss:SSS} [%thread] %-5level %logger{36} - %msg%n</pattern-->
+      <pattern>%-18(%white(%d{HH:mm:ss}) %highlight(%-5level) %white([%thread])) %magenta(%logger{0})::%cyan(%M\(\)) - %highlight(%msg%n)</pattern>
     </encoder>
   </appender>
 
   <logger name="io.netty" level="warn"/>
 
-  <root level="debug">
+  <root level="DEBUG">
     <appender-ref ref="STDOUT"/>
   </root>
 </configuration>
