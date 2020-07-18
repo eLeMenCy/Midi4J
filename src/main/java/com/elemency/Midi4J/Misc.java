@@ -64,4 +64,21 @@ public class Misc {
 
         return result;
     }
+
+    public static String findPattern(String data, String regex) {
+
+        // regex to extract ALSA client:port ids: "\\w+:\\w+$"
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(data);
+        String result = "";
+
+        if (matcher.find()) {
+            result = data.substring(matcher.start(), matcher.end());
+//            System.out.println("client:port -> " + result);
+        }
+
+        return result;
+    }
 }
+

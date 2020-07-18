@@ -12,7 +12,7 @@ public class MidiOut extends MidiBase {
 
     public MidiOut() {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
-        super.rtMidiDevice = create(api, super.clientName);
+        super.rtMidiDevice = create(api, super.deviceName);
     }
 
     public MidiOut(int api, String clientName) {
@@ -22,7 +22,7 @@ public class MidiOut extends MidiBase {
             // Remove the eventual semicolon form client name.
             // The semicolon is generally used as a separator between client and port name and id).
             clientName = clientName.replaceAll(":"," ");
-            super.clientName = clientName;
+            super.deviceName = clientName;
         }
         super.rtMidiDevice = create(api, clientName);
     }

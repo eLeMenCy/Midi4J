@@ -6,7 +6,6 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.midi.MidiEvent;
 import java.util.ArrayList;
 
 
@@ -14,12 +13,12 @@ public abstract class MidiBase implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
     private final Logger logger = LoggerFactory.getLogger(MidiBase.class);
     protected RtMidiDevice rtMidiDevice = null;
-    protected String clientName = "Midi4J";
+    protected String deviceName = "Midi4J";
+    protected boolean isConnected = false;
+    protected int targetDevicePortId = -1;
     protected ArrayList<MidiDevice> midiDevices = new ArrayList<>();
 
-/* *********************************************************************************************************************
- * 											           RtMidiDevice
- **********************************************************************************************************************/
+//TODO: Add fields to memorise connection between device/ports in the MidiDevice class.
 
     /**
      *
@@ -57,6 +56,13 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
+    private String getDeviceType() {
+        return getDeviceClassName().equals("MidiIn") ? "In" : "Out";
+    }
+
+    /**
+     *
+     */
     public void error(int type, String errorString) {
         lib.rtmidi_error(type, errorString);
     }
@@ -65,7 +71,13 @@ public abstract class MidiBase implements AutoCloseable {
      *
      */
     public int getCurrentApiId() {
-        return lib.rtmidi_out_get_current_api(rtMidiDevice);
+
+        if (getDeviceClassName().equals("MidiIn")) {
+            return lib.rtmidi_in_get_current_api(rtMidiDevice);
+        }
+        else {
+            return lib.rtmidi_out_get_current_api(rtMidiDevice);
+        }
     }
 
     /**
@@ -78,15 +90,15 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public void setClientName(String clientName) {
+    public void setDeviceName(String deviceName) {
         // TODO: exception.
         try {
-            if (clientName.isEmpty()) {
+            if (deviceName.isEmpty()) {
                 throw new MidiException("setClientName() -> Client name cannot be empty!");
             }
 
-            lib.rtmidi_set_client_name(this.rtMidiDevice, clientName);
-            this.clientName = clientName;
+            lib.rtmidi_set_client_name(this.rtMidiDevice, deviceName);
+            this.deviceName = deviceName;
 
         }
         catch (MidiException msg) {
@@ -97,25 +109,47 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getClientName(int portId) {
-        String fullPortName = getFullDeviceDetails(portId);
+    public String getTargetDeviceName(int targetPortId) {
+        String[] data = getFullDeviceDetails(targetPortId)/*.split("|")*/;
 
-        if (fullPortName.equals("")) return "Unknown";
+        if (data.length < 1) {
+            return "Unknown";
+        }
 
-        int stop = fullPortName.indexOf(":");
-        return fullPortName.substring(0, stop);
+        return data[3];
     }
 
     /**
      *
      */
-    public String getClientName() {
-        return this.clientName;
+    public String getName() {
+        return this.deviceName;
     }
 
-/* *********************************************************************************************************************
- * 											           RtMidiDevice Port
- **********************************************************************************************************************/
+    /**
+     *
+     */
+    public ArrayList<MidiDevice> getMidiDevices (boolean updateList) {
+        // Update device list.
+        if (updateList) {
+            listDevices();
+        }
+
+        return this.midiDevices;
+    }
+
+
+    /**
+     *
+     */
+    public MidiDevice getMidiDevice (int index, boolean updateList) {
+        // Update device list.
+        if (updateList) {
+            listDevices();
+        }
+
+        return this.midiDevices.get(index);
+    }
 
     /**
      *
@@ -127,41 +161,44 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public boolean connectDevices(String fromPortName, int toPortId, boolean autoConnect) {
+    public boolean connect(String portName, int toPortId, boolean autoConnect) {
 
         int deviceCount = getDeviceCount();
         boolean portIdIsValid = ((toPortId > -1) && (toPortId < deviceCount));
 
         System.out.println("");
-        logger.info("Trying to " + (autoConnect ? "open and connect " : "open ") + "both " + getClientName(toPortId) + " " +
+        logger.info("Trying to " + (autoConnect ? "open and connect " : "open ") + "both " + getTargetDeviceName(toPortId) + " " +
                 getTargetDeviceType() + " port (id " + toPortId + ") and " +
-                this.clientName + "'s " + fromPortName + " port...");
+                this.deviceName + "'s " + portName + " port...");
 
         if (!portIdIsValid) {
             logger.warn(getTargetDeviceType() + " port (id " + toPortId + ") doesn't exist - " +
                     "Are the " + getCurrentApiName() + " Midi API and/or your Midi sw/hw running?");
         }
 
-        String word1 = Misc.getFirstWord(this.clientName);
-        String word2 = Misc.getFirstWord(getClientName(toPortId));
+        String word1 = Misc.getFirstWord(this.deviceName);
+        String word2 = Misc.getFirstWord(getTargetDeviceName(toPortId));
 
         if (word1.equals(word2)) {
             autoConnect = false;
         }
 
-        lib.rtmidi_open_port(this.rtMidiDevice, toPortId, fromPortName, autoConnect);
+        lib.rtmidi_open_port(this.rtMidiDevice, toPortId, portName, autoConnect);
 
         if (this.rtMidiDevice.ok != 0) {
             String msg;
 
             if (portIdIsValid) {
-                msg = this.clientName + "'s " + fromPortName +
-                        " port " + (portIdIsValid ? "and " + getClientName(toPortId) + "'s " + getTargetDeviceType() +
+                msg = this.deviceName + "'s " + portName +
+                        " port " + (portIdIsValid ? "and " + getTargetDeviceName(toPortId) + "'s " + getTargetDeviceType() +
                         " port (id " + toPortId + ") have been opened succesfully" +
                         (autoConnect ? " and, at your request, connected together!" : " but, at your request, were left disconnected!") : "");
+                        targetDevicePortId = toPortId;
+                        isConnected = autoConnect;
+
             } else {
                 msg = "Couldn't find " + getTargetDeviceType() + " port (id " + toPortId + ") so only " +
-                        this.clientName + "'s " + fromPortName + " port could be opened.";
+                        this.deviceName + "'s " + portName + " port could be opened.";
             }
 
             logger.info(msg);
@@ -198,16 +235,30 @@ public abstract class MidiBase implements AutoCloseable {
 
     /**
      *
+     * @return
      */
-    public String getFullDeviceDetails(int portId) {
+    public String[] getFullDeviceDetails(int portId) {
         String fullDeviceDetails = "??";
-//        if (midiDevice.ok != 0) {
-        fullDeviceDetails = lib.rtmidi_get_port_name(this.rtMidiDevice, portId);
-//        }
-//        else {
-//            System.out.println("Device not found - unable to provide its name.");
-//        }
-        return fullDeviceDetails;
+
+        fullDeviceDetails = portId + "|" +
+                getCurrentApiName() + "|" +
+                getTargetDeviceType() + "|" +
+                lib.rtmidi_get_port_name(this.rtMidiDevice, portId);
+
+        String ids = Misc.findPattern(fullDeviceDetails,"\\w+:\\w+$");
+        if (!ids.equals("")){
+            fullDeviceDetails = fullDeviceDetails.replace((" " + ids), "");
+            fullDeviceDetails = fullDeviceDetails + "|" + ids;
+        }
+
+        if (targetDevicePortId == portId && isConnected) {
+            fullDeviceDetails = fullDeviceDetails.concat("|-->" + this.deviceName + "|" + getDeviceType());
+        }
+
+        fullDeviceDetails = fullDeviceDetails.replace(":", "|");
+//        System.out.println("fullDeviceDetails: " + fullDeviceDetails);
+
+        return fullDeviceDetails.split("\\|");
     }
 
     /**
@@ -221,23 +272,17 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getPortName(int portId) {
+    public String getTargetPortName(int targetPortId) {
         if (getDeviceCount() < 1) {
             return "No such a port";
         }
 
-        String fullDeviceDetails = getFullDeviceDetails(portId);
-        if (fullDeviceDetails.equals("")) return "??";
-
-        int start = fullDeviceDetails.indexOf(":") + 1;
-        int stop = fullDeviceDetails.lastIndexOf(" ");
-
-        // Client and port are not referenced in device details open under the Jack API.
-        if (stop < start) {
-            stop = fullDeviceDetails.length();
+        String[] fullDeviceDetails = getFullDeviceDetails(targetPortId)/*.split("\\|")*/;
+        if (fullDeviceDetails.length < 1 ) {
+            return "??";
         }
 
-        return fullDeviceDetails.substring(start, stop);
+        return fullDeviceDetails[1];
     }
 
     /**
@@ -258,25 +303,30 @@ public abstract class MidiBase implements AutoCloseable {
 
         for (int i = 0; i < deviceCount; i++) {
 
-            String fullDeviceDetails = "";
+            String[] fullDeviceDetails = getFullDeviceDetails(i);
 
-            //-> Fastest way to concatenate string in java (String tutorial - Jakob Jenkov).
-            String[] params = new String[]{String.valueOf(i), getCurrentApiName(), getTargetDeviceType(), getFullDeviceDetails(i)};
+            //-> A Fast way to concatenate string in java (String tutorial - Jakob Jenkov).
             StringBuilder sb = new StringBuilder();
 
-            for (int j = 0; j < params.length; j++) {
-                sb.append(params[j]);
-                if (j < params.length - 1)
+            for (int j = 0; j < fullDeviceDetails.length; j++) {
+                sb.append(fullDeviceDetails[j]);
+                if (j < fullDeviceDetails.length - 1)
                     sb.append("|");
             }
             //<-
 
-            fullDeviceDetails = sb.toString();
+            /* Remove current device and its target from the list to minimise the temptation of doing a midi loop
+            * (this has also been done in the connect method to avoid auto connection of these together) */
+            if (fullDeviceDetails[3].equals(this.deviceName)) {
+                continue;
+            }
 
-            midiDevice = new MidiDevice(fullDeviceDetails);
-            midiDevices.add(midiDevice);
+//            midiDevice = new MidiDevice(sb.toString());
+//            if (!midiDevices.contains(midiDevice)) {
+//                midiDevices.add(midiDevice);
+//            }
 
-            logger.info(fullDeviceDetails);
+            logger.info(sb.toString());
         }
         return midiDevices;
     }
@@ -297,31 +347,6 @@ public abstract class MidiBase implements AutoCloseable {
         }
         return rtMidiDevice.ok != 0;
     }
-
-    /**
-     *
-     */
-    public ArrayList<MidiDevice> getMidiDevices (boolean updateList) {
-        // Update device list.
-        if (updateList) {
-            listDevices();
-        }
-        return this.midiDevices;
-    }
-
-    /**
-     *
-     */
-    public MidiDevice getMidiDevice (int index, boolean updateList) {
-        // Update device list.
-        if (updateList) {
-            listDevices();
-        }
-
-        MidiDevice md = this.midiDevices.get(index);
-        return md;
-    }
-
 
 
 //    /**

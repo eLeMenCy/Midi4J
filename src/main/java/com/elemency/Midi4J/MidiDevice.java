@@ -4,14 +4,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MidiDevice {
-    private int midiDeviceId = -1;
     private String apiName = null;
-    private String portType = "Unknown";
-    private int clientId = -1;
-    private String clientName = "No Name";
 
+    private int midiDeviceId = -1;
+
+    private int deviceId = -1;
+    private String deviceName = "No Name";
+
+    private boolean isConnected = false;
+    private int connectedDeviceId = -1;
+    private String connectedDeviceName = "No Name";
+
+    private int connectedPortId = -1;
+    private String connectedPortName = "No Name";
+    
     private int portId = -1;
     private String portName = "No Name";
+    private String portType = "Unknown";
 
 
     public MidiDevice() {
@@ -19,6 +28,15 @@ public class MidiDevice {
     }
 
     public MidiDevice(String fullDeviceDetails) {
+
+        String ids = findPattern(fullDeviceDetails,"\\w+:\\w+$");
+        if (!ids.equals("")){
+            fullDeviceDetails = fullDeviceDetails.replace((" " + ids), "");
+            fullDeviceDetails = fullDeviceDetails + "|" + ids;
+        }
+        fullDeviceDetails = fullDeviceDetails.replace(":", "|");
+
+//        System.out.println("fullDeviceDetails: " + fullDeviceDetails);
 
         String[] params = fullDeviceDetails.split("\\|");
 
@@ -28,46 +46,60 @@ public class MidiDevice {
         this.midiDeviceId = Integer.parseInt(params[0]);
         this.apiName = params[1];
         this.portType = params[2];
-
-        /** Device details have different layout depending on their API - handling the difference.
-         *  i.e. client ID and port ID only exist under the ALSA API.
-         */
-        switch (apiName) {
-            case "ALSA":
-
-                // Insert a semicolon between clientPort names and client ports ids.
-                String param = params[3];
-                int index = param.lastIndexOf(" ");
-
-                fullDeviceDetails = param.substring(0, index) + ":" + param.substring(index + 1);
-                params = fullDeviceDetails.split(":");// [Midi Through, Midi Through Port-0, 14, 0]
-
-                this.clientId = Integer.parseInt(params[2]);
-                this.portId = Integer.parseInt(params[3]);
-
-                break;
-
-            case "Jack":
-                params = params[3].split(":");
-
-                break;
-
-            case "CoreMidi":
-            case "Windows MultiMedia":
-                params = new String[]{"No Name", "No Name"};
-
-                break;
-
-            default: // Unknown & Dummy
-                return;
-        }
-
-        this.clientName = params[0];
+        this.deviceName = params[0];
         this.portName = params[1];
 
 //        for (String t : params) {
 //            System.out.println("test: " + t);
 //        }
+    }
+
+    public String getPortType() {
+        return portType;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public int getConnectedDeviceId() {
+        return connectedDeviceId;
+    }
+
+    public String getConnectedDeviceName() {
+        return connectedDeviceName;
+    }
+
+    public int getConnectedPortId() {
+        return connectedPortId;
+    }
+
+    public String getConnectedPortName() {
+        return connectedPortName;
+    }
+
+    public int getMidiDeviceId() {
+        return midiDeviceId;
+    }
+
+    public String getApiName() {
+        return apiName;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public int getPortId() {
+        return portId;
+    }
+
+    public String getPortName() {
+        return portName;
     }
 
     private String findPattern(String data, String regex) {
@@ -86,30 +118,27 @@ public class MidiDevice {
         return result;
     }
 
-    public int getMidiDeviceId() {
-        return midiDeviceId;
+    public void setConnected(boolean connected) {
+        isConnected = connected;
     }
 
-    public String getApiName() {
-        return apiName;
+    public void setConnectedDeviceId(int connectedDeviceId) {
+        this.connectedDeviceId = connectedDeviceId;
     }
 
-    public int getClientId() {
-        return clientId;
+    public void setConnectedDeviceName(String connectedDeviceName) {
+        this.connectedDeviceName = connectedDeviceName;
     }
 
-    public String getClientName() {
-        return clientName;
+    public void setConnectedPortId(int connectedPortId) {
+        this.connectedPortId = connectedPortId;
     }
 
-    public int getPortId() {
-        return portId;
-    }
-
-    public String getPortName() {
-        return portName;
+    public void setConnectedPortName(String connectedPortName) {
+        this.connectedPortName = connectedPortName;
     }
 }
+
 
 
 /* excerpt lsl

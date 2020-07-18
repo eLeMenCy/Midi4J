@@ -17,7 +17,7 @@ public class MidiIn extends MidiBase {
 
     public MidiIn() throws MidiException {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
-        super.rtMidiDevice = create(api, super.clientName, 100);
+        super.rtMidiDevice = create(api, super.deviceName, 100);
     }
 
     public MidiIn(int api, String clientName, int queueSizeLimit) throws MidiException {
@@ -26,9 +26,9 @@ public class MidiIn extends MidiBase {
             // Remove the eventual semicolon form client name.
             // The semicolon is generally used as a separator between client and port name and id).
             clientName = clientName.replaceAll(":"," ");
-            super.clientName = clientName;
+            super.deviceName = clientName;
         }
-        super.rtMidiDevice = create(api, super.clientName, queueSizeLimit);
+        super.rtMidiDevice = create(api, super.deviceName, queueSizeLimit);
     }
 
     @Override

@@ -80,23 +80,30 @@ public class App extends KeepAppRunning {
             System.out.println("In device count: "+ this.midi4jOut.getDeviceCount());
 
             this.midi4jIn.listDevices();
-            this.midi4jIn.connectDevices("IN", 2, true);
+            this.midi4jIn.connect("IN", 2, true);
 
             this.midi4jOut.listDevices();
-            this.midi4jOut.connectDevices("OUT", 1, true);
+            this.midi4jOut.connect("OUT", 1, true);
 
-            System.out.println("In Client name : " + this.midi4jIn.getClientName());
+            System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getName());
+            System.out.println("A possible target Device name is: " + this.midi4jIn.getTargetDeviceName(5));
+            System.out.println("and its Port name is: " + this.midi4jIn.getTargetPortName(5));
 
-            System.out.println("Name of Out port id(" + 1 + ") is: " + this.midi4jIn.getPortName(1));
-            System.out.println("Name of In port id(" + 0 + ") is: " +  this.midi4jOut.getPortName(0));
+            System.out.println("\nName of Out port id(" + 1 + ") is: " + this.midi4jIn.getTargetPortName(1));
+            System.out.println("Name of In port id(" + 0 + ") is: " +  this.midi4jOut.getTargetPortName(0));
 
             this.midi4jIn.setCallback(process, "native", null);
 
             System.out.println("\nis midi4jIn device Open: " + midi4jIn.isDeviceOpen());
             System.out.println("is midi4jOut device Open: " + midi4jOut.isDeviceOpen());
 
-            System.out.println("MidiDevice[0]: " + midi4jOut.getMidiDevice(0, false).getClientName());
-            System.out.println("MidiDevice[0]: " + midi4jIn.getMidiDevice(5, false).getClientName());
+//            System.out.println("MidiDevice[0]: " + midi4jOut.getMidiDevice(0, false).getDeviceName());
+//            System.out.println("MidiDevice[0]: " + midi4jIn.getMidiDevice(5, false).getDeviceName());
+
+            System.out.println("--------------------------------------------");
+
+            this.midi4jIn.listDevices();
+            this.midi4jOut.listDevices();
 
             keepRunning();
 
