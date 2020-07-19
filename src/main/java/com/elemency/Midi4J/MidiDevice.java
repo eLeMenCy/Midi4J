@@ -71,10 +71,10 @@ public class MidiDevice {
         }
 
         if (isConnected) {
-//            connectedDeviceId = Integer.parseInt(params[0]);
+//            connectedDeviceId = Integer.parseInt(params[x]);
             ctdDeviceName = params[connectedIndex];
 
-//            connectedPortId = Integer.parseInt(params[8]);
+//            connectedPortId = Integer.parseInt(params[x]);
             ctdPortName = params[connectedIndex + 2];
             ctdPortType = params[connectedIndex + 1];
         }

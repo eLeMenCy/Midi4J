@@ -308,7 +308,7 @@ public abstract class MidiBase implements AutoCloseable {
                 continue;
             }
 
-//            midiDevices.add(new MidiDevice(rtMidiDevice, fullDeviceDetails));
+            midiDevices.add(new MidiDevice(rtMidiDevice, fullDeviceDetails));
             logger.info(sb.toString());
         }
 
