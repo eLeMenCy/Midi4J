@@ -12,13 +12,14 @@ import java.util.ArrayList;
 public abstract class MidiBase implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
     private final Logger logger = LoggerFactory.getLogger(MidiBase.class);
+
+//    protected MidiDevice midiDevice;
+
     protected RtMidiDevice rtMidiDevice = null;
     protected String deviceName = "Midi4J";
+    protected String portName = "??";
     protected boolean isConnected = false;
     protected int targetDevicePortId = -1;
-    protected ArrayList<MidiDevice> midiDevices = new ArrayList<>();
-
-//TODO: Add fields to memorise connection between device/ports in the MidiDevice class.
 
     /**
      *
@@ -112,7 +113,7 @@ public abstract class MidiBase implements AutoCloseable {
     public String getTargetDeviceName(int targetPortId) {
         String[] data = getFullDeviceDetails(targetPortId)/*.split("|")*/;
 
-        if (data.length < 1) {
+        if (data.length < 4) {
             return "Unknown";
         }
 
@@ -129,26 +130,8 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public ArrayList<MidiDevice> getMidiDevices (boolean updateList) {
-        // Update device list.
-        if (updateList) {
-            listDevices();
-        }
-
-        return this.midiDevices;
-    }
-
-
-    /**
-     *
-     */
-    public MidiDevice getMidiDevice (int index, boolean updateList) {
-        // Update device list.
-        if (updateList) {
-            listDevices();
-        }
-
-        return this.midiDevices.get(index);
+    public String getPortName() {
+        return this.portName;
     }
 
     /**
@@ -195,6 +178,7 @@ public abstract class MidiBase implements AutoCloseable {
                         (autoConnect ? " and, at your request, connected together!" : " but, at your request, were left disconnected!") : "");
                         targetDevicePortId = toPortId;
                         isConnected = autoConnect;
+                        this.portName = portName;
 
             } else {
                 msg = "Couldn't find " + getTargetDeviceType() + " port (id " + toPortId + ") so only " +
@@ -248,11 +232,11 @@ public abstract class MidiBase implements AutoCloseable {
         String ids = Misc.findPattern(fullDeviceDetails,"\\w+:\\w+$");
         if (!ids.equals("")){
             fullDeviceDetails = fullDeviceDetails.replace((" " + ids), "");
-            fullDeviceDetails = fullDeviceDetails + "|" + ids;
+            fullDeviceDetails += "|" + ids;
         }
 
         if (targetDevicePortId == portId && isConnected) {
-            fullDeviceDetails = fullDeviceDetails.concat("|-->" + this.deviceName + "|" + getDeviceType());
+            fullDeviceDetails += "|-->" + this.deviceName + "|" + this.portName + "|" + getDeviceType();
         }
 
         fullDeviceDetails = fullDeviceDetails.replace(":", "|");
@@ -291,7 +275,6 @@ public abstract class MidiBase implements AutoCloseable {
      */
     public ArrayList<MidiDevice> listDevices() {
         int deviceCount = getDeviceCount();
-        MidiDevice midiDevice = null;
 
         System.out.println("");
         if (deviceCount < 1) {
@@ -301,14 +284,18 @@ public abstract class MidiBase implements AutoCloseable {
             return null;
         }
 
+        // Build our list...
+        ArrayList<MidiDevice> midiDevices = new ArrayList<>();
         for (int i = 0; i < deviceCount; i++) {
 
             String[] fullDeviceDetails = getFullDeviceDetails(i);
 
-            //-> A Fast way to concatenate string in java (String tutorial - Jakob Jenkov).
+            //-> A Fast way to concatenate string in Java (String tutorial - Jakob Jenkov).
             StringBuilder sb = new StringBuilder();
 
+            // Build a string with each array elements separated by '|' except for lat one.
             for (int j = 0; j < fullDeviceDetails.length; j++) {
+
                 sb.append(fullDeviceDetails[j]);
                 if (j < fullDeviceDetails.length - 1)
                     sb.append("|");
@@ -321,13 +308,10 @@ public abstract class MidiBase implements AutoCloseable {
                 continue;
             }
 
-//            midiDevice = new MidiDevice(sb.toString());
-//            if (!midiDevices.contains(midiDevice)) {
-//                midiDevices.add(midiDevice);
-//            }
-
+//            midiDevices.add(new MidiDevice(rtMidiDevice, fullDeviceDetails));
             logger.info(sb.toString());
         }
+
         return midiDevices;
     }
 
