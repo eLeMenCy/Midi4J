@@ -23,26 +23,8 @@ public abstract class MidiBase implements AutoCloseable {
 
     /**
      *
-     *
      */
-    public void free() {
-        try {
-            if (getDeviceClassName().compareTo("MidiIn") == 0) {
-                lib.rtmidi_in_free(rtMidiDevice);
-
-            } else {
-                lib.rtmidi_out_free(rtMidiDevice);
-            }
-            if (rtMidiDevice.ok == 0) throw new MidiException();
-            logger.info(getDeviceClassName() + " memory ... freed");
-        } catch (Throwable throwable) {
-        }
-    }
-
-    /**
-     *
-     */
-    private String getDeviceClassName() {
+    protected String getDeviceClassName() {
         String deviceClassName = this.getClass().getTypeName();
         return deviceClassName.substring(deviceClassName.lastIndexOf(".") + 1);
     }
@@ -71,15 +53,7 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public int getCurrentApiId() {
-
-        if (getDeviceClassName().equals("MidiIn")) {
-            return lib.rtmidi_in_get_current_api(rtMidiDevice);
-        }
-        else {
-            return lib.rtmidi_out_get_current_api(rtMidiDevice);
-        }
-    }
+    public abstract int getCurrentApiId();
 
     /**
      *
@@ -111,7 +85,7 @@ public abstract class MidiBase implements AutoCloseable {
      *
      */
     public String getTargetDeviceName(int targetPortId) {
-        String[] data = getFullDeviceDetails(targetPortId)/*.split("|")*/;
+        String[] data = getFullDeviceDetails(targetPortId);
 
         if (data.length < 4) {
             return "Unknown";
@@ -123,7 +97,7 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getName() {
+    public String getDeviceName() {
         return this.deviceName;
     }
 
@@ -143,6 +117,13 @@ public abstract class MidiBase implements AutoCloseable {
 
     /**
      *
+     *
+     */
+    public abstract void free();
+
+
+    /**
+     *
      */
     public boolean connect(String portName, int toPortId, boolean autoConnect) {
 
@@ -159,10 +140,11 @@ public abstract class MidiBase implements AutoCloseable {
                     "Are the " + getCurrentApiName() + " Midi API and/or your Midi sw/hw running?");
         }
 
-        String word1 = Misc.getFirstWord(this.deviceName);
-        String word2 = Misc.getFirstWord(getTargetDeviceName(toPortId));
+        // Avoid connecting I/O ports of same device.
+        String devName = Misc.getFirstWord(this.deviceName);
+        String tgtDevName = Misc.getFirstWord(getTargetDeviceName(toPortId));
 
-        if (word1.equals(word2)) {
+        if (devName.equals(tgtDevName)) {
             autoConnect = false;
         }
 
@@ -234,9 +216,12 @@ public abstract class MidiBase implements AutoCloseable {
             fullDeviceDetails = fullDeviceDetails.replace((" " + ids), "");
             fullDeviceDetails += "|" + ids;
         }
+        else {
+            fullDeviceDetails += "|--|--";
+        }
 
         if (targetDevicePortId == portId && isConnected) {
-            fullDeviceDetails += "|-->" + this.deviceName + "|" + this.portName + "|" + getDeviceType();
+            fullDeviceDetails += "|--> " + this.deviceName + "|" + this.portName + "|" + getDeviceType();
         }
 
         fullDeviceDetails = fullDeviceDetails.replace(":", "|");
@@ -290,17 +275,15 @@ public abstract class MidiBase implements AutoCloseable {
 
             String[] fullDeviceDetails = getFullDeviceDetails(i);
 
-            //-> A Fast way to concatenate string in Java (String tutorial - Jakob Jenkov).
-            StringBuilder sb = new StringBuilder();
-
-            // Build a string with each array elements separated by '|' except for lat one.
+            // Build a logMsg with each array elements separated by '|'.
+            StringBuilder logMsg = new StringBuilder();
             for (int j = 0; j < fullDeviceDetails.length; j++) {
 
-                sb.append(fullDeviceDetails[j]);
-                if (j < fullDeviceDetails.length - 1)
-                    sb.append("|");
+                if (fullDeviceDetails[j].equals("--"))
+                    continue;
+
+                logMsg.append(fullDeviceDetails[j] + "|");
             }
-            //<-
 
             /* Remove current device and its target from the list to minimise the temptation of doing a midi loop
             * (this has also been done in the connect method to avoid auto connection of these together) */
@@ -309,7 +292,7 @@ public abstract class MidiBase implements AutoCloseable {
             }
 
             midiDevices.add(new MidiDevice(rtMidiDevice, fullDeviceDetails));
-            logger.info(sb.toString());
+            logger.info(logMsg.toString());
         }
 
         return midiDevices;
@@ -322,7 +305,7 @@ public abstract class MidiBase implements AutoCloseable {
         try {
             lib.rtmidi_close_port(rtMidiDevice);
             if (rtMidiDevice.ok == 0) throw new MidiException();
-            logger.info(getDeviceClassName() + " port ... closed");
+            logger.info(getDeviceClassName() + "(" + getDeviceName() + ") " + "device ... closed");
 
         } catch (Throwable e) {
             if (rtMidiDevice.ok != 0) {
@@ -331,6 +314,8 @@ public abstract class MidiBase implements AutoCloseable {
         }
         return rtMidiDevice.ok != 0;
     }
+
+
 
 
 //    /**

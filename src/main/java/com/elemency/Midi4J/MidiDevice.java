@@ -10,78 +10,69 @@ public class MidiDevice {
 
     private String apiName = "Unknown";
 
-    private int midiDeviceId = -1;
+    private String midiDeviceId = "--";
 
-    private int deviceId = -1;
-    private String deviceName = "No Name";
+    private String deviceId = "--";
+    private String deviceName = "--";
 
     private boolean isConnected = false;
-    private int ctdDeviceId = -1;
-    private String ctdDeviceName = "No Name";
+    private String ctdDeviceId = "--";
+    private String ctdDeviceName = "--";
 
-    private int ctdPortId = -1;
-    private String ctdPortName = "No Name";
-    private String ctdPortType = "No Name";
+    private String ctdPortId = "--";
+    private String ctdPortName = "--";
+    private String ctdPortType = "--";
     
-    private int portId = -1;
-    private String portName = "No Name";
-    private String portType = "Unknown";
+    private String portId = "--";
+    private String portName = "--";
+    private String portType = "--";
 
 
     public MidiDevice() {
 
     }
 
-//    public MidiDevice(String[] fullDeviceDetails) {
+    //    public MidiDevice(String[] fullDeviceDetails) {
     public MidiDevice(RtMidiDevice rtMidiDevice, String[] params) {
         int connectedIndex = -1;
 
         this.rtMidiDevice = rtMidiDevice;
 
-//   params[0]  | params[1] |     params[2]   |     params[3]    |      params[4]       |   params[5]   | params[6]   |   params[7]   |  params[8]  |  params[9]
+//   params[0]  | params[1] |     params[2]   |     params[3]    |      params[4]       |   params[5]   |  params[6]  |   params[7]   |  params[8]  |  params[9]
 // -------------|-----------|-----------------|------------------|----------------------|---------------|-------------|---------------|-------------|--------------
 // midiDeviceId |  apiName  |     portType    |    deviceName    |      portName        |    deviceId   |    portId   | ctdDeviceName | ctdPortType | ctdPortName
 //     0        |   ALSA    |      Out/In     |   Midi Through   | Midi Through Port-0  |       14      |       0     |-->   Midi4J   |     In      |     IN
 // -------------|-----------|-----------------|------------------|----------------------|---------------|-------------|---------------|-------------|--------------
-// midiDeviceId |  apiName  |     portType    |    deviceName    |      portName        | ctdDeviceName | ctdPortType |  ctdPortName
-//     1        |   Jack    |      Out/In     | Calf Studio Gear |     Organ MIDI In    |-->  Midi4J    |     OUT     |      Out
+// midiDeviceId |  apiName  |     portType    |    deviceName    |      portName        |    deviceId   |    portId   | ctdDeviceName | ctdPortType |  ctdPortName
+//     1        |   Jack    |      Out/In     | Calf Studio Gear |     Organ MIDI In    |      --       |     --      |-->  Midi4J    |     OUT     |      Out
 
-        midiDeviceId = Integer.parseInt(params[0]);
+        midiDeviceId = params[0];
         apiName = params[1];
         portType = params[2];
         deviceName = params[3];
         portName = params[4];
+        deviceId = params[5];
+        portId = params[6];
 
-        switch (params[1]) {
-            case "ALSA":
-                deviceId = Integer.parseInt(params[5]);
-                portId = Integer.parseInt(params[6]);
-
-                if (isConnected = (params.length > 7)) {
-                    connectedIndex = 7;
-                }
-
-                break;
-            case "Jack":
-            case "CoreMidi":
-            case "Windows MultiMedia":
-                if (isConnected = (params.length > 5)) {
-                    connectedIndex = 5;
-                }
-        }
-
-        if (isConnected) {
+        if (isConnected = (params.length > 7)) {
 //            connectedDeviceId = Integer.parseInt(params[x]);
-            ctdDeviceName = params[connectedIndex];
-
 //            connectedPortId = Integer.parseInt(params[x]);
-            ctdPortName = params[connectedIndex + 2];
-            ctdPortType = params[connectedIndex + 1];
+            ctdDeviceName = params[7];
+            ctdPortName = params[9];
+            ctdPortType = params[8];
         }
 
-//        for (String t : params) {
-//            System.out.println("test: " + t);
-//        }
+        for (String t : params) {
+            System.out.println("test: " + t);
+        }
+    }
+
+    public RtMidiDevice getRtMidiDevice() {
+        return rtMidiDevice;
+    }
+
+    public void setRtMidiDevice(RtMidiDevice rtMidiDevice) {
+        this.rtMidiDevice = rtMidiDevice;
     }
 
     public String getPortType() {
@@ -92,7 +83,7 @@ public class MidiDevice {
         return isConnected;
     }
 
-    public int getCtdDeviceId() {
+    public String getCtdDeviceId() {
         return ctdDeviceId;
     }
 
@@ -100,7 +91,7 @@ public class MidiDevice {
         return ctdDeviceName;
     }
 
-    public int getCtdPortId() {
+    public String getCtdPortId() {
         return ctdPortId;
     }
 
@@ -108,7 +99,7 @@ public class MidiDevice {
         return ctdPortName;
     }
 
-    public int getMidiDeviceId() {
+    public String getMidiDeviceId() {
         return midiDeviceId;
     }
 
@@ -116,7 +107,7 @@ public class MidiDevice {
         return apiName;
     }
 
-    public int getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
@@ -124,7 +115,7 @@ public class MidiDevice {
         return deviceName;
     }
 
-    public int getPortId() {
+    public String getPortId() {
         return portId;
     }
 
@@ -132,27 +123,11 @@ public class MidiDevice {
         return portName;
     }
 
-    private String findPattern(String data, String regex) {
-
-        // regex to extract ALSA client:port ids: "\\w+:\\w+$"
-
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(data);
-        String result = "";
-
-        if (matcher.find()) {
-            result = data.substring(matcher.start(), matcher.end());
-//            System.out.println("client:port -> " + result);
-        }
-
-        return result;
-    }
-
     public void setConnected(boolean connected) {
         isConnected = connected;
     }
 
-    public void setCtdDeviceId(int ctdDeviceId) {
+    public void setCtdDeviceId(String ctdDeviceId) {
         this.ctdDeviceId = ctdDeviceId;
     }
 
@@ -160,7 +135,7 @@ public class MidiDevice {
         this.ctdDeviceName = ctdDeviceName;
     }
 
-    public void setCtdPortId(int ctdPortId) {
+    public void setCtdPortId(String ctdPortId) {
         this.ctdPortId = ctdPortId;
     }
 

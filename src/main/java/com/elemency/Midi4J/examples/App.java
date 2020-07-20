@@ -85,7 +85,7 @@ public class App extends KeepAppRunning {
             this.midi4jOut.listDevices();
             this.midi4jOut.connect("OUT", 1, true);
 
-            System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getName());
+            System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getDeviceName());
             System.out.println("A possible target Device name is: " + this.midi4jIn.getTargetDeviceName(5));
             System.out.println("and its Port name is: " + this.midi4jIn.getTargetPortName(5));
 

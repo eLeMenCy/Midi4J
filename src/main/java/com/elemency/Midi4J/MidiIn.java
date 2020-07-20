@@ -20,13 +20,13 @@ public class MidiIn extends MidiBase {
         super.rtMidiDevice = create(api, super.deviceName, 100);
     }
 
-    public MidiIn(int api, String clientName, int queueSizeLimit) throws MidiException {
-        if (!clientName.isEmpty()) {
+    public MidiIn(int api, String deviceName, int queueSizeLimit) throws MidiException {
+        if (!deviceName.isEmpty()) {
 
             // Remove the eventual semicolon form client name.
             // The semicolon is generally used as a separator between client and port name and id).
-            clientName = clientName.replaceAll(":"," ");
-            super.deviceName = clientName;
+            deviceName = deviceName.replaceAll(":"," ");
+            super.deviceName = deviceName;
         }
         super.rtMidiDevice = create(api, super.deviceName, queueSizeLimit);
     }
@@ -36,6 +36,29 @@ public class MidiIn extends MidiBase {
         cancelCallback();
         closeDevice();
         free();
+    }
+
+    /**
+     *
+     *
+     */
+    @Override
+    public void free() {
+        try {
+            lib.rtmidi_in_free(rtMidiDevice);
+            if (rtMidiDevice.ok == 0) throw new MidiException();
+            logger.info(getDeviceClassName() + " memory ... freed");
+        } catch (Throwable throwable) {
+
+        }
+    }
+
+    /**
+     *
+     */
+    @Override
+    public int getCurrentApiId() {
+        return lib.rtmidi_in_get_current_api(rtMidiDevice);
     }
 
     /**
