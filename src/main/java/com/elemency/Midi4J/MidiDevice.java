@@ -3,8 +3,6 @@ package com.elemency.Midi4J;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MidiDevice {
     private RtMidiDevice rtMidiDevice = null;
@@ -13,20 +11,20 @@ public class MidiDevice {
 
     private String midiDeviceId = "--";
 
-    private String deviceId = "--";
-    private String deviceName = "--";
+    private String targetDeviceId = "--";
+    private String targetDeviceName = "--";
 
     private boolean isConnected = false;
     private String ctdDeviceId = "--";
-    private String ctdDeviceName = "--";
+    private String deviceName = "--";
 
     private String ctdPortId = "--";
-    private String ctdPortName = "--";
-    private String ctdPortType = "--";
-    
-    private String portId = "--";
     private String portName = "--";
     private String portType = "--";
+    
+    private String targetPortId = "--";
+    private String targetPortName = "--";
+    private String targetPortType = "--";
 
 
     public MidiDevice() {
@@ -39,33 +37,41 @@ public class MidiDevice {
 
         this.rtMidiDevice = rtMidiDevice;
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-// | midiDeviceId | apiName | portType |    deviceName    |      portName       | deviceId | portId | ctdDeviceName | ctdPortName | ctdPortType  |
-// |--------------|---------|----------|------------------|---------------------|----------|--------|---------------|-------------|--------------|
-// |      0       |  ALSA   |  Out/In  |   Midi Through   | Midi Through Port-0 |    14    |   0    |-->   Midi4J   |     In      |     IN       |
-// |--------------|---------|----------|------------------|---------------------|----------|--------|---------------|-------------|--------------|
-// |      1       |  Jack   |  Out/In  | Calf Studio Gear |    Organ MIDI In    |    --    |   --   |-->  Midi4J    |     Out     |     OUT      |
-// -----------------------------------------------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// | midiDeviceId | apiName | portType | deviceName | portName | targetPortType | targetDeviceName |    targetPortName   | targetDeviceId | targetPortId |
+// |--------------|---------|----------|------------|----------|----------------|------------------|---------------------|----------------|--------------|
+// |      0       |  ALSA   |    IN    |   Midi4J   |    In    |-->    OUT      |   Midi Through   | Midi Through Port-0 |       14       |      0       |
+// |--------------|---------|----------|------------|----------|----------------|------------------|---------------------|----------------|--------------|
+// |      0       |  Jack   |    OUT   |   Midi4J   |    Out   |<--    IN       | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// | midiDeviceId | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
+// |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
+// |      0       |  ALSA   |     Out/In     |   Midi Through   | Midi Through Port-0 |       14       |      0       |-->  Midi4J |    In    |    IN    |
+// |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
+// |      1       |  Jack   |     Out/In     | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |-->  Midi4J |    Out   |    OUT   |
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
 
         midiDeviceId = params.get("midiDeviceId");
         apiName = params.get("apiName");
-        portType = params.get("portType");
-        deviceName = params.get("deviceName");
-        portName = params.get("portName");
-        deviceId = params.get("deviceId");
-        portId = params.get("portId");
+        targetPortType = params.get("targetPortType");
+        targetDeviceName = params.get("targetDeviceName");
+        targetPortName = params.get("targetPortName");
+        targetDeviceId = params.get("targetDeviceId");
+        targetPortId = params.get("targetPortId");
 
         if (isConnected = (params.size() > 7)) {
-//            connectedDeviceId = Integer.parseInt(params[x]);
-//            connectedPortId = Integer.parseInt(params[x]);
-            ctdDeviceName = params.get("ctdDeviceName");
-            ctdPortName = params.get("ctdPortName");
-            ctdPortType = params.get("ctdPortType");
+//            deviceId = params.get("deviceId");
+//            portId = params.get("portId");
+            deviceName = params.get("deviceName");
+            portName = params.get("portName");
+            portType = params.get("portType");
         }
 
-        for (String value : params.values()) {
-            System.out.println("Values: " + value);
-        }
+//        for (String value : params.values()) {
+//            System.out.println("Values: " + value);
+//        }
     }
 
     public RtMidiDevice getRtMidiDevice() {
@@ -76,8 +82,8 @@ public class MidiDevice {
         this.rtMidiDevice = rtMidiDevice;
     }
 
-    public String getPortType() {
-        return portType;
+    public String getTargetPortType() {
+        return targetPortType;
     }
 
     public boolean isConnected() {
@@ -88,16 +94,16 @@ public class MidiDevice {
         return ctdDeviceId;
     }
 
-    public String getCtdDeviceName() {
-        return ctdDeviceName;
+    public String getDeviceName() {
+        return deviceName;
     }
 
     public String getCtdPortId() {
         return ctdPortId;
     }
 
-    public String getCtdPortName() {
-        return ctdPortName;
+    public String getPortName() {
+        return portName;
     }
 
     public String getMidiDeviceId() {
@@ -108,20 +114,20 @@ public class MidiDevice {
         return apiName;
     }
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getTargetDeviceId() {
+        return targetDeviceId;
     }
 
-    public String getDeviceName() {
-        return deviceName;
+    public String getTargetDeviceName() {
+        return targetDeviceName;
     }
 
-    public String getPortId() {
-        return portId;
+    public String getTargetPortId() {
+        return targetPortId;
     }
 
-    public String getPortName() {
-        return portName;
+    public String getTargetPortName() {
+        return targetPortName;
     }
 
     public void setConnected(boolean connected) {
@@ -132,16 +138,16 @@ public class MidiDevice {
         this.ctdDeviceId = ctdDeviceId;
     }
 
-    public void setCtdDeviceName(String ctdDeviceName) {
-        this.ctdDeviceName = ctdDeviceName;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public void setCtdPortId(String ctdPortId) {
         this.ctdPortId = ctdPortId;
     }
 
-    public void setCtdPortName(String ctdPortName) {
-        this.ctdPortName = ctdPortName;
+    public void setPortName(String portName) {
+        this.portName = portName;
     }
 }
 
