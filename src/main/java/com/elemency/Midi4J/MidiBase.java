@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public abstract class MidiBase implements AutoCloseable {
@@ -85,13 +88,14 @@ public abstract class MidiBase implements AutoCloseable {
      *
      */
     public String getTargetDeviceName(int targetPortId) {
-        String[] data = getFullDeviceDetails(targetPortId);
+//        String[] data = getFullDeviceDetails(targetPortId);
+        Map<String, String> data = getFullDeviceDetails(targetPortId);
 
-        if (data.length < 4) {
+        if (data.size() < 4) {
             return "Unknown";
         }
 
-        return data[3];
+        return data.get("deviceName");
     }
 
     /**
@@ -203,32 +207,51 @@ public abstract class MidiBase implements AutoCloseable {
      *
      * @return
      */
-    public String[] getFullDeviceDetails(int portId) {
-        String fullDeviceDetails = "??";
+    public Map<String, String> getFullDeviceDetails(int portId) {
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+// | midiDeviceId | apiName | portType |    deviceName    |      portName       | deviceId | portId | ctdDeviceName | ctdPortName | ctdPortType  |
+// |--------------|---------|----------|------------------|---------------------|----------|--------|---------------|-------------|--------------|
+// |      0       |  ALSA   |  Out/In  |   Midi Through   | Midi Through Port-0 |    14    |   0    |-->   Midi4J   |     In      |     IN       |
+// |--------------|---------|----------|------------------|---------------------|----------|--------|---------------|-------------|--------------|
+// |      1       |  Jack   |  Out/In  | Calf Studio Gear |    Organ MIDI In    |    --    |   --   |-->  Midi4J    |     Out     |     OUT      |
+// -----------------------------------------------------------------------------------------------------------------------------------------------
 
-        fullDeviceDetails = portId + "|" +
-                getCurrentApiName() + "|" +
-                getTargetDeviceType() + "|" +
-                lib.rtmidi_get_port_name(this.rtMidiDevice, portId);
+        Map<String, String> fullDeviceDetails = new LinkedHashMap<>();
 
-        String ids = Misc.findPattern(fullDeviceDetails,"\\w+:\\w+$");
+        fullDeviceDetails.put("midiDeviceId", Integer.toString(portId));
+        fullDeviceDetails.put("apiName", getCurrentApiName());
+        fullDeviceDetails.put("portType", getTargetDeviceType());
+
+        String data = lib.rtmidi_get_port_name(this.rtMidiDevice, portId);
+
+        int semicolonIndex = data.indexOf(":");
+        fullDeviceDetails.put("deviceName", data.substring(0, semicolonIndex));
+        fullDeviceDetails.put("portName", data.substring(semicolonIndex + 1));
+
+        String ids = Misc.findPattern(data,"\\w+:\\w+$");
         if (!ids.equals("")){
-            fullDeviceDetails = fullDeviceDetails.replace((" " + ids), "");
-            fullDeviceDetails += "|" + ids;
+            data = data.replace((" " + ids), "");
+
+            semicolonIndex = ids.indexOf(":");
+            fullDeviceDetails.put("deviceId", ids.substring(0, semicolonIndex));
+            fullDeviceDetails.put("portId", ids.substring(semicolonIndex + 1));
         }
         else {
-            fullDeviceDetails += "|--|--";
+            fullDeviceDetails.put("deviceId", "--");
+            fullDeviceDetails.put("portId", "--");
         }
 
         if (targetDevicePortId == portId && isConnected) {
-            fullDeviceDetails += "|--> " + this.deviceName + "|" + this.portName + "|" + getDeviceType();
+            fullDeviceDetails.put("ctdDeviceName", "-->" + this.deviceName);
+            fullDeviceDetails.put("ctdPortName", this.portName);
+            fullDeviceDetails.put("ctdPortType", getDeviceType());
         }
 
-        fullDeviceDetails = fullDeviceDetails.replace(":", "|");
-//        System.out.println("fullDeviceDetails: " + fullDeviceDetails);
-
-        return fullDeviceDetails.split("\\|");
+        return fullDeviceDetails;
     }
+
+
+
 
     /**
      *
@@ -246,12 +269,12 @@ public abstract class MidiBase implements AutoCloseable {
             return "No such a port";
         }
 
-        String[] fullDeviceDetails = getFullDeviceDetails(targetPortId)/*.split("\\|")*/;
-        if (fullDeviceDetails.length < 1 ) {
+        Map<String, String> fullDeviceDetails = getFullDeviceDetails(targetPortId);
+        if (fullDeviceDetails.size() < 1 ) {
             return "??";
         }
 
-        return fullDeviceDetails[1];
+        return fullDeviceDetails.get("portName");
     }
 
     /**
@@ -273,25 +296,23 @@ public abstract class MidiBase implements AutoCloseable {
         ArrayList<MidiDevice> midiDevices = new ArrayList<>();
         for (int i = 0; i < deviceCount; i++) {
 
-            String[] fullDeviceDetails = getFullDeviceDetails(i);
+            Map<String, String> fullDeviceDetails = getFullDeviceDetails(i);
 
             // Build a logMsg with each array elements separated by '|'.
             StringBuilder logMsg = new StringBuilder();
-            for (int j = 0; j < fullDeviceDetails.length; j++) {
-
-                if (fullDeviceDetails[j].equals("--"))
+            for (String value : fullDeviceDetails.values()) {
+                if (value.equals("--"))
                     continue;
-
-                logMsg.append(fullDeviceDetails[j] + "|");
+                logMsg.append(value + "|");
             }
 
             /* Remove current device and its target from the list to minimise the temptation of doing a midi loop
             * (this has also been done in the connect method to avoid auto connection of these together) */
-            if (fullDeviceDetails[3].equals(this.deviceName)) {
+            if (fullDeviceDetails.get("deviceName").equals(this.deviceName)) {
                 continue;
             }
 
-            midiDevices.add(new MidiDevice(rtMidiDevice, fullDeviceDetails));
+//            midiDevices.add(new MidiDevice(rtMidiDevice, fullDeviceDetails));
             logger.info(logMsg.toString());
         }
 
