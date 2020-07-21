@@ -282,7 +282,7 @@ public abstract class MidiBase implements AutoCloseable {
      *
      * @return
      */
-    public ArrayList<MidiDevice> listDevices() {
+    public Map<String, MidiDevice> listDevices() {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // | midiDeviceId | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
@@ -303,8 +303,8 @@ public abstract class MidiBase implements AutoCloseable {
             return null;
         }
 
-        // Build our list as a map. TODO: refactor the midiDevices arraylist to a map.
-        ArrayList<MidiDevice> midiDevices = new ArrayList<>();
+        // Build our device map.
+        Map<String, MidiDevice> midiDevices = new HashMap<>();
         for (int i = 0; i < deviceCount; i++) {
 
             Map<String, String> fullDeviceDetails = getFullDeviceDetails(i);
@@ -323,7 +323,7 @@ public abstract class MidiBase implements AutoCloseable {
                 continue;
             }
 
-            midiDevices.add(new MidiDevice(rtMidiDevice, fullDeviceDetails));
+            midiDevices.put(fullDeviceDetails.get("targetDeviceName"), new MidiDevice(rtMidiDevice, fullDeviceDetails));
             logger.info(logMsg.toString());
         }
 
