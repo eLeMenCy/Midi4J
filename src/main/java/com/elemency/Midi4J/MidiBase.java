@@ -293,8 +293,7 @@ public abstract class MidiBase implements AutoCloseable {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 
         int deviceCount = getDeviceCount();
-        String tgtName = getFullDeviceDetails(0).get("targetDeviceName");
-        boolean tgtNameIsName = (tgtName != null) && (tgtName.contains(this.deviceName));
+        boolean tgtNameIsName = tgtNameIsName(0);
 
         System.out.println("");
         if (deviceCount < 1 || tgtNameIsName) {
@@ -315,12 +314,12 @@ public abstract class MidiBase implements AutoCloseable {
             for (String value : fullDeviceDetails.values()) {
                 if (value.equals("--"))
                     continue;
-                logMsg.append(value + "|");
+                logMsg.append(value).append("|");
             }
 
             /* Remove current device and its target from the list to minimise the temptation of doing a midi loop
-            * (this has also been done in the connect method to avoid auto connection of these together) */
-            if (fullDeviceDetails.get("targetDeviceName").contains(this.deviceName)) {
+            * (this has also been done in the connect method to avoid auto connection */
+            if (tgtNameIsName(i)) {
                 continue;
             }
 
@@ -329,6 +328,12 @@ public abstract class MidiBase implements AutoCloseable {
         }
 
         return midiDevices;
+    }
+
+    private boolean tgtNameIsName(int port) {
+        // To Minimise Midi loops, bypasses current Midi4J device to be listed as a possible target devices.
+        String tgtName = getFullDeviceDetails(port).get("targetDeviceName");
+        return (tgtName != null) && (tgtName.contains(this.deviceName));
     }
 
     /**
