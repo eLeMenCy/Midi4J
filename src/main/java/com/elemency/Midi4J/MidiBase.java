@@ -253,7 +253,6 @@ public abstract class MidiBase implements AutoCloseable {
         return fullDeviceDetails;
     }
 
-
     /**
      *
      */
@@ -294,19 +293,14 @@ public abstract class MidiBase implements AutoCloseable {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 
         int deviceCount = getDeviceCount();
-
-        String targetDeviceName = getFullDeviceDetails(0).get("targetDeviceName");
-        boolean tgtDeviceNameIsDeviceName = false;
-
-        if (targetDeviceName != null) {
-            tgtDeviceNameIsDeviceName = targetDeviceName.contains(this.deviceName);
-        }
+        String tgtName = getFullDeviceDetails(0).get("targetDeviceName");
+        boolean tgtNameIsName = (tgtName != null) && (tgtName.contains(this.deviceName));
 
         System.out.println("");
-        if (deviceCount < 1 || tgtDeviceNameIsDeviceName) {
+        if (deviceCount < 1 || tgtNameIsName) {
             logger.warn("There are no " + getCurrentApiName() + " Midi " +
                     getTargetDeviceType() + " ports" + (deviceCount > 1 ? "s" : "") + " available." +
-                    (deviceCount == 0 || tgtDeviceNameIsDeviceName ? " Are the " + getCurrentApiName()  + " API and/or your Midi sw/hw running?" : ""));
+                    (deviceCount == 0 || tgtNameIsName ? " Are the " + getCurrentApiName()  + " API and/or your Midi sw/hw running?" : ""));
             return null;
         }
 
@@ -353,8 +347,6 @@ public abstract class MidiBase implements AutoCloseable {
         }
         return rtMidiDevice.ok != 0;
     }
-
-
 
 
 //    /**
