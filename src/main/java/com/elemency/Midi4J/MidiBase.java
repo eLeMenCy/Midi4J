@@ -6,7 +6,6 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,6 +22,13 @@ public abstract class MidiBase implements AutoCloseable {
     protected String portName = "??";
     protected boolean isConnected = false;
     protected int targetDevicePortId = -1;
+
+    /**
+     *
+     */
+    public RtMidiDevice getRtMidiDevice() {
+        return this.rtMidiDevice;
+    }
 
     /**
      *
@@ -87,12 +93,12 @@ public abstract class MidiBase implements AutoCloseable {
     /**
      *
      */
-    public String getTargetDeviceName(int toPorId) {
-        if (getDeviceCount() < toPorId) {
+    public String getTargetDeviceName(int targetPorId) {
+        if (getDeviceCount() < targetPorId) {
             return "unknown device";
         }
 
-        Map<String, String> data = getFullDeviceDetails(toPorId);
+        Map<String, String> data = getFullDeviceDetails(targetPorId);
 
         if (data.get("targetDeviceName") == null) {
             return "unknown";
@@ -232,12 +238,15 @@ public abstract class MidiBase implements AutoCloseable {
             fullDeviceDetails.put("targetDeviceName", data.substring(0, semicolonIndex));
             fullDeviceDetails.put("targetPortName", data.substring(semicolonIndex + 1));
         }
+
         fullDeviceDetails.put("targetDeviceId", "--");
         fullDeviceDetails.put("targetPortId", "--");
 
         String ids = Misc.findPattern(data,"\\w+:\\w+$");
         if (!ids.equals("")){
             data = data.replace((" " + ids), "");
+
+            fullDeviceDetails.put("targetPortName", data.substring(semicolonIndex + 1));
 
             semicolonIndex = ids.indexOf(":");
             fullDeviceDetails.put("targetDeviceId", ids.substring(0, semicolonIndex));
@@ -271,18 +280,18 @@ public abstract class MidiBase implements AutoCloseable {
 
         Map<String, String> fullDeviceDetails = getFullDeviceDetails(targetPortId);
 
-        if (fullDeviceDetails.get("portName") == null) {
+        if (fullDeviceDetails.get("targetPortName") == null) {
             return "unknown";
         }
 
-        return fullDeviceDetails.get("portName");
+        return fullDeviceDetails.get("targetPortName");
     }
 
     /**
      *
      * @return
      */
-    public Map<String, MidiDevice> listDevices() {
+    public Map<String, MidiDevice> listTargetDevices() {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // | midiDeviceId | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |

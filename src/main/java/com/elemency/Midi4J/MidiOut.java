@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class MidiOut extends MidiBase {
     protected final Logger logger = LoggerFactory.getLogger(MidiOut.class);
-    private final RtMidiLibrary lib = super.lib;
+//    private final RtMidiLibrary lib = super.lib;
 
     public MidiOut() {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();

@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 
 public class MidiIn extends MidiBase {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
-    private final RtMidiLibrary lib = super.lib;
+//    private final RtMidiLibrary lib = super.lib;
 
     public MidiIn() throws MidiException {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();

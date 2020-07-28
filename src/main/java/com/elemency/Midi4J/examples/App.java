@@ -79,10 +79,10 @@ public class App extends KeepAppRunning {
             System.out.println("Out device count: "+ this.midi4jIn.getDeviceCount());
             System.out.println("In device count: "+ this.midi4jOut.getDeviceCount());
 
-            this.midi4jIn.listDevices();
+            this.midi4jIn.listTargetDevices();
             this.midi4jIn.connect("IN", 2, true);
 
-            this.midi4jOut.listDevices();
+            this.midi4jOut.listTargetDevices();
             this.midi4jOut.connect("OUT", 1, true);
 
             System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getDeviceName());
@@ -102,8 +102,8 @@ public class App extends KeepAppRunning {
 
             System.out.println("--------------------------------------------");
 
-            this.midi4jIn.listDevices();
-            this.midi4jOut.listDevices();
+            this.midi4jIn.listTargetDevices();
+            this.midi4jOut.listTargetDevices();
 
             keepRunning();
 
