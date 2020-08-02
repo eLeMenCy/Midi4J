@@ -5,6 +5,7 @@ package com.elemency.Midi4J.examples;
 
 import com.elemency.Midi4J.MidiException;
 import com.elemency.Midi4J.MidiIn;
+import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.MidiOut;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import org.slf4j.Logger;
@@ -25,7 +26,16 @@ public class App extends KeepAppRunning {
      * @param messageSize   Size of the Midi message.
      * @param userData      Additional user data.
      */
-    private final MidiIn.MidiInCallback process = (timeStamp, message, messageSize, userData) -> {
+    private final MidiIn.FromNative process = (timeStamp, message, messageSize, userData) -> {
+//        MidiMessage mmsg = new MidiMessage(message, messageSize, timeStamp);
+//
+//        System.out.println("getChannel: " + mmsg.getChannel());
+//        System.out.println("isForChannel(1): " + mmsg.isForChannel(1));
+//        System.out.println("setChannel(3): ");
+//        mmsg.setChannel(3);
+//        System.out.println("isForChannel(1): " + mmsg.isForChannel(1));
+//        System.out.println("getChannel: " + mmsg.getChannel());
+
         // Byte array to receive the event from native pointer.
         byte[] data = new byte[messageSize.intValue()];
         if (!doQuit) {

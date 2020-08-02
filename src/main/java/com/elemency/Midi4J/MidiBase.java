@@ -275,13 +275,13 @@ public abstract class MidiBase implements AutoCloseable {
      */
     public String getTargetPortName(int targetPortId) {
         if (getDeviceCount() < targetPortId) {
-            return "unknown port";
+            return "Port doesn't exist";
         }
 
         Map<String, String> fullDeviceDetails = getFullDeviceDetails(targetPortId);
 
         if (fullDeviceDetails.get("targetPortName") == null) {
-            return "unknown";
+            return "Port doesn't exist";
         }
 
         return fullDeviceDetails.get("targetPortName");
