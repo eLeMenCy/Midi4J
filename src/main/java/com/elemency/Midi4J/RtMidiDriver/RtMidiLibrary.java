@@ -208,7 +208,7 @@ public interface RtMidiLibrary extends Library {
 	 * Original signature : <code>void rtmidi_in_set_callback(RtMidiInPtr, RtMidiCCallback, void*)</code><br>
 	 * <i>native declaration : RtMidi/rtmidi_c.h:191</i>
 	 */
-	void rtmidi_in_set_callback(RtMidiDevice device, MidiIn.FromNative callback, Pointer userData);
+	void rtmidi_in_set_callback(RtMidiDevice device, MidiIn.MidiInCallback callback, Pointer userData);
 
 	/**
 	 * Cancel use of the current callback function (if one exists).<br>

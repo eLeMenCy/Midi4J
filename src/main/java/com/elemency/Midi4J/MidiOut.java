@@ -2,7 +2,6 @@ package com.elemency.Midi4J;
 
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
-import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +72,22 @@ public class MidiOut extends MidiBase {
 
         if (rtMidiDevice.ok != 0) {
             result = lib.rtmidi_out_send_message(rtMidiDevice, message, length);
+        }
+        else {
+            System.out.println("No out device found - Received data cannot be sent!");
+        }
+        return result;
+    }
+
+    /**
+     *
+     */
+    public int sendMessage(MidiMessage midiMessage) {
+
+        int result = 0;
+
+        if (rtMidiDevice.ok != 0) {
+            result = lib.rtmidi_out_send_message(rtMidiDevice, midiMessage.getMidiMessage(), midiMessage.getMidiMessageSize());
         }
         else {
             System.out.println("No out device found - Received data cannot be sent!");

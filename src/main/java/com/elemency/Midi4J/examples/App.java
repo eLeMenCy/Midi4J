@@ -3,11 +3,9 @@
  */
 package com.elemency.Midi4J.examples;
 
-import com.elemency.Midi4J.MidiException;
-import com.elemency.Midi4J.MidiIn;
-import com.elemency.Midi4J.MidiMessage;
-import com.elemency.Midi4J.MidiOut;
+import com.elemency.Midi4J.*;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,54 +16,44 @@ public class App extends KeepAppRunning {
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
 
-    /**
-     * Midi In lambda Callback
-     *
-     * @param timeStamp     The time at which the message has been received.
-     * @param message       The midi message.
-     * @param messageSize   Size of the Midi message.
-     * @param userData      Additional user data.
-     */
-    private final MidiIn.FromNative process = (timeStamp, message, messageSize, userData) -> {
-//        MidiMessage mmsg = new MidiMessage(message, messageSize, timeStamp);
-//
-//        System.out.println("getChannel: " + mmsg.getChannel());
-//        System.out.println("isForChannel(1): " + mmsg.isForChannel(1));
-//        System.out.println("setChannel(3): ");
-//        mmsg.setChannel(3);
-//        System.out.println("isForChannel(1): " + mmsg.isForChannel(1));
-//        System.out.println("getChannel: " + mmsg.getChannel());
 
-        // Byte array to receive the event from native pointer.
-        byte[] data = new byte[messageSize.intValue()];
+
+
+    public void processMidiInMessage(double timeStamp, MidiMessage midiMessage, Pointer userData) {
         if (!doQuit) {
-            // Read native memory data into our data byte array.
-            message.read(0, data, 0, messageSize.intValue());
-
-            //data -> Byte 0 = 144, Byte 1 = 77, Byte 2 = 0, stamp = 0.107015
-
-            if ((data[0] & 0xFF) == 144 && data[1] == 39) {
+            if (midiMessage.isNoteOn(false) && midiMessage.getNoteNumber() == 39) {
                 logger.info("quitting...");
                 doQuit();
                 return;
             }
-
-            midi4jOut.sendMessage(data, messageSize.intValue());
-
-            String log = "";
-            for (int i = 0; i < messageSize.intValue(); i++) {
-                if (i == 0) {
-                    int status = data[i] & 0xFF;
-                    log += "Byte 0 = 0x" + Integer.toHexString(status) + "(" + status + "), ";
-                } else {
-                    log += "Byte " + i + " = " + data[i] + ", ";
-                }
-            }
-            log += "Stamp = " + String.format("%1.10s", timeStamp);
-
-            logger.debug(log);
         }
-    };
+
+        midi4jOut.sendMessage(midiMessage);
+
+//        System.out.println("getChannel: " + midiMessage.getChannel());
+//        System.out.println("isForChannel(1): " + midiMessage.isForChannel(1));
+//        System.out.println("isNoteOn: " + midiMessage.isNoteOn(false));
+//        System.out.println("isNoteOff: " + midiMessage.isNoteOff(true));
+//        System.out.println("isNoteOnOrOff: " + midiMessage.isNoteOnOrOff());
+//        System.out.println("getNoteNumber: " + midiMessage.getNoteNumber());
+//        System.out.println("getVelocity: " + midiMessage.getVelocity());
+//        System.out.println("getFloatVelocity: " + midiMessage.getFloatVelocity());
+//        System.out.println("isChannelAftertouch: " + midiMessage.isChannelAftertouch());
+//        System.out.println("getChannelAftertouchValue: " + midiMessage.getChannelAftertouchValue());
+//        System.out.println("isPolyAftertouch: " + midiMessage.isPolyAftertouch());
+//        System.out.println("getPolyAftertouchValue: " + midiMessage.getPolyAftertouchValue());
+//        System.out.println("getMidiNoteName: " + midiMessage.getMidiNoteName(midiMessage.getNoteNumber(), true, true, 3));
+//        System.out.println("getDescription: " + midiMessage.getDescription());
+        logger.info(midiMessage.timeStampToTimecode() + midiMessage.getDescription());
+//        midi4jOut.sendMessage(MidiMessage.noteOn(1, 60, 64));
+//        midi4jOut.sendMessage(MidiMessage.noteOn(1, 60, 0));
+
+    }
+
+    public void test(double timeStamp) {
+        String log = "Stamp = " + String.format("%1.10s", timeStamp);
+        System.out.println(log);
+    }
 
     public static void main(String[] args) throws Exception {
             App midiInApp = new App();
@@ -75,16 +63,17 @@ public class App extends KeepAppRunning {
     @Override
     protected void Init() throws Exception {
 
-
         try (
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
-                MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100)
+                MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, this)
 //                MidiOut midi4jOut = new MidiOut();
 //                MidiIn midi4jIn = new MidiIn();
         ) {
 
             this.midi4jIn = midi4jIn;
             this.midi4jOut = midi4jOut;
+
+//            this.midi4jIn.setCallback(process, "native", null);
 
             System.out.println("Out device count: "+ this.midi4jIn.getDeviceCount());
             System.out.println("In device count: "+ this.midi4jOut.getDeviceCount());
@@ -102,7 +91,7 @@ public class App extends KeepAppRunning {
             System.out.println("\nName of Out port id(" + 1 + ") is: " + this.midi4jIn.getTargetPortName(1));
             System.out.println("Name of In port id(" + 0 + ") is: " +  this.midi4jOut.getTargetPortName(0));
 
-            this.midi4jIn.setCallback(process, "native", null);
+//            this.midi4jIn.setCallback(process, "native", null);
 
             System.out.println("\nis midi4jIn device Open: " + midi4jIn.isDeviceOpen());
             System.out.println("is midi4jOut device Open: " + midi4jOut.isDeviceOpen());
