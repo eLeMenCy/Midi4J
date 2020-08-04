@@ -45,14 +45,10 @@ public class App extends KeepAppRunning {
 //        System.out.println("getMidiNoteName: " + midiMessage.getMidiNoteName(midiMessage.getNoteNumber(), true, true, 3));
 //        System.out.println("getDescription: " + midiMessage.getDescription());
         logger.info(midiMessage.timeStampToTimecode() + midiMessage.getDescription());
+
 //        midi4jOut.sendMessage(MidiMessage.noteOn(1, 60, 64));
 //        midi4jOut.sendMessage(MidiMessage.noteOn(1, 60, 0));
 
-    }
-
-    public void test(double timeStamp) {
-        String log = "Stamp = " + String.format("%1.10s", timeStamp);
-        System.out.println(log);
     }
 
     public static void main(String[] args) throws Exception {
@@ -73,8 +69,6 @@ public class App extends KeepAppRunning {
             this.midi4jIn = midi4jIn;
             this.midi4jOut = midi4jOut;
 
-//            this.midi4jIn.setCallback(process, "native", null);
-
             System.out.println("Out device count: "+ this.midi4jIn.getDeviceCount());
             System.out.println("In device count: "+ this.midi4jOut.getDeviceCount());
 
@@ -91,13 +85,8 @@ public class App extends KeepAppRunning {
             System.out.println("\nName of Out port id(" + 1 + ") is: " + this.midi4jIn.getTargetPortName(1));
             System.out.println("Name of In port id(" + 0 + ") is: " +  this.midi4jOut.getTargetPortName(0));
 
-//            this.midi4jIn.setCallback(process, "native", null);
-
             System.out.println("\nis midi4jIn device Open: " + midi4jIn.isDeviceOpen());
             System.out.println("is midi4jOut device Open: " + midi4jOut.isDeviceOpen());
-
-//            System.out.println("MidiDevice[0]: " + midi4jOut.getMidiDevice(0, false).getDeviceName());
-//            System.out.println("MidiDevice[0]: " + midi4jIn.getMidiDevice(5, false).getDeviceName());
 
             System.out.println("--------------------------------------------");
 
