@@ -11,9 +11,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-public abstract class MidiBase implements AutoCloseable {
+public abstract class MidiDeviceMgr implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
-    private final Logger logger = LoggerFactory.getLogger(MidiBase.class);
+    private final Logger logger = LoggerFactory.getLogger(MidiDeviceMgr.class);
 
 //    protected MidiDevice midiDevice;
 

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
-public class MidiIn extends MidiBase {
+public class MidiIn extends MidiDeviceMgr {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
     private App app = null;
 

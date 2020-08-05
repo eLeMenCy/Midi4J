@@ -1,6 +1,6 @@
 package com.elemency.Midi4J.RtMidiDriver;
 
-import com.elemency.Midi4J.MidiBase;
+import com.elemency.Midi4J.MidiDeviceMgr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +10,7 @@ import java.nio.IntBuffer;
 public class RtMidi {
 
     private final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
-    private final Logger logger = LoggerFactory.getLogger(MidiBase.class);
+    private final Logger logger = LoggerFactory.getLogger(MidiDeviceMgr.class);
 
     /**
      * MIDI API specifier arguments.  See ref: RtMidi::Api.<br>
