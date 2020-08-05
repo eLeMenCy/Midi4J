@@ -17,8 +17,6 @@ public class App extends KeepAppRunning {
     private MidiOut midi4jOut = null;
 
 
-
-
     public void processMidiInMessage(double timeStamp, MidiMessage midiMessage, Pointer userData) {
         if (!doQuit) {
             if (midiMessage.isNoteOn(false) && midiMessage.getNoteNumber() == 39) {
@@ -44,7 +42,11 @@ public class App extends KeepAppRunning {
 //        System.out.println("getPolyAftertouchValue: " + midiMessage.getPolyAftertouchValue());
 //        System.out.println("getMidiNoteName: " + midiMessage.getMidiNoteName(midiMessage.getNoteNumber(), true, true, 3));
 //        System.out.println("getDescription: " + midiMessage.getDescription());
-        logger.info(midiMessage.timeStampToTimecode() + midiMessage.getDescription());
+
+        logger.info(
+                SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
+                midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
+        );
 
 //        midi4jOut.sendMessage(MidiMessage.noteOn(1, 60, 64));
 //        midi4jOut.sendMessage(MidiMessage.noteOn(1, 60, 0));
@@ -52,8 +54,8 @@ public class App extends KeepAppRunning {
     }
 
     public static void main(String[] args) throws Exception {
-            App midiInApp = new App();
-            midiInApp.Init();
+        App midiInApp = new App();
+        midiInApp.Init();
     }
 
     @Override

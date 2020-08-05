@@ -127,50 +127,70 @@ public class MidiMessage {
     public String getDescription() {
 
         if (isNoteOn(false)) {
-            return "Note on " + getMidiNoteName(getNoteNumber(), true, true, 3) +
-                    " Velocity " + getVelocity() +
-                    " Channel " + getChannel();
+//            return String.format("%02d:%02d:%02d:%03d - ",hours, minutes, seconds, millis);
+
+            return String.format(
+                    "Note ON %3s Velocity %03d Channel %02d",
+                    getMidiNoteName(getNoteNumber(), true, true, 3),
+                    getVelocity(),
+                    getChannel()
+            );
         }
 
         if (isNoteOff(true)) {
-            return "Note off " + getMidiNoteName(getNoteNumber(), true, true, 3) +
-                    " Velocity " + getVelocity() +
-                    " Channel " + getChannel();
+            return String.format(
+                    "Note OFF %s Velocity %03d Channel %02d",
+                    getMidiNoteName(getNoteNumber(), true, true, 3),
+                    getVelocity(),
+                    getChannel()
+            );
         }
 
         if (isProgramChange()) {
-            return "Program change " + getProgramChangeNumber() +
-                    " Channel " + getChannel();
+            return String.format(
+                    "Program change %03d Channel %02d",
+                    getProgramChangeNumber(),
+                    getChannel()
+            );
         }
 
         if (isPitchWheel()) {
-            return "Pitch wheel " + getPitchWheelValue() +
-                    " Channel " + getChannel();
-        }
-
-        if (isChannelPressure()) {
-            return "Aftertouch " + getMidiNoteName(getNoteNumber(), true, true, 3) +
-                    ": " + getChannelPressureValue() +
-                    " Channel " + getChannel();
+            return String.format(
+                    "Pitchbend %05d Channel %02d",
+                    getPitchWheelValue(),
+                    getChannel()
+            );
         }
 
         if (isPolyAftertouch()) {
-            return "Aftertouch " + getMidiNoteName(getNoteNumber(), true, true, 3) +
-                    ": " + getPolyAftertouchValue() +
-                    " Channel " + getChannel();
+            return String.format(
+                    "Poly Aftertouch %s: %03d Channel %02d",
+                    getMidiNoteName(getNoteNumber(), true, true, 3),
+                    getPolyAftertouchValue(),
+                    getChannel()
+            );
         }
 
         if (isChannelPressure()) {
-            return "Channel pressure " + getChannelPressureValue() +
-                    " Channel " + getChannel();
+            return String.format(
+                    "Channel Aftertouch %03d Channel %02d",
+                    getChannelPressureValue(),
+                    getChannel()
+            );
         }
 
         if (isAllNotesOff()) {
-            return "All notes off Channel " + getChannel();
+            return String.format(
+                    "All notes off Channel %02d",
+                    getChannel()
+            );
         }
 
         if (isAllSoundOff()) {
-            return "All sound off Channel " + getChannel();
+            return String.format(
+                    "All sound off Channel %02d",
+                    getChannel()
+            );
         }
 
         if (isMetaEvent()) {
@@ -179,12 +199,17 @@ public class MidiMessage {
 
         if (isController())
         {
-            String name = getControllerName (getControllerNumber());
+            String name = getControllerName(getControllerNumber());
 
             if (name.isEmpty())
                 name = String.valueOf(getControllerNumber());
 
-            return "Controller " + name + ": " + getControllerValue() + " Channel " + getChannel();
+            return String.format(
+                    "CC %s: %03d Channel %02d",
+                    name.equals("--") ? getControllerNumber() : name,
+                    getControllerValue(),
+                    getChannel()
+            );
         }
 
         return toHexString();
@@ -828,17 +853,8 @@ public class MidiMessage {
      *
      * @return
      */
-    public String timeStampToTimecode() {
-
-        double time = timeStamp;
-
-        int hours = ((int) (time / 3600.0)) % 24;
-        int minutes = ((int) (time / 60.0)) % 60;
-        int seconds = ((int) time) % 60;
-        int millis = ((int) (time * 1000.0)) % 1000;
-
-        return hours + ":" + minutes + ":" + seconds + ":" + millis + " - ";
-
+    public String timeStampAsTimecode() {
+        return SmpteTimecode.getTimecode(timeStamp * 1000);
     }
 
     /**

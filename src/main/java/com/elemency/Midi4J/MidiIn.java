@@ -10,11 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.time.ZonedDateTime;
 
 public class MidiIn extends MidiBase {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
     private App app = null;
+
 
     public MidiIn() {
 
@@ -40,7 +40,9 @@ public class MidiIn extends MidiBase {
         setCallback(fromNative, "native", null);
     }
 
-
+    /**
+     *
+     */
     @Override
     public void close()/* throws MidiException*/ {
         cancelCallback();
@@ -95,6 +97,8 @@ public class MidiIn extends MidiBase {
 
         lib.rtmidi_in_set_callback(rtMidiDevice, callback, userData);
 //        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
+        SmpteTimecode.setStartTime();
+
         return rtMidiDevice.ok != 0;
     }
 
