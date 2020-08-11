@@ -15,10 +15,11 @@ public class MidiDevice {
     private String targetDeviceName = "--";
 
     private boolean isConnected = false;
-    private String ctdDeviceId = "--";
-    private String deviceName = "--";
 
-    private String ctdPortId = "--";
+//    private String ctdDeviceId = "--";
+//    private String ctdPortId = "--";
+
+    private String deviceName = "--";
     private String portName = "--";
     private String portType = "--";
     
@@ -90,16 +91,8 @@ public class MidiDevice {
         return isConnected;
     }
 
-    public String getCtdDeviceId() {
-        return ctdDeviceId;
-    }
-
     public String getDeviceName() {
         return deviceName;
-    }
-
-    public String getCtdPortId() {
-        return ctdPortId;
     }
 
     public String getPortName() {
@@ -134,21 +127,29 @@ public class MidiDevice {
         isConnected = connected;
     }
 
-    public void setCtdDeviceId(String ctdDeviceId) {
-        this.ctdDeviceId = ctdDeviceId;
-    }
-
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
-    }
-
-    public void setCtdPortId(String ctdPortId) {
-        this.ctdPortId = ctdPortId;
     }
 
     public void setPortName(String portName) {
         this.portName = portName;
     }
+
+//    public String getCtdDeviceId() {
+//        return ctdDeviceId;
+//    }
+//
+//    public String getCtdPortId() {
+//        return ctdPortId;
+//    }
+//
+//    public void setCtdDeviceId(String ctdDeviceId) {
+//        this.ctdDeviceId = ctdDeviceId;
+//    }
+//
+//    public void setCtdPortId(String ctdPortId) {
+//        this.ctdPortId = ctdPortId;
+//    }
 }
 
 

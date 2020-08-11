@@ -47,6 +47,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @return
      */
     private String getDeviceType() {
         return getDeviceClassName().equals("MidiIn") ? "In" : "Out";
@@ -54,6 +55,8 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @param type
+     * @param errorString
      */
     public void error(int type, String errorString) {
         lib.rtmidi_error(type, errorString);
@@ -66,6 +69,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @return
      */
     public String getCurrentApiName() {
         return new RtMidi().apiDisplayName(getCurrentApiId());
@@ -73,6 +77,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @param deviceName
      */
     public void setDeviceName(String deviceName) {
         // TODO: exception.
@@ -92,6 +97,8 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @param targetPorId
+     * @return
      */
     public String getTargetDeviceName(int targetPorId) {
         if (getDeviceCount() < targetPorId) {
@@ -109,6 +116,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @return
      */
     public String getDeviceName() {
         return this.deviceName;
@@ -116,6 +124,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @return
      */
     public String getPortName() {
         return this.portName;
@@ -123,6 +132,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @return
      */
     public boolean isDeviceOpen() {
         return lib.rtmidi_is_port_open(this.rtMidiDevice);
@@ -130,13 +140,16 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
-     *
      */
     public abstract void free();
 
 
     /**
      *
+     * @param portName
+     * @param toPortId
+     * @param autoConnect
+     * @return
      */
     public boolean connect(String portName, int toPortId, boolean autoConnect) {
 
@@ -214,6 +227,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @param portId
      * @return
      */
     public Map<String, String> getFullDeviceDetails(int portId) {
@@ -264,6 +278,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @param portName
      */
     public void setPortName(String portName) {
         // TODO: throw exception
@@ -272,6 +287,8 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @param targetPortId
+     * @return
      */
     public String getTargetPortName(int targetPortId) {
         if (getDeviceCount() < targetPortId) {
@@ -347,6 +364,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      *
+     * @return
      */
     public boolean closeDevice() {
         try {

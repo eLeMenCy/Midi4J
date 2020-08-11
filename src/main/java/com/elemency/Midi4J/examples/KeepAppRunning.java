@@ -5,10 +5,12 @@ import com.elemency.Midi4J.SmpteTimecode;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Timer;
 
 public abstract class KeepAppRunning {
     private final Logger logger = LoggerFactory.getLogger(KeepAppRunning.class);
     protected boolean doQuit = false;
+    protected Timer t = null;
 
     protected abstract void Init() throws Exception;
 
@@ -16,6 +18,7 @@ public abstract class KeepAppRunning {
 
 
     public synchronized void doQuit() {
+        t.cancel();
         this.doQuit = true;
     }
 

@@ -8,6 +8,9 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.lang.String.valueOf;
 
@@ -15,7 +18,6 @@ public class App extends KeepAppRunning {
     private final Logger logger = LoggerFactory.getLogger(App.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
-
 
     public void processMidiInMessage(double timeStamp, MidiMessage midiMessage, Pointer userData) {
         if (!doQuit) {
@@ -94,6 +96,33 @@ public class App extends KeepAppRunning {
 
             this.midi4jIn.listTargetDevices();
             this.midi4jOut.listTargetDevices();
+
+            t = new Timer();
+            TimerTask tt = new TimerTask() {
+                @Override
+                public void run() {
+
+                    Random random = new Random();
+                    int note = random.nextInt(127);
+                    int velocity = random.nextInt(127);
+
+                    MidiMessage tmp = MidiMessage.noteOn(1, note, velocity,0);
+                    midi4jOut.sendMessage(tmp);
+                    logger.info(tmp.getDescription());
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    tmp.setVelocity(0);
+                    midi4jOut.sendMessage(tmp);
+                    logger.info(tmp.getDescription());
+                }
+            };
+
+            t.schedule(tt,1000,250);
 
             keepRunning();
 

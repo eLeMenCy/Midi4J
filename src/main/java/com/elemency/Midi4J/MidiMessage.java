@@ -5,6 +5,8 @@ import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
+
 public class MidiMessage {
 
     private final Logger logger = LoggerFactory.getLogger(MidiMessage.class);
@@ -20,7 +22,7 @@ public class MidiMessage {
      * @param byte2
      * @param timeStamp
      */
-    public MidiMessage(int byte0, int byte1, int byte2, int timeStamp) {
+    public MidiMessage(int byte0, int byte1, int byte2, double timeStamp) {
         messageSize = 3;
         this.timeStamp = timeStamp;
 
@@ -30,6 +32,7 @@ public class MidiMessage {
         midiMessage[2] = (byte)byte2;
 
         //TODO: Trows MidiException
+        //      logger.error("Voice message Status byte should be < 0xF0: " + me);
         //      check that the length matches the data..
         //      jassert (byte1 >= 0xF0 || getMessageLengthFromFirstByte ((uint8) byte1) == 3);
     }
@@ -40,7 +43,7 @@ public class MidiMessage {
      * @param byte1
      * @param timeStamp
      */
-    public MidiMessage(int byte0, int byte1, int timeStamp) {
+    public MidiMessage(int byte0, int byte1, double timeStamp) {
         messageSize = 2;
         this.timeStamp = timeStamp;
 
@@ -58,7 +61,7 @@ public class MidiMessage {
      * @param byte0
      * @param timeStamp
      */
-    public MidiMessage(int byte0, int timeStamp) {
+    public MidiMessage(int byte0, double timeStamp) {
         messageSize = 1;
         this.timeStamp = timeStamp;
 
@@ -130,7 +133,7 @@ public class MidiMessage {
 //            return String.format("%02d:%02d:%02d:%03d - ",hours, minutes, seconds, millis);
 
             return String.format(
-                    "Note ON %3s Velocity %03d Channel %02d",
+                    "Note ON  %-4s Velocity %03d Channel %02d",
                     getMidiNoteName(getNoteNumber(), true, true, 3),
                     getVelocity(),
                     getChannel()
@@ -139,7 +142,7 @@ public class MidiMessage {
 
         if (isNoteOff(true)) {
             return String.format(
-                    "Note OFF %s Velocity %03d Channel %02d",
+                    "Note OFF %-4s Velocity %03d Channel %02d",
                     getMidiNoteName(getNoteNumber(), true, true, 3),
                     getVelocity(),
                     getChannel()
@@ -164,7 +167,7 @@ public class MidiMessage {
 
         if (isPolyAftertouch()) {
             return String.format(
-                    "Poly Aftertouch %s: %03d Channel %02d",
+                    "Poly Aftertouch %-4s: %03d Channel %02d",
                     getMidiNoteName(getNoteNumber(), true, true, 3),
                     getPolyAftertouchValue(),
                     getChannel()
@@ -402,8 +405,8 @@ public class MidiMessage {
      * @param velocity     in the range 0 to 127
      * see isNoteOn
      */
-    public static MidiMessage noteOn (int channel, int noteNumber, int velocity) {
-        return new MidiMessage(statusByte(0x90, channel), (noteNumber & 127), velocity, 0);
+    public static MidiMessage noteOn (int channel, int noteNumber, int velocity, double timeStamp) {
+        return new MidiMessage(statusByte(0x90, channel), (noteNumber & 127), velocity, timeStamp);
     }
 
     /**
@@ -413,8 +416,8 @@ public class MidiMessage {
      * @param velocity     in the range 0 to 1.0
      * see isNoteOn
      */
-    public static MidiMessage noteOn (int channel, int noteNumber, float velocity) {
-        return noteOn(channel, noteNumber, (int)(127.0f * velocity));
+    public static MidiMessage noteOn (int channel, int noteNumber, float velocity, double timeStamp) {
+        return noteOn(channel, noteNumber, (int)(127.0f * velocity), timeStamp);
     }
 
     /** Creates a key-up message.
@@ -423,8 +426,8 @@ public class MidiMessage {
      * @param velocity     in the range 0 to 127
      * @link isNoteOff
      */
-    public static MidiMessage noteOff (int channel, int noteNumber, int velocity) {
-        return new MidiMessage(statusByte(0x80, channel), noteNumber, velocity, 0);
+    public static MidiMessage noteOff (int channel, int noteNumber, int velocity, double timeStamp) {
+        return new MidiMessage(statusByte(0x80, channel), noteNumber, velocity, timeStamp);
     }
 
 
@@ -434,8 +437,8 @@ public class MidiMessage {
      * @param velocity     in the range 0 to 1.0
      * @link isNoteOff
      */
-    public static MidiMessage noteOff (int channel, int noteNumber, float velocity) {
-        return noteOff(channel, noteNumber, (int)(127.0f * velocity));
+    public static MidiMessage noteOff (int channel, int noteNumber, float velocity, double timeStamp) {
+        return noteOff(channel, noteNumber, (int)(127.0f * velocity), timeStamp);
     }
 
     /** Creates a key-up message.@param channel
@@ -444,7 +447,7 @@ public class MidiMessage {
      * @link isNoteOff
      */
     public static MidiMessage noteOff (int channel, int noteNumber) {
-        return noteOff(channel, noteNumber, 0);
+        return noteOff(channel, noteNumber, 0, 0);
     }
 
     /**
