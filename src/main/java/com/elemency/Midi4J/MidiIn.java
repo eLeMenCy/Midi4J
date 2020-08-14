@@ -20,14 +20,14 @@ public class MidiIn extends MidiDeviceMgr {
 
     }
 
-    public MidiIn(App app) throws MidiException {
+    public MidiIn(App app) /*throws MidiException*/ {
         this.app = app;
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.deviceName, 100);
         setCallback(fromNative, "native", null);
     }
 
-    public MidiIn(int api, String deviceName, int queueSizeLimit, App app) throws MidiException {
+    public MidiIn(int api, String deviceName, int queueSizeLimit, App app)/* throws MidiException*/ {
         this.app = app;
         if (!deviceName.isEmpty()) {
 
@@ -76,7 +76,7 @@ public class MidiIn extends MidiDeviceMgr {
     /**
      *
      */
-    private RtMidiDevice create(int api, String clientName, int queueSizeLimit) throws MidiException {
+    private RtMidiDevice create(int api, String clientName, int queueSizeLimit)/* throws MidiException*/ {
 
         RtMidiDevice midiDevice = lib.rtmidi_in_create(api, clientName, queueSizeLimit);
         return midiDevice;
@@ -152,9 +152,23 @@ public class MidiIn extends MidiDeviceMgr {
      * @param messageSize   Size of the Midi message.
      * @param userData      Additional user data.
      */
-    public final MidiInCallback fromNative = (timeStamp, message, messageSize, userData) -> {
-        // Send a MidiMessage to application based on incoming raw data.
-        MidiMessage midiMessage = new MidiMessage(message, messageSize, timeStamp);
-        this.app.processMidiInMessage(timeStamp, midiMessage, userData);
+    public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
+
+        MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
+
+//        try {
+//            if (message == null) {
+//                throw new MidiException("A midi Message object can't be null");
+//            }
+//
+            // Send our MidiMessage (based on incoming raw data) to our application.
+            this.app.processMidiInMessage(timeStamp, midiMessage, userData);
+
+//        } catch (MidiException me) {
+//            logger.error(me.getMessage());
+
+//        } catch (NullPointerException npe) {
+//            logger.error("Huuh" + npe);
+//        }
     };
 }

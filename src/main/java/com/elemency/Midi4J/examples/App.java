@@ -8,6 +8,7 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -97,6 +98,20 @@ public class App extends KeepAppRunning {
             this.midi4jIn.listTargetDevices();
             this.midi4jOut.listTargetDevices();
 
+            System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
+            midi4jIn.setDeviceName("tt");
+            System.out.println(midi4jIn.getDeviceName());
+            midi4jIn.setPortName("Huuuuh");
+            System.out.println(midi4jIn.getPortName());
+            System.out.println(midi4jIn.getTargetPortName(-2));
+            new MidiMessage(MidiMessage.createStatusByte(0x90, 1), (60 & 127), 80, 0);
+
+            byte[] tmp = new byte [3];
+            tmp[0] = (byte) MidiMessage.createStatusByte(0xF1, 1);
+            tmp[1] = 60 & 127;
+            tmp[2] = 80 & 127;
+            new MidiMessage(tmp, 0, 0);
+
             t = new Timer();
             TimerTask tt = new TimerTask() {
                 @Override
@@ -121,14 +136,6 @@ public class App extends KeepAppRunning {
                     logger.info(tmp.getDescription());
                 }
             };
-
-            System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
-            midi4jIn.setDeviceName("tt");
-            System.out.println(midi4jIn.getDeviceName());
-            midi4jIn.setPortName("Huuuuh");
-            System.out.println(midi4jIn.getPortName());
-            System.out.println(midi4jIn.getTargetPortName(-2));
-
 
 //            t.schedule(tt,1000,250);
 

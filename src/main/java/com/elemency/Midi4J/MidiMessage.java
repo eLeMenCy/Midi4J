@@ -7,11 +7,13 @@ import org.slf4j.LoggerFactory;
 
 // https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
 
-public class MidiMessage {
+//TODO: add timestamp param to all method requiring it.
+
+public class MidiMessage implements Cloneable{
 
     private final Logger logger = LoggerFactory.getLogger(MidiMessage.class);
-    private int messageSize = 0;
-    private byte[] midiMessage;
+    private int midiDataSize = 0;
+    private byte[] midiData;
     private double timeStamp = 0;
 
 
@@ -23,18 +25,21 @@ public class MidiMessage {
      * @param timeStamp
      */
     public MidiMessage(int byte0, int byte1, int byte2, double timeStamp) {
-        messageSize = 3;
+        midiDataSize = 3;
         this.timeStamp = timeStamp;
 
-        midiMessage = new byte[this.messageSize];
-        midiMessage[0] = (byte)byte0;
-        midiMessage[1] = (byte)byte1;
-        midiMessage[2] = (byte)byte2;
+        try {
+            if (byte0 >= 0xF0) {
+                throw new MidiException("The Status of a 3 byte short message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
+            }
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
+        }
 
-        //TODO: Trows MidiException
-        //      logger.error("Voice message Status byte should be < 0xF0: " + me);
-        //      check that the length matches the data..
-        //      jassert (byte1 >= 0xF0 || getMessageLengthFromFirstByte ((uint8) byte1) == 3);
+        midiData = new byte[midiDataSize];
+        midiData[0] = (byte)byte0;
+        midiData[1] = (byte)byte1;
+        midiData[2] = (byte)byte2;
     }
 
     /**
@@ -44,16 +49,20 @@ public class MidiMessage {
      * @param timeStamp
      */
     public MidiMessage(int byte0, int byte1, double timeStamp) {
-        messageSize = 2;
+        midiDataSize = 2;
         this.timeStamp = timeStamp;
 
-        midiMessage = new byte[this.messageSize];
-        midiMessage[0] = (byte)byte0;
-        midiMessage[1] = (byte)byte1;
+        try {
+            if (byte0 >= 0xF0) {
+                throw new MidiException("The Status of a 2 byte short message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
+            }
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
+        }
 
-        //TODO: Trows MidiException
-        //      check that the length matches the data..
-        //      jassert (byte1 >= 0xF0 || getMessageLengthFromFirstByte ((uint8) byte1) == 2);
+        midiData = new byte[this.midiDataSize];
+        midiData[0] = (byte)byte0;
+        midiData[1] = (byte)byte1;
     }
 
     /**
@@ -62,15 +71,19 @@ public class MidiMessage {
      * @param timeStamp
      */
     public MidiMessage(int byte0, double timeStamp) {
-        messageSize = 1;
+        midiDataSize = 1;
         this.timeStamp = timeStamp;
 
-        midiMessage = new byte[this.messageSize];
-        midiMessage[0] = (byte)byte0;
+        try {
+            if (byte0 >= 0xF0) {
+                throw new MidiException("The Status of a 1 byte short message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
+            }
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
+        }
 
-        //TODO: Trows MidiException
-        //      check that the length matches the data..
-        //      jassert (byte1 >= 0xF0 || getMessageLengthFromFirstByte ((uint8) byte1) == 1);
+        midiData = new byte[this.midiDataSize];
+        midiData[0] = (byte)byte0;
     }
 
     /**
@@ -80,47 +93,73 @@ public class MidiMessage {
      * @param timeStamp
      */
     public MidiMessage(byte[] sysexData, int datasize, double timeStamp) {
-        messageSize = datasize;
+        midiDataSize = datasize;
         this.timeStamp = timeStamp;
 
-        midiMessage = new byte[this.messageSize];
-        midiMessage = sysexData;
+        try {
+            if (midiDataSize < 1) {
+                throw new MidiException("A multibyte Sysex message size should be > 0");
 
-        //TODO: Trows MidiException
-        //      check that the length matches the data..
-        //      jassert (byte1 >= 0xF0 || getMessageLengthFromFirstByte ((uint8) byte1) == 1);
+            } else if ((sysexData[0] & 0xF0) < 0xF0) {
+                throw new MidiException("Status of a multibyte Sysex message should be >= 0xF0 (" + 0xF0 +
+                        ") but is: 0x" + Integer.toHexString(sysexData[0] & 0xFF).toUpperCase() + " (" + (sysexData[0] & 0xF0) + ")");
+            }
+
+            System.out.println("huuuh");
+            midiData = new byte[this.midiDataSize];
+            midiData = sysexData;
+
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
+        }
     }
 
     /**
      * Creates a midi message from a native jna block of data.
-     * @param message
-     * @param messageSize
+     * @param midiData
+     * @param midiDataSize
      * @param timeStamp
      */
-    public MidiMessage(Pointer message, NativeSize messageSize, double timeStamp) {
-        this.messageSize = messageSize.intValue();
+    public MidiMessage(Pointer midiData, NativeSize midiDataSize, double timeStamp) {
+        this.midiDataSize = midiDataSize.intValue();
         this.timeStamp = timeStamp;
 
-        // Byte array to receive the event from native pointer.
-        midiMessage = new byte[this.messageSize];
-        // Read native memory data into our data byte array.
-        message.read(0, midiMessage, 0, this.messageSize);
+//        this.midiDataSize = 0;
+//        midiData = null;
+
+        try {
+            if (this.midiDataSize < 1) {
+                throw new MidiException("A native Midi Message size should be > 0");
+            }
+
+            // Byte array to receive the event from native pointer.
+            this.midiData = new byte[this.midiDataSize];
+
+            // Read native memory data into our data byte array.
+            midiData.read(0, this.midiData, 0, this.midiDataSize);
+
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
+
+        } catch (NullPointerException npe) {
+            logger.warn(String.valueOf(npe) + ": A native Midi Message can't be null");
+        }
     }
 
     /**
      * Get the current midi message block
      * @return byte[]
      */
-    public byte[] getMidiMessage() {
-        return midiMessage;
+    public byte[] getMidiData() {
+        return midiData;
     }
 
     /**
      * Get the current midi message block size
      * @return int
      */
-    public int getMidiMessageSize() {
-        return messageSize;
+    public int getMidiDataSize() {
+        return midiDataSize;
     }
 
     /**
@@ -223,13 +262,18 @@ public class MidiMessage {
      * @return
      */
     private String toHexString() {
-        String hexString = "--";
-        for (int i = 0; i < messageSize; i++) {
+        String hexString = "# # # # # # # # # # # # # # # # # #";
+
+        if (midiData == null || midiData[0] < 1 || midiDataSize < 1) {
+            return hexString;
+        }
+
+        for (int i = 0; i < midiDataSize; i++) {
             if (i == 0) {
-                int status = midiMessage[i] & 0xFF;
-                hexString += "Byte 0 = 0x" + Integer.toHexString(status) + "(" + status + "),";
+                int status = midiData[i] & 0xFF;
+                hexString += "Byte 0 = 0x" + Integer.toHexString(status) + "(" + status + "), ";
             } else {
-                hexString += "Byte " + i + " = " + midiMessage[i] + ",";
+                hexString += "Byte " + i + " = " + midiData[i] + ", ";
             }
         }
         return hexString;
@@ -291,8 +335,25 @@ public class MidiMessage {
      * @return
      */
     public MidiMessage withTimeStamp(double newTimestamp) {
+        MidiMessage midiMessage = null;
 
-        return null;
+        try {
+            midiMessage = (MidiMessage)this.clone();
+
+            if (midiMessage == null) {
+                throw new MidiException("Attempt to clone current midiMessage and change its timestamp failed.");
+            }
+
+            midiMessage.timeStamp = newTimestamp;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+
+        } catch (CloneNotSupportedException e) {
+            logger.error(e.toString());
+        }
+
+        return midiMessage;
     }
 
     /**
@@ -300,11 +361,25 @@ public class MidiMessage {
      */
     public int getChannel() {
 
-        if ((midiMessage[0] & 0xF0) == 0xF0) {
-            return 0;
+        int result = 0;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("Can't get the Channel from a 'null' midi message!");
+            }
+
+            if ((midiData[0] & 0xF0) == 0xF0) {
+                result =  0;
+            }
+            else {
+                result =  (midiData[0] & 0xF) + 1;
+            }
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
         }
 
-        return (midiMessage[0] & 0xF) + 1;
+        return result;
     }
 
     /**
@@ -319,7 +394,7 @@ public class MidiMessage {
             return;
         }
 
-        midiMessage[0] = (byte) ((midiMessage[0] & 0xF0) | ((number - 1) & 0xF));
+        midiData[0] = (byte) ((midiData[0] & 0xF0) | ((number - 1) & 0xF));
     }
 
     /**
@@ -330,7 +405,7 @@ public class MidiMessage {
      */
     public boolean isForChannel(int number) {
 
-        return (midiMessage[0] & 0xF) + 1 == (number & 0xF);
+        return (midiData[0] & 0xF) + 1 == (number & 0xF);
     }
 
     /** Creates a system-exclusive message.
@@ -341,9 +416,9 @@ public class MidiMessage {
 
         result[0] = (byte)0xF0;
 
-        for (int i = 0; i < dataSize; i ++) {
-            result[i + 1] = sysexData[i];
-        }
+        if (dataSize >= 0)
+            System.arraycopy(sysexData, 0, result, 1, dataSize);
+
         result[dataSize + 1] = (byte)0xF7;
 
         return new MidiMessage(result, dataSize + 2, 0);
@@ -355,7 +430,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isSysEx() {
-        return (midiMessage[0] & 0xF0) == 0xF0;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a SysEx.");
+            }
+
+            result = (midiData[0] & 0xF0) == 0xF0;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -365,7 +453,7 @@ public class MidiMessage {
      */
     public byte[] getSysExData() {
 
-        return isSysEx() ? midiMessage : null;
+        return isSysEx() ? midiData : null;
     }
 
     /**
@@ -374,7 +462,20 @@ public class MidiMessage {
      * @return
      */
     public int getSysExDataSize() {
-        return isSysEx() ? messageSize - 2 : 0;
+        int result = 0;
+
+        try {
+            if (midiDataSize < 1) {
+                throw new MidiException("A SysEx message size must be > 0.");
+            }
+
+            result = isSysEx() ? midiDataSize - 2 : 0;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -383,7 +484,7 @@ public class MidiMessage {
      * @param channel
      * @return
      */
-    private static int statusByte(int command, int channel) {
+    public static int createStatusByte(int command, int channel) {
         return ((command & 0xF0) | ((channel - 1) & 0x0F));
     }
 
@@ -394,9 +495,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isNoteOn(boolean returnTrueForVelocity0) {
+        boolean result = false;
 
-        return ((midiMessage[0] & 0xF0) == 0x90) && (returnTrueForVelocity0 || midiMessage[2] != 0);
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Note ON.");
+            }
 
+            result = ((midiData[0] & 0xF0) == 0x90) && (returnTrueForVelocity0 || midiData[2] != 0);
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates a key-down message (using an integer velocity).
@@ -406,7 +518,7 @@ public class MidiMessage {
      * see isNoteOn
      */
     public static MidiMessage noteOn (int channel, int noteNumber, int velocity, double timeStamp) {
-        return new MidiMessage(statusByte(0x90, channel), (noteNumber & 127), velocity, timeStamp);
+        return new MidiMessage(createStatusByte(0x90, channel), (noteNumber & 127), velocity, timeStamp);
     }
 
     /**
@@ -427,7 +539,7 @@ public class MidiMessage {
      * @link isNoteOff
      */
     public static MidiMessage noteOff (int channel, int noteNumber, int velocity, double timeStamp) {
-        return new MidiMessage(statusByte(0x80, channel), noteNumber, velocity, timeStamp);
+        return new MidiMessage(createStatusByte(0x80, channel), noteNumber, velocity, timeStamp);
     }
 
 
@@ -457,11 +569,24 @@ public class MidiMessage {
      * @return
      */
     public boolean isNoteOff(boolean returnTrueForNoteOnVelocity0) {
-        return ((midiMessage[0] & 0xF0) == 0x80)
-                || (midiMessage.length == 3)
-                && (returnTrueForNoteOnVelocity0
-                && (midiMessage[2] == 0)
-                && ((midiMessage[0] & 0xF0) == 0x90));
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a NoteOFF.");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0x80)
+                    || (midiData.length == 3)
+                    && (returnTrueForNoteOnVelocity0
+                    && (midiData[2] == 0)
+                    && ((midiData[0] & 0xF0) == 0x90));
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -470,7 +595,21 @@ public class MidiMessage {
      * @return
      */
     public boolean isNoteOnOrOff() {
-        return ((midiMessage[0] & 0xF0) == 0x90 || (midiMessage[0] & 0xF0) == 0x80);
+
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a NoteON or NoteOFF.");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0x90 || (midiData[0] & 0xF0) == 0x80);
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -479,8 +618,20 @@ public class MidiMessage {
      * @return
      */
     public int getNoteNumber() {
+        int result = -1;
 
-        return midiMessage[1];
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get a Note Number.");
+            }
+
+            result = midiData[1];
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -489,9 +640,19 @@ public class MidiMessage {
      * @param newNoteNumber
      */
     public void setNoteNumber(byte newNoteNumber) {
+        int result = -1;
 
-        if (isNoteOnOrOff() || isPolyAftertouch() || isChannelPressure())
-            midiMessage[1] = newNoteNumber;
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't set a new note number.");
+            }
+
+            if (isNoteOnOrOff() || isPolyAftertouch() || isChannelPressure())
+                midiData[1] = newNoteNumber;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
     }
 
     /**
@@ -501,9 +662,21 @@ public class MidiMessage {
      */
     public int getVelocity() {
 
-        if (isNoteOnOrOff())
-            return midiMessage[2];
-        return 0;
+        int result = 0;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get Velocity.");
+            }
+
+            if (isNoteOnOrOff())
+                result =  midiData[2];
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -512,8 +685,18 @@ public class MidiMessage {
      * @param newVelocity
      */
     public void setVelocity(float newVelocity) {
-        if (isNoteOnOrOff()) {
-            midiMessage[2] = (byte) (127.0f * newVelocity);
+        int result = -1;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't set a new velocity.");
+            }
+
+            if (isNoteOnOrOff())
+                midiData[2] = (byte) (127.0f * newVelocity);
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
         }
     }
 
@@ -541,7 +724,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isSustainPedalOn() {
-        return isControllerOfType(0x40) && midiMessage[2] >= 64;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Sustain Pedal ON.");
+            }
+
+            result = isControllerOfType(0x40) && midiData[2] >= 64;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -550,7 +746,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isSustainPedalOff() {
-        return isControllerOfType(0x40) && midiMessage[2] < 64;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Sustain Pedal OFF.");
+            }
+
+            result = isControllerOfType(0x40) && midiData[2] < 64;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -559,7 +768,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isSostenutoPedalOn() {
-        return isControllerOfType(0x42) && midiMessage[2] >= 64;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Sostenuto Pedal ON.");
+            }
+
+            result = isControllerOfType(0x42) && midiData[2] >= 64;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -568,7 +790,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isSostenutoPedalOff() {
-        return isControllerOfType(0x42) && midiMessage[2] < 64;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Sostenuto Pedal OFF.");
+            }
+
+            result = isControllerOfType(0x42) && midiData[2] < 64;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -577,7 +812,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isSoftPedalOn() {
-        return isControllerOfType(0x43) && midiMessage[2] >= 64;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Soft Pedal ON.");
+            }
+
+            result = isControllerOfType(0x43) && midiData[2] >= 64;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -586,7 +834,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isSoftPedalOff() {
-        return isControllerOfType(0x43) && midiMessage[2] < 64;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Soft Pedal OFF.");
+            }
+
+            result = isControllerOfType(0x43) && midiData[2] < 64;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates a program-change message.
@@ -595,7 +856,7 @@ public class MidiMessage {
      @link isProgramChange, getGMInstrumentName
      */
     static MidiMessage programChange (int channel, int programNumber) {
-        return new MidiMessage(statusByte(0xC0, channel), programNumber & 0x7F);
+        return new MidiMessage(createStatusByte(0xC0, channel), programNumber & 0x7F);
     }
 
     /**
@@ -604,7 +865,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isProgramChange() {
-        return (midiMessage[0] & 0xF0) == 0xC0;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Program Change.");
+            }
+
+            result = (midiData[0] & 0xF0) == 0xC0;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -613,8 +887,20 @@ public class MidiMessage {
      * @return
      */
     public int getProgramChangeNumber() {
+        int result = -1;
 
-        return midiMessage[1];
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get a Program Change number.");
+            }
+
+            result = midiData[1];
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates a pitch-wheel move message.
@@ -623,7 +909,7 @@ public class MidiMessage {
      * @link isPitchWheel
      */
     static MidiMessage pitchWheel (int channel, int position) {
-        return new MidiMessage (statusByte(0xE0, channel), position & 127, (position >> 7) & 127, 0);
+        return new MidiMessage (createStatusByte(0xE0, channel), position & 127, (position >> 7) & 127, 0);
     }
 
     /**
@@ -632,7 +918,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isPitchWheel() {
-        return (midiMessage[0] & 0xF0) == 0xE0;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Pitch Wheel");
+            }
+
+            result = (midiData[0] & 0xF0) == 0xE0;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -641,7 +940,20 @@ public class MidiMessage {
      * @return
      */
     public int getPitchWheelValue() {
-        return midiMessage[1] | midiMessage[2] << 7;
+        int result = -1;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get a Pitch Wheel value.");
+            }
+
+            result = midiData[1] | midiData[2] << 7;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates a channel-pressure change event.
@@ -650,7 +962,7 @@ public class MidiMessage {
      * @link isChannelPressure
      */
     static MidiMessage channelPressureChange (int channel, int pressure) {
-        return new MidiMessage (statusByte(0xD0, channel), pressure & 0x7F, 0);
+        return new MidiMessage (createStatusByte(0xD0, channel), pressure & 0x7F, 0);
     }
 
     /**
@@ -659,8 +971,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isChannelPressure() {
+        boolean result = false;
 
-        return ((midiMessage[0] & 0xF0) == 0xD0);
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Channel Pressure.");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0xD0);
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -669,10 +993,22 @@ public class MidiMessage {
      * @return
      */
     public int getChannelPressureValue() {
-        if (isChannelPressure()) {
-            return midiMessage[1];
+        int result = -1;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get a Channel Pressure value.");
+            }
+
+            if (isChannelPressure()) {
+                result = midiData[1];
+            }
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
         }
-        return 0;
+
+        return result;
     }
 
     /** Creates an aftertouch message.
@@ -682,7 +1018,7 @@ public class MidiMessage {
      * @link isAftertouch
      */
     static MidiMessage aftertouchChange (int channel, int noteNumber, int aftertouchAmount) {
-        return new MidiMessage (statusByte(0xA0, channel), noteNumber & 0x7F, aftertouchAmount & 0x7F);
+        return new MidiMessage (createStatusByte(0xA0, channel), noteNumber & 0x7F, aftertouchAmount & 0x7F);
     }
 
 
@@ -692,20 +1028,44 @@ public class MidiMessage {
      * @return
      */
     public boolean isPolyAftertouch() {
+        boolean result = false;
 
-        return ((midiMessage[0] & 0xF0) == 0xA0);
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Poly After Touch.");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0xA0);
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
-     * Returns the amount of Poliphonic Aftertouch from anAftertouch messages.
+     * Returns the amount of Poliphonic Aftertouch from an Aftertouch messages.
      *
      * @return
      */
     public int getPolyAftertouchValue() {
-        if (isPolyAftertouch()) {
-            return midiMessage[2];
+        int result = -1;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get a Poly After Touch value.");
+            }
+
+            if (isPolyAftertouch()) {
+                result = midiData[2];
+            }
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
         }
-        return 0;
+
+        return result;
     }
 
     /**
@@ -714,7 +1074,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isController() {
-        return ((midiMessage[0] & 0xF0) == 0xB0);
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Controller.");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0xB0);
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -768,7 +1141,20 @@ public class MidiMessage {
      * @return
      */
     public int getControllerNumber() {
-        return midiMessage[1];
+        int result = -1;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get a Controller number.");
+            }
+
+            result = midiData[1];
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -777,7 +1163,20 @@ public class MidiMessage {
      * @return
      */
     public int getControllerValue() {
-        return midiMessage[2];
+        int result = -1;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't get a Controller value.");
+            }
+
+            result = midiData[2];
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -787,7 +1186,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isControllerOfType(int controllerType) {
-        return ((midiMessage[0] & 0xF0) == 0xB0) && (midiMessage[1] == controllerType);
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check type of Controller.");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == controllerType);;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates a controller message.
@@ -797,7 +1209,7 @@ public class MidiMessage {
      * @link isController
      */
     static MidiMessage controllerEvent (int channel, int controllerType, int value) {
-        return new MidiMessage(statusByte(0xB0, channel), (controllerType & 127), (value & 127),0);
+        return new MidiMessage(createStatusByte(0xB0, channel), (controllerType & 127), (value & 127),0);
     }
 
 
@@ -815,7 +1227,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isAllNotesOff() {
-        return ((midiMessage[0] & 0xF0) == 0xB0) && (midiMessage[1] == 123) ;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is an All Note OFF");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == 123) ;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates an all-sound-off message.
@@ -832,7 +1257,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isAllSoundOff() {
-        return (midiMessage[1] == 120) && ((midiMessage[0] & 0xF0) == 0xB0);
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is an All Sound OFF.");
+            }
+
+            result = (midiData[1] == 120) && ((midiData[0] & 0xF0) == 0xB0);
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates an all-controllers-off message.
@@ -849,7 +1287,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isResetAllControllers() {
-        return ((midiMessage[0] & 0xF0) == 0xB0) && (midiMessage[1] == 121) ;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Reset All Controllers.");
+            }
+
+            result = ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == 121) ;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     /**
@@ -866,7 +1317,20 @@ public class MidiMessage {
      * @return
      */
     public boolean isMetaEvent() {
-        return (midiMessage[0] & 0xFF) == 0xFF;
+        boolean result = false;
+
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if it is a Meta Event.");
+            }
+
+            result = (midiData[0] & 0xFF) == 0xFF;
+
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
+        }
+
+        return result;
     }
 
     //TODO: ??
