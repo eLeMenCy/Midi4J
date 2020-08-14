@@ -122,11 +122,19 @@ public class App extends KeepAppRunning {
                 }
             };
 
-            t.schedule(tt,1000,250);
+            System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
+            midi4jIn.setDeviceName("tt");
+            System.out.println(midi4jIn.getDeviceName());
+            midi4jIn.setPortName("Huuuuh");
+            System.out.println(midi4jIn.getPortName());
+            System.out.println(midi4jIn.getTargetPortName(-2));
+
+
+//            t.schedule(tt,1000,250);
 
             keepRunning();
 
-        } catch( MidiException me) {
+        } catch(MidiException me) {
             logger.error(String.valueOf(me));
 
 //        } catch( Exception e) {

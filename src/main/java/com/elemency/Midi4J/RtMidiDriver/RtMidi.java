@@ -75,34 +75,33 @@ public class RtMidi {
         public int getIntValue() {
             return value;
         }
-//    public NativeLong getNativeLongValue() { return new NativeLong((long)value); }
     }
 
     /**
      *
      */
-    public int getCompiledApi(IntBuffer apis, int apis_size) {
+    public int getAvailableApis(IntBuffer apis, int apis_size) {
         return lib.rtmidi_get_compiled_api(apis, apis_size);
     }
 
     /**
      *
      */
-    public String apiName(int api) {
+    public String getApiName(int api) {
         return lib.rtmidi_api_name(api);
     }
 
     /**
      *
      */
-    public String apiDisplayName(int api) {
+    public String getApiLabel(int api) {
         return lib.rtmidi_api_display_name(api);
     }
 
     /**
      *
      */
-    public int compiledApiByName(String name) {
+    public int getCompiledApiByName(String name) {
         return lib.rtmidi_compiled_api_by_name(name);
     }
 }
