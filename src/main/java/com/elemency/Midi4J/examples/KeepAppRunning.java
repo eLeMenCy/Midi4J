@@ -1,5 +1,6 @@
 package com.elemency.Midi4J.examples;
 
+import com.elemency.Midi4J.MidiException;
 import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.SmpteTimecode;
 import com.sun.jna.Pointer;
@@ -24,15 +25,20 @@ public abstract class KeepAppRunning {
 
     public void keepRunning() throws InterruptedException {
         while (!this.doQuit) {
-            long timeTillNextDisplayChange = 1000 - (SmpteTimecode.getElapsedTimeSinceStartTime() % 1000);
+//            try {
+                long timeTillNextDisplayChange = 1000 - (SmpteTimecode.getElapsedTimeSinceStartTime() % 1000);
 
-            Thread.sleep(timeTillNextDisplayChange);
+                Thread.sleep(timeTillNextDisplayChange);
 
-            System.out.println(SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()));
+                System.out.println(SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()));
+//            } catch (MidiException me) {
+//                me.printStackTrace();
 
-            if (!doQuit) {
+                if (!doQuit) {
 //                logger.debug("heartbeat...");
-            }
+                }
+//            }
+
         }
     }
 }

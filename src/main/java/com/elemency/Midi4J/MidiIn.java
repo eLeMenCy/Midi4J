@@ -154,21 +154,17 @@ public class MidiIn extends MidiDeviceMgr {
      */
     public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
 
-        MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
+        try {
+            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
 
-//        try {
-//            if (message == null) {
-//                throw new MidiException("A midi Message object can't be null");
-//            }
-//
             // Send our MidiMessage (based on incoming raw data) to our application.
             this.app.processMidiInMessage(timeStamp, midiMessage, userData);
 
-//        } catch (MidiException me) {
-//            logger.error(me.getMessage());
+        } catch (MidiException me) {
+            logger.error(me.getMessage());
 
-//        } catch (NullPointerException npe) {
-//            logger.error("Huuh" + npe);
-//        }
+        } catch (NullPointerException npe) {
+            logger.error(String.valueOf(npe) + ": Native Midi message can't be null");
+        }
     };
 }

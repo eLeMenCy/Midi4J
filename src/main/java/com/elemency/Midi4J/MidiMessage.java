@@ -147,18 +147,26 @@ public class MidiMessage implements Cloneable{
     }
 
     /**
-     * Get the current midi message block
+     * Get the current midi data block
      * @return byte[]
      */
     public byte[] getMidiData() {
+        if (midiData == null) {
+            throw new MidiException("midiData is 'null' - can't return it.");
+        }
+
         return midiData;
     }
 
     /**
-     * Get the current midi message block size
+     * Get the current midi data block size
      * @return int
      */
     public int getMidiDataSize() {
+        if (midiDataSize < 1) {
+            throw new MidiException("midiDataSize must be > 0");
+        }
+
         return midiDataSize;
     }
 
@@ -254,15 +262,15 @@ public class MidiMessage implements Cloneable{
             );
         }
 
-        return toHexString();
+        return midiDataHexString().isEmpty() ? "# # No midi data desciption available # #" : midiDataHexString();
     }
 
     /**
-     * Returns a human-readable raw midi message as a string.
+     * Returns raw midi data as a HexString.
      * @return
      */
-    private String toHexString() {
-        String hexString = "# # # # # # # # # # # # # # # # # #";
+    private String midiDataHexString() {
+        String hexString = "";
 
         if (midiData == null || midiData[0] < 1 || midiDataSize < 1) {
             return hexString;
@@ -365,7 +373,7 @@ public class MidiMessage implements Cloneable{
 
         try {
             if (midiData == null) {
-                throw new MidiException("Can't get the Channel from a 'null' midi message!");
+                throw new MidiException("midiData is 'null' - can't get the Channel number.");
             }
 
             if ((midiData[0] & 0xF0) == 0xF0) {
@@ -619,6 +627,8 @@ public class MidiMessage implements Cloneable{
      */
     public int getNoteNumber() {
         int result = -1;
+
+//        midiData = null;
 
         try {
             if (midiData == null) {

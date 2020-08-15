@@ -87,7 +87,11 @@ public class MidiOut extends MidiDeviceMgr {
         int result = 0;
 
         if (rtMidiDevice.ok != 0) {
-            result = lib.rtmidi_out_send_message(rtMidiDevice, midiMessage.getMidiData(), midiMessage.getMidiDataSize());
+            try {
+                result = lib.rtmidi_out_send_message(rtMidiDevice, midiMessage.getMidiData(), midiMessage.getMidiDataSize());
+            } catch (MidiException me) {
+                me.getMessage();
+            }
         }
         else {
             System.out.println("No out device found - Received data cannot be sent!");

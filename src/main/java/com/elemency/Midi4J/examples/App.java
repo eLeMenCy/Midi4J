@@ -5,6 +5,7 @@ package com.elemency.Midi4J.examples;
 
 import com.elemency.Midi4J.*;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class App extends KeepAppRunning {
 
     public void processMidiInMessage(double timeStamp, MidiMessage midiMessage, Pointer userData) {
         if (!doQuit) {
-            if (midiMessage.isNoteOn(false) && midiMessage.getNoteNumber() == 39) {
+            if (midiMessage.isNoteOnOrOff() && midiMessage.getNoteNumber() == 39) {
                 logger.info("quitting...");
                 doQuit();
                 return;
@@ -104,38 +105,46 @@ public class App extends KeepAppRunning {
             midi4jIn.setPortName("Huuuuh");
             System.out.println(midi4jIn.getPortName());
             System.out.println(midi4jIn.getTargetPortName(-2));
-            new MidiMessage(MidiMessage.createStatusByte(0x90, 1), (60 & 127), 80, 0);
+
+            MidiMessage ta = new MidiMessage(MidiMessage.createStatusByte(0x90, 1), (60 & 127), 80, 0);
+            logger.info(ta.getDescription());
 
             byte[] tmp = new byte [3];
             tmp[0] = (byte) MidiMessage.createStatusByte(0xF1, 1);
             tmp[1] = 60 & 127;
             tmp[2] = 80 & 127;
-            new MidiMessage(tmp, 0, 0);
+            MidiMessage tb = new MidiMessage(tmp, 0, 0);
+            logger.info(tb.getDescription());
 
-            t = new Timer();
-            TimerTask tt = new TimerTask() {
-                @Override
-                public void run() {
+            Pointer test = null;
+            NativeSize testSize = new NativeSize(0);
+            MidiMessage tc = new MidiMessage(test, testSize, 0);
+            logger.info(tc.getDescription());
 
-                    Random random = new Random();
-                    int note = random.nextInt(127);
-                    int velocity = random.nextInt(127);
+        t = new Timer();
+        TimerTask tt = new TimerTask() {
+            @Override
+            public void run() {
 
-                    MidiMessage tmp = MidiMessage.noteOn(1, note, velocity,0);
-                    midi4jOut.sendMessage(tmp);
-                    logger.info(tmp.getDescription());
+                Random random = new Random();
+                int note = random.nextInt(127);
+                int velocity = random.nextInt(127);
 
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                MidiMessage tmp = MidiMessage.noteOn(1, note, velocity,0);
+                midi4jOut.sendMessage(tmp);
+                logger.info(tmp.getDescription());
 
-                    tmp.setVelocity(0);
-                    midi4jOut.sendMessage(tmp);
-                    logger.info(tmp.getDescription());
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            };
+
+                tmp.setVelocity(0);
+                midi4jOut.sendMessage(tmp);
+                logger.info(tmp.getDescription());
+            }
+        };
 
 //            t.schedule(tt,1000,250);
 
