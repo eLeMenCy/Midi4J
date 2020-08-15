@@ -26,3 +26,4 @@ gradle-app.setting
 ### misc ###
 /lmc_*
 /.idea/uiDesigner.xml
+/hs_err_*
