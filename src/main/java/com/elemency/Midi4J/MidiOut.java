@@ -26,6 +26,10 @@ public class MidiOut extends MidiDeviceMgr {
         super.rtMidiDevice = create(api, deviceName);
     }
 
+
+    /**
+     * Called on try with resources exception thrown.
+     */
     @Override
     public void close() {
         closeDevice();

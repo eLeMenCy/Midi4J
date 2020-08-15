@@ -41,7 +41,7 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
-     *
+     * Called on try with resources exception thrown.
      */
     @Override
     public void close()/* throws MidiException*/ {

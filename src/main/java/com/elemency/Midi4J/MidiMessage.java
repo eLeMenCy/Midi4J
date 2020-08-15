@@ -176,93 +176,100 @@ public class MidiMessage implements Cloneable{
      */
     public String getDescription() {
 
-        if (isNoteOn(false)) {
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't return its description");
+            }
+
+            if (isNoteOn(false)) {
 //            return String.format("%02d:%02d:%02d:%03d - ",hours, minutes, seconds, millis);
 
-            return String.format(
-                    "Note ON  %-4s Velocity %03d Channel %02d",
-                    getMidiNoteName(getNoteNumber(), true, true, 3),
-                    getVelocity(),
-                    getChannel()
-            );
+                return String.format(
+                        "Note ON  %-4s Velocity %03d Channel %02d",
+                        getMidiNoteName(getNoteNumber(), true, true, 3),
+                        getVelocity(),
+                        getChannel()
+                );
+            }
+
+            if (isNoteOff(true)) {
+                return String.format(
+                        "Note OFF %-4s Velocity %03d Channel %02d",
+                        getMidiNoteName(getNoteNumber(), true, true, 3),
+                        getVelocity(),
+                        getChannel()
+                );
+            }
+
+            if (isProgramChange()) {
+                return String.format(
+                        "Program change %03d Channel %02d",
+                        getProgramChangeNumber(),
+                        getChannel()
+                );
+            }
+
+            if (isPitchWheel()) {
+                return String.format(
+                        "Pitchbend %05d Channel %02d",
+                        getPitchWheelValue(),
+                        getChannel()
+                );
+            }
+
+            if (isPolyAftertouch()) {
+                return String.format(
+                        "Poly Aftertouch %-4s: %03d Channel %02d",
+                        getMidiNoteName(getNoteNumber(), true, true, 3),
+                        getPolyAftertouchValue(),
+                        getChannel()
+                );
+            }
+
+            if (isChannelPressure()) {
+                return String.format(
+                        "Channel Aftertouch %03d Channel %02d",
+                        getChannelPressureValue(),
+                        getChannel()
+                );
+            }
+
+            if (isAllNotesOff()) {
+                return String.format(
+                        "All notes off Channel %02d",
+                        getChannel()
+                );
+            }
+
+            if (isAllSoundOff()) {
+                return String.format(
+                        "All sound off Channel %02d",
+                        getChannel()
+                );
+            }
+
+            if (isMetaEvent()) {
+                return "Meta event";
+            }
+
+            if (isController()) {
+                String name = getControllerName(getControllerNumber());
+
+                if (name.isEmpty())
+                    name = String.valueOf(getControllerNumber());
+
+                return String.format(
+                        "CC %s: %03d Channel %02d",
+                        name.equals("--") ? getControllerNumber() : name,
+                        getControllerValue(),
+                        getChannel()
+                );
+            }
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
         }
 
-        if (isNoteOff(true)) {
-            return String.format(
-                    "Note OFF %-4s Velocity %03d Channel %02d",
-                    getMidiNoteName(getNoteNumber(), true, true, 3),
-                    getVelocity(),
-                    getChannel()
-            );
-        }
-
-        if (isProgramChange()) {
-            return String.format(
-                    "Program change %03d Channel %02d",
-                    getProgramChangeNumber(),
-                    getChannel()
-            );
-        }
-
-        if (isPitchWheel()) {
-            return String.format(
-                    "Pitchbend %05d Channel %02d",
-                    getPitchWheelValue(),
-                    getChannel()
-            );
-        }
-
-        if (isPolyAftertouch()) {
-            return String.format(
-                    "Poly Aftertouch %-4s: %03d Channel %02d",
-                    getMidiNoteName(getNoteNumber(), true, true, 3),
-                    getPolyAftertouchValue(),
-                    getChannel()
-            );
-        }
-
-        if (isChannelPressure()) {
-            return String.format(
-                    "Channel Aftertouch %03d Channel %02d",
-                    getChannelPressureValue(),
-                    getChannel()
-            );
-        }
-
-        if (isAllNotesOff()) {
-            return String.format(
-                    "All notes off Channel %02d",
-                    getChannel()
-            );
-        }
-
-        if (isAllSoundOff()) {
-            return String.format(
-                    "All sound off Channel %02d",
-                    getChannel()
-            );
-        }
-
-        if (isMetaEvent()) {
-            return "Meta event";
-        }
-
-        if (isController())
-        {
-            String name = getControllerName(getControllerNumber());
-
-            if (name.isEmpty())
-                name = String.valueOf(getControllerNumber());
-
-            return String.format(
-                    "CC %s: %03d Channel %02d",
-                    name.equals("--") ? getControllerNumber() : name,
-                    getControllerValue(),
-                    getChannel()
-            );
-        }
-
-        return midiDataHexString().isEmpty() ? "# # No midi data desciption available # #" : midiDataHexString();
+        return "Midi message as HexString: " + midiDataHexString();
     }
 
     /**
@@ -270,7 +277,7 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     private String midiDataHexString() {
-        String hexString = "";
+        String hexString = "No Midi data to process!";
 
         if (midiData == null || midiData[0] < 1 || midiDataSize < 1) {
             return hexString;
@@ -355,7 +362,7 @@ public class MidiMessage implements Cloneable{
             midiMessage.timeStamp = newTimestamp;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
 
         } catch (CloneNotSupportedException e) {
             logger.error(e.toString());
@@ -384,7 +391,7 @@ public class MidiMessage implements Cloneable{
             }
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -448,7 +455,7 @@ public class MidiMessage implements Cloneable{
             result = (midiData[0] & 0xF0) == 0xF0;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -480,7 +487,7 @@ public class MidiMessage implements Cloneable{
             result = isSysEx() ? midiDataSize - 2 : 0;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -513,7 +520,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0x90) && (returnTrueForVelocity0 || midiData[2] != 0);
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -591,7 +598,7 @@ public class MidiMessage implements Cloneable{
                     && ((midiData[0] & 0xF0) == 0x90));
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -614,7 +621,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0x90 || (midiData[0] & 0xF0) == 0x80);
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -638,7 +645,7 @@ public class MidiMessage implements Cloneable{
             result = midiData[1];
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -661,7 +668,7 @@ public class MidiMessage implements Cloneable{
                 midiData[1] = newNoteNumber;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
     }
 
@@ -683,7 +690,7 @@ public class MidiMessage implements Cloneable{
                 result =  midiData[2];
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -706,7 +713,7 @@ public class MidiMessage implements Cloneable{
                 midiData[2] = (byte) (127.0f * newVelocity);
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
     }
 
@@ -744,7 +751,7 @@ public class MidiMessage implements Cloneable{
             result = isControllerOfType(0x40) && midiData[2] >= 64;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -766,7 +773,7 @@ public class MidiMessage implements Cloneable{
             result = isControllerOfType(0x40) && midiData[2] < 64;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -788,7 +795,7 @@ public class MidiMessage implements Cloneable{
             result = isControllerOfType(0x42) && midiData[2] >= 64;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -810,7 +817,7 @@ public class MidiMessage implements Cloneable{
             result = isControllerOfType(0x42) && midiData[2] < 64;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -832,7 +839,7 @@ public class MidiMessage implements Cloneable{
             result = isControllerOfType(0x43) && midiData[2] >= 64;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -854,7 +861,7 @@ public class MidiMessage implements Cloneable{
             result = isControllerOfType(0x43) && midiData[2] < 64;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -885,7 +892,7 @@ public class MidiMessage implements Cloneable{
             result = (midiData[0] & 0xF0) == 0xC0;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -907,7 +914,7 @@ public class MidiMessage implements Cloneable{
             result = midiData[1];
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -938,7 +945,7 @@ public class MidiMessage implements Cloneable{
             result = (midiData[0] & 0xF0) == 0xE0;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -960,7 +967,7 @@ public class MidiMessage implements Cloneable{
             result = midiData[1] | midiData[2] << 7;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -991,7 +998,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0xD0);
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1015,7 +1022,7 @@ public class MidiMessage implements Cloneable{
             }
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1048,7 +1055,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0xA0);
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1072,7 +1079,7 @@ public class MidiMessage implements Cloneable{
             }
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1094,7 +1101,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0xB0);
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1161,7 +1168,7 @@ public class MidiMessage implements Cloneable{
             result = midiData[1];
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1183,7 +1190,7 @@ public class MidiMessage implements Cloneable{
             result = midiData[2];
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1206,7 +1213,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == controllerType);;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1247,7 +1254,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == 123) ;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1277,7 +1284,7 @@ public class MidiMessage implements Cloneable{
             result = (midiData[1] == 120) && ((midiData[0] & 0xF0) == 0xB0);
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1307,7 +1314,7 @@ public class MidiMessage implements Cloneable{
             result = ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == 121) ;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
@@ -1337,7 +1344,7 @@ public class MidiMessage implements Cloneable{
             result = (midiData[0] & 0xFF) == 0xFF;
 
         } catch (MidiException me) {
-            logger.error(me.getMessage());
+            logger.warn(me.getMessage());
         }
 
         return result;
