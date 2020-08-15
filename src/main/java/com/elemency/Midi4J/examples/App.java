@@ -40,8 +40,8 @@ public class App extends KeepAppRunning {
 //        System.out.println("getNoteNumber: " + midiMessage.getNoteNumber());
 //        System.out.println("getVelocity: " + midiMessage.getVelocity());
 //        System.out.println("getFloatVelocity: " + midiMessage.getFloatVelocity());
-//        System.out.println("isChannelAftertouch: " + midiMessage.isChannelAftertouch());
-//        System.out.println("getChannelAftertouchValue: " + midiMessage.getChannelAftertouchValue());
+//        System.out.println("isChannelAftertouch: " + midiMessage.isChannelPressure());
+//        System.out.println("getChannelAftertouchValue: " + midiMessage.getChannelPressureValue());
 //        System.out.println("isPolyAftertouch: " + midiMessage.isPolyAftertouch());
 //        System.out.println("getPolyAftertouchValue: " + midiMessage.getPolyAftertouchValue());
 //        System.out.println("getMidiNoteName: " + midiMessage.getMidiNoteName(midiMessage.getNoteNumber(), true, true, 3));

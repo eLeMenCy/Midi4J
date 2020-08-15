@@ -11,6 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
+//TODO: Merge the MidiDevice CLass with this one and then delete MidiDevice.
+// Refactor all variable name other than those containing target to source
+// (i.e. deviceName -> sourceDeviceName, portName -> sourcePortName etc...)
+
 public abstract class MidiDeviceMgr implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
     private final Logger logger = LoggerFactory.getLogger(MidiDeviceMgr.class);
@@ -80,20 +84,14 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      * @param deviceName
      */
     public void setDeviceName(String deviceName) {
+        String name = deviceName;
 
-        try {
-            if (deviceName.isEmpty()) {
-                this.deviceName = "Midi4J";
-                throw new MidiException("A device name can't be empty! It has been named 'Midi4J' (default device name)");
-            }
-
-            lib.rtmidi_set_client_name(rtMidiDevice, deviceName);
-            this.deviceName = deviceName;
-
+        if (deviceName.isEmpty()) {
+            name = "Midi4J";
         }
-        catch (MidiException msg) {
-            logger.warn(msg.getMessage());
-        }
+
+        lib.rtmidi_set_client_name(rtMidiDevice, name);
+        this.deviceName = name;
     }
 
     /**
