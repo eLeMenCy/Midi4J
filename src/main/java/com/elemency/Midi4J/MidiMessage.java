@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 // https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
 
-//TODO: add timestamp param to all method requiring it.
+//TODO: add timestamp param to all methods requiring it.
 
 public class MidiMessage implements Cloneable{
 
@@ -269,14 +269,14 @@ public class MidiMessage implements Cloneable{
             logger.warn(me.getMessage());
         }
 
-        return "Midi message as HexString: " + midiDataHexString();
+        return "Midi message as HexString: " + midiDataToHexString();
     }
 
     /**
      * Returns raw midi data as a HexString.
      * @return
      */
-    private String midiDataHexString() {
+    public String midiDataToHexString() {
         String hexString = "No Midi data to process!";
 
         if (midiData == null || midiData[0] < 1 || midiDataSize < 1) {
@@ -333,14 +333,14 @@ public class MidiMessage implements Cloneable{
      * @param newTimestamp
      */
     public void setTimeStamp(double newTimestamp) {
-        this.timeStamp = newTimestamp;
+        timeStamp = newTimestamp;
     }
 
     /**
      * Adds a value to the message's timestamp.
      */
     public void addToTimeStamp(double delta) {
-        this.timeStamp += delta;
+        timeStamp += delta;
     }
 
     /**
@@ -403,13 +403,23 @@ public class MidiMessage implements Cloneable{
      * @param number
      */
     public void setChannel(int number) {
+
         if (number < 1 || number > 16) {
             //TODO: throw exception ?
             logger.warn("A Midi voice channel can only be between 1 and 16");
             return;
         }
 
-        midiData[0] = (byte) ((midiData[0] & 0xF0) | ((number - 1) & 0xF));
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't set the Channel to " + number);
+            }
+
+            midiData[0] = (byte) ((midiData[0] & 0xF0) | ((number - 1) & 0xF));
+
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
+        }
     }
 
     /**
@@ -419,8 +429,20 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     public boolean isForChannel(int number) {
+        boolean result = false;
 
-        return (midiData[0] & 0xF) + 1 == (number & 0xF);
+        try {
+            if (midiData == null) {
+                throw new MidiException("midiData is 'null' - can't check if current message applies to channel " + number);
+            }
+
+            result = (midiData[0] & 0xF) + 1 == (number & 0xF);
+
+        } catch (MidiException me) {
+            logger.warn(me.getMessage());
+        }
+
+        return result;
     }
 
     /** Creates a system-exclusive message.
@@ -639,7 +661,7 @@ public class MidiMessage implements Cloneable{
 
         try {
             if (midiData == null) {
-                throw new MidiException("midiData is 'null' - can't get a Note Number.");
+                throw new MidiException("midiData is 'null' - can't get Note Number.");
             }
 
             result = midiData[1];
@@ -702,7 +724,7 @@ public class MidiMessage implements Cloneable{
      * @param newVelocity
      */
     public void setVelocity(float newVelocity) {
-        int result = -1;
+        int result = 0;
 
         try {
             if (midiData == null) {
@@ -904,7 +926,7 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     public int getProgramChangeNumber() {
-        int result = -1;
+        int result = 0;
 
         try {
             if (midiData == null) {
@@ -957,7 +979,7 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     public int getPitchWheelValue() {
-        int result = -1;
+        int result = 0;
 
         try {
             if (midiData == null) {
@@ -1010,7 +1032,7 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     public int getChannelPressureValue() {
-        int result = -1;
+        int result = 0;
 
         try {
             if (midiData == null) {
@@ -1067,7 +1089,7 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     public int getPolyAftertouchValue() {
-        int result = -1;
+        int result = 0;
 
         try {
             if (midiData == null) {
@@ -1158,7 +1180,7 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     public int getControllerNumber() {
-        int result = -1;
+        int result = 0;
 
         try {
             if (midiData == null) {
@@ -1180,7 +1202,7 @@ public class MidiMessage implements Cloneable{
      * @return
      */
     public int getControllerValue() {
-        int result = -1;
+        int result = 0;
 
         try {
             if (midiData == null) {
