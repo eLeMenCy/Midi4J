@@ -16,6 +16,8 @@ import java.util.TimerTask;
 
 import static java.lang.String.valueOf;
 
+//TODO: get all command tes here and use them in the junit test.
+
 public class App extends KeepAppRunning {
     private final Logger logger = LoggerFactory.getLogger(App.class);
     private MidiIn midi4jIn = null;

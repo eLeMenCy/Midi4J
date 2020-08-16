@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 
 // https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
 
-//TODO: add timestamp param to all methods requiring it.
-
 public class MidiMessage implements Cloneable{
 
     private final Logger logger = LoggerFactory.getLogger(MidiMessage.class);
