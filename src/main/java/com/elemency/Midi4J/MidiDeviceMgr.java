@@ -1,7 +1,7 @@
 package com.elemency.Midi4J;
 
-import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     }
 
     /**
-     *
      * @return
      */
     private String getDeviceType() {
@@ -58,7 +57,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     }
 
     /**
-     *
      * @param type
      * @param errorString
      */
@@ -72,7 +70,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     public abstract int getCurrentApiId();
 
     /**
-     *
      * @return
      */
     public String getCurrentApiName() {
@@ -80,10 +77,39 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     }
 
     /**
-     *
+     * @param targetDeviceId
+     * @return
+     */
+    public String getTargetDeviceName(int targetDeviceId) {
+
+        if (getDeviceCount() < targetDeviceId || targetDeviceId < 0) {
+            throw new MidiException("Given device id (" + targetDeviceId + ") is outside current range of devices!");
+        }
+
+        String result = getFullDeviceDetails(targetDeviceId).get("targetDeviceName");
+
+        if (result == null || result.isEmpty()) {
+            throw new MidiException(" - Target device ID (" + targetDeviceId + ") is null or empty!");
+        }
+
+        return result;
+    }
+
+    /**
+     * @return
+     */
+    public String getDeviceName() {
+        return this.deviceName;
+    }
+
+    /**
      * @param deviceName
      */
     public void setDeviceName(String deviceName) {
+        if (rtMidiDevice == null) {
+            throw new MidiException("This device is null - name can't be changed.");
+        }
+
         String name = deviceName;
 
         if (deviceName.isEmpty()) {
@@ -95,46 +121,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     }
 
     /**
-     *
-     * @param targetDeviceId
-     * @return
-     */
-    public String getTargetDeviceName(int targetDeviceId) {
-        String result = "! UNKNOWN DEVICE ID !";
-
-        try {
-            if (getDeviceCount() < targetDeviceId || targetDeviceId < 0) {
-                throw new MidiException(result + " - Given device id (" + targetDeviceId + ") is outside current range of devices!");
-            }
-
-            try {
-                result = getFullDeviceDetails(targetDeviceId).get("targetDeviceName");
-
-                if (result == null || result.isEmpty()) {
-                    throw new MidiException(" - Target device ID (" + targetDeviceId + ") is null or empty!");
-                }
-
-            } catch (MidiException me) {
-                logger.warn(me.getMessage());
-            }
-
-        } catch (MidiException me) {
-            logger.warn(me.getMessage());
-        }
-
-        return result;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getDeviceName() {
-        return this.deviceName;
-    }
-
-    /**
-     *
      * @return
      */
     public String getPortName() {
@@ -142,10 +128,30 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     }
 
     /**
-     *
+     * @param portName
+     */
+    public void setPortName(String portName) {
+        if (rtMidiDevice == null) {
+            throw new MidiException("This device is null, can't set its port name.");
+        }
+
+        if (portName.isEmpty()) {
+            portName = getDeviceType().toUpperCase();
+            logger.warn("A Port name can't be empty! It has been named '" + portName + "' (default port name)");
+        }
+
+        lib.rtmidi_set_port_name(rtMidiDevice, portName);
+    }
+
+    /**
      * @return
      */
     public boolean isDeviceOpen() {
+
+        if (rtMidiDevice == null) {
+            throw new MidiException("This device is null, can't check if its opened status.");
+        }
+
         return lib.rtmidi_is_port_open(rtMidiDevice);
     }
 
@@ -154,9 +160,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      */
     public abstract void free();
 
-
     /**
-     *
      * @param portName
      * @param toPortId
      * @param autoConnect
@@ -164,10 +168,14 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      */
     public boolean connect(String portName, int toPortId, boolean autoConnect) {
 
+        if (rtMidiDevice == null) {
+            throw new MidiException("This device is null, can't connect it to its target.");
+        }
+
         int deviceCount = getDeviceCount();
         boolean portIdIsValid = ((toPortId > -1) && (toPortId < deviceCount));
 
-        System.out.println("");
+        System.out.println();
         logger.info("Trying to " + (autoConnect ? "open and connect " : "open ") + "both " + getTargetDeviceName(toPortId) + " " +
                 getTargetDeviceType() + " port (id " + toPortId + ") and " +
                 this.deviceName + "'s " + portName + " port...");
@@ -195,9 +203,9 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
                         " port and " + getTargetDeviceName(toPortId) + "'s " + getTargetDeviceType() +
                         " port (id " + toPortId + ") have been opened succesfully" +
                         (autoConnect ? " and, at your request, connected together!" : " but, at your request, were left disconnected!");
-                        targetDevicePortId = toPortId;
-                        isConnected = autoConnect;
-                        this.portName = portName;
+                targetDevicePortId = toPortId;
+                isConnected = autoConnect;
+                this.portName = portName;
 
             } else {
                 msg = "Couldn't find " + getTargetDeviceType() + " port (id " + toPortId + ") so only " +
@@ -215,11 +223,11 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
         return false;
     }
 
-
     /**
      *
      */
     public boolean openVirtualDevice(String deviceName) {
+
         if (rtMidiDevice.ok != 0) {
             lib.rtmidi_open_virtual_port(rtMidiDevice, deviceName);
         } else {
@@ -232,11 +240,14 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      *
      */
     public int getDeviceCount() {
+        if (rtMidiDevice == null) {
+            throw new MidiException("This device is null, can't count its possible targets.");
+        }
+
         return lib.rtmidi_get_port_count(rtMidiDevice);
     }
 
     /**
-     *
      * @param portId
      * @return
      */
@@ -248,6 +259,10 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 // |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
 // |      1       |  Jack   |     Out/In     | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |-->  Midi4J |    Out   |    OUT   |
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        if (rtMidiDevice == null) {
+            throw new MidiException("This device is null, can't get its details.");
+        }
 
         Map<String, String> fullDeviceDetails = new LinkedHashMap<>();
 
@@ -266,8 +281,8 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
         fullDeviceDetails.put("targetDeviceId", "--");
         fullDeviceDetails.put("targetPortId", "--");
 
-        String ids = Misc.findPattern(data,"\\w+:\\w+$");
-        if (!ids.equals("")){
+        String ids = Misc.findPattern(data, "\\w+:\\w+$");
+        if (!ids.equals("")) {
             data = data.replace((" " + ids), "");
 
             fullDeviceDetails.put("targetPortName", data.substring(semicolonIndex + 1));
@@ -287,26 +302,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     }
 
     /**
-     *
-     * @param portName
-     */
-    public void setPortName(String portName) {
-
-        try {
-            if (portName.isEmpty()) {
-                portName = getDeviceType().toUpperCase();
-                throw new MidiException("A Port name can't be empty! It has been named '" + portName + "' (default port name)");
-            }
-
-            lib.rtmidi_set_port_name(rtMidiDevice, portName);
-        }
-        catch (MidiException msg) {
-            logger.warn(msg.getMessage());
-        }
-    }
-
-    /**
-     *
      * @param targetDeviceId
      * @return
      */
@@ -324,31 +319,20 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
         String result = "! UNKNOWN PORT !";
 
-        try {
-            if (getDeviceCount() < targetDeviceId || targetDeviceId < 0) {
-                throw new MidiException(result + " - Given device id (" + targetDeviceId + ") is outside current range of devices!");
-            }
+        if (getDeviceCount() < targetDeviceId || targetDeviceId < 0) {
+            throw new MidiException(result + " - Given device id (" + targetDeviceId + ") is outside current range of devices!");
+        }
 
-            try {
-                result = getFullDeviceDetails(targetDeviceId).get("targetPortName");
+        result = getFullDeviceDetails(targetDeviceId).get("targetPortName");
 
-                if (result == null || result.isEmpty()) {
-                    throw new MidiException(" - Port of target device ID (" + targetDeviceId + ") is null or empty!");
-                }
-
-            } catch (MidiException me) {
-                logger.warn(me.getMessage());
-            }
-
-        } catch (MidiException me) {
-            logger.warn(me.getMessage());
+        if (result == null || result.isEmpty()) {
+            throw new MidiException(" - Port of target device ID (" + targetDeviceId + ") is null or empty!");
         }
 
         return result;
     }
 
     /**
-     *
      * @return
      */
     public Map<String, MidiDevice> listTargetDevices() {
@@ -364,11 +348,11 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
         int deviceCount = getDeviceCount();
         boolean tgtNameIsName = tgtNameIsName(0);
 
-        System.out.println("");
+        System.out.println();
         if (deviceCount < 1 || tgtNameIsName) {
             logger.warn("There are no " + getCurrentApiName() + " Midi " +
                     getTargetDeviceType() + " ports" + (deviceCount > 1 ? "s" : "") + " available." +
-                    (deviceCount == 0 || tgtNameIsName ? " Are the " + getCurrentApiName()  + " API and/or your Midi sw/hw running?" : ""));
+                    (deviceCount == 0 || tgtNameIsName ? " Are the " + getCurrentApiName() + " API and/or your Midi sw/hw running?" : ""));
             return null;
         }
 
@@ -387,7 +371,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
             }
 
             /* Remove current device and its target from the list to minimise the temptation of doing a midi loop
-            * (this has also been done in the connect method to avoid auto connection */
+             * (this has also been done in the connect method to avoid auto connection */
             if (tgtNameIsName(i)) {
                 continue;
             }
@@ -409,6 +393,10 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      *
      */
     public void closeDevice() {
+        if (rtMidiDevice == null) {
+            throw new MidiException("This device is null and can't be closed.");
+        }
+
         lib.rtmidi_close_port(rtMidiDevice);
         logger.info(getDeviceClassName() + "(" + getDeviceName() + ") " + "device ... closed");
     }

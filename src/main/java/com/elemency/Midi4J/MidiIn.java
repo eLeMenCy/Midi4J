@@ -1,11 +1,14 @@
 package com.elemency.Midi4J;
 
-import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.examples.App;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
-import com.sun.jna.*;
+import com.sun.jna.Callback;
+import com.sun.jna.CallbackThreadInitializer;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +17,26 @@ import java.nio.ByteBuffer;
 public class MidiIn extends MidiDeviceMgr {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
     private App app = null;
+    /**
+     * Midi In raw callback implementation.
+     *
+     * @param timeStamp     The time at which the message has been received.
+     * @param message       The midi message.
+     * @param messageSize   Size of the Midi message.
+     * @param userData      Additional user data.
+     */
+    public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
 
+        try {
+            /* Create a new MidiMessage (based on incoming native raw data) and
+            sends it to our application. */
+            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
+            this.app.processMidiInMessage(timeStamp, midiMessage, userData);
+
+        } catch (MidiException | NullPointerException me) {
+            me.printStackTrace();
+        }
+    };
 
     public MidiIn() {
 
@@ -33,7 +55,7 @@ public class MidiIn extends MidiDeviceMgr {
 
             // Remove the eventual semicolon from client name.
             // The semicolon is generally used as a separator between client and port name and id).
-            deviceName = deviceName.replaceAll(":"," ");
+            deviceName = deviceName.replaceAll(":", " ");
             super.deviceName = deviceName;
         }
         super.rtMidiDevice = create(api, super.deviceName, queueSizeLimit);
@@ -52,17 +74,15 @@ public class MidiIn extends MidiDeviceMgr {
 
     /**
      *
-     *
      */
     @Override
     public void free() {
-        try {
-            lib.rtmidi_in_free(rtMidiDevice);
-            if (rtMidiDevice.ok == 0) throw new MidiException();
-            logger.info(getDeviceClassName() + " memory ... freed");
-        } catch (Throwable throwable) {
-
+        if (rtMidiDevice == null) {
+            throw new MidiException("This IN device is null and its memory can't be freed.");
         }
+
+        lib.rtmidi_in_free(rtMidiDevice);
+        logger.info(getDeviceClassName() + " memory ... freed");
     }
 
     /**
@@ -70,6 +90,10 @@ public class MidiIn extends MidiDeviceMgr {
      */
     @Override
     public int getCurrentApiId() {
+        if (rtMidiDevice == null) {
+            throw new MidiException("This IN device is null - can't find out about its Api ID.");
+        }
+
         return lib.rtmidi_in_get_current_api(rtMidiDevice);
     }
 
@@ -78,15 +102,17 @@ public class MidiIn extends MidiDeviceMgr {
      */
     private RtMidiDevice create(int api, String clientName, int queueSizeLimit)/* throws MidiException*/ {
 
-        RtMidiDevice midiDevice = lib.rtmidi_in_create(api, clientName, queueSizeLimit);
-        return midiDevice;
+        return lib.rtmidi_in_create(api, clientName, queueSizeLimit);
     }
-
 
     /**
      *
      */
     public boolean setCallback(MidiInCallback callback, String threadName, Pointer userData) /*throws Exception*/ {
+
+        if (rtMidiDevice == null) {
+            throw new MidiException("This IN device is null - can't set its callback.");
+        }
 
         /**
          * The CallbackThreadInitializer ensures that the VM doesn't generate multiple Java Threads for the same
@@ -106,6 +132,11 @@ public class MidiIn extends MidiDeviceMgr {
      *
      */
     public boolean cancelCallback() {
+
+        if (rtMidiDevice == null) {
+            throw new MidiException("This IN device is null - can't cancel is callback.");
+        }
+
         logger.info("Cancelling IN callback...");
         lib.rtmidi_in_cancel_callback(rtMidiDevice);
 //        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
@@ -116,6 +147,11 @@ public class MidiIn extends MidiDeviceMgr {
      *
      */
     public void ignoreTypes(byte midiSysex, byte midiTime, byte midiSense) {
+
+        if (rtMidiDevice == null) {
+            throw new MidiException("This IN device is null - can't filter its incoming event types.");
+        }
+
         lib.rtmidi_in_ignore_types(rtMidiDevice, midiSysex, midiTime, midiSense);
     }
 
@@ -123,6 +159,11 @@ public class MidiIn extends MidiDeviceMgr {
      *
      */
     public double getMessage(ByteBuffer message, NativeSizeByReference size) {
+
+        if (rtMidiDevice == null) {
+            throw new MidiException("This IN device is null - can't poll raw midi messages.");
+        }
+
         double midiMessage = lib.rtmidi_in_get_message(rtMidiDevice, message, size);
 //        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
         return midiMessage;
@@ -143,28 +184,4 @@ public class MidiIn extends MidiDeviceMgr {
          */
         void process(double timeStamp, Pointer message, NativeSize messageSize, Pointer userData);
     }
-
-    /**
-     * Midi In raw callback implementation.
-     *
-     * @param timeStamp     The time at which the message has been received.
-     * @param message       The midi message.
-     * @param messageSize   Size of the Midi message.
-     * @param userData      Additional user data.
-     */
-    public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
-
-        try {
-            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
-
-            // Send our MidiMessage (based on incoming raw data) to our application.
-            this.app.processMidiInMessage(timeStamp, midiMessage, userData);
-
-        } catch (MidiException me) {
-            logger.error(me.getMessage());
-
-        } catch (NullPointerException npe) {
-            logger.error(String.valueOf(npe) + ": Native Midi message can't be null");
-        }
-    };
 }

@@ -25,7 +25,7 @@ public class Misc {
         String result = text;
 
         int index = getSymbolIndex(text);
-        text.replaceFirst("([^A-Za-z0-9])"," ");
+        text.replaceFirst("([^A-Za-z0-9])", " ");
 
         return result;
     }

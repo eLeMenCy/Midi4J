@@ -13,6 +13,34 @@ public class RtMidi {
     private final Logger logger = LoggerFactory.getLogger(MidiDeviceMgr.class);
 
     /**
+     *
+     */
+    public int getAvailableApis(IntBuffer apis, int apis_size) {
+        return lib.rtmidi_get_compiled_api(apis, apis_size);
+    }
+
+    /**
+     *
+     */
+    public String getApiName(int api) {
+        return lib.rtmidi_api_name(api);
+    }
+
+    /**
+     *
+     */
+    public String getApiLabel(int api) {
+        return lib.rtmidi_api_display_name(api);
+    }
+
+    /**
+     *
+     */
+    public int getCompiledApiByName(String name) {
+        return lib.rtmidi_compiled_api_by_name(name);
+    }
+
+    /**
      * MIDI API specifier arguments.  See ref: RtMidi::Api.<br>
      * <i>native declaration : RtMidi/rtmidi_c.h:62</i><br>
      * enum values
@@ -75,33 +103,5 @@ public class RtMidi {
         public int getIntValue() {
             return value;
         }
-    }
-
-    /**
-     *
-     */
-    public int getAvailableApis(IntBuffer apis, int apis_size) {
-        return lib.rtmidi_get_compiled_api(apis, apis_size);
-    }
-
-    /**
-     *
-     */
-    public String getApiName(int api) {
-        return lib.rtmidi_api_name(api);
-    }
-
-    /**
-     *
-     */
-    public String getApiLabel(int api) {
-        return lib.rtmidi_api_display_name(api);
-    }
-
-    /**
-     *
-     */
-    public int getCompiledApiByName(String name) {
-        return lib.rtmidi_compiled_api_by_name(name);
     }
 }

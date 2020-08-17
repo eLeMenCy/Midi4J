@@ -22,7 +22,7 @@ public class MidiDevice {
     private String deviceName = "--";
     private String portName = "--";
     private String portType = "--";
-    
+
     private String targetPortId = "--";
     private String targetPortName = "--";
     private String targetPortType = "--";
@@ -91,12 +91,24 @@ public class MidiDevice {
         return isConnected;
     }
 
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
+
     public String getDeviceName() {
         return deviceName;
     }
 
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
     public String getPortName() {
         return portName;
+    }
+
+    public void setPortName(String portName) {
+        this.portName = portName;
     }
 
     public String getMidiDeviceId() {
@@ -121,18 +133,6 @@ public class MidiDevice {
 
     public String getTargetPortName() {
         return targetPortName;
-    }
-
-    public void setConnected(boolean connected) {
-        isConnected = connected;
-    }
-
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
-    }
-
-    public void setPortName(String portName) {
-        this.portName = portName;
     }
 
 //    public String getCtdDeviceId() {

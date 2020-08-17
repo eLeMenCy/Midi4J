@@ -3,50 +3,7 @@ package com.elemency.Midi4J;
 public class SmpteTimecode {
     private static long startTime = 0;
 
-
-    public enum SmpteTimecodeType {
     /**
-     * 24 fps
-     * 25 fps
-     * 30 Drop fps
-     * 30 fps
-     */
-
-        /**
-         *
-         *
-         */
-        SMPTE_24_FPS (0),
-
-        /**
-         *
-         *
-         */
-        SMPTE_25_FPS (1),
-
-        /**
-         *
-         *
-         */
-        SMPTE_30_DROP_FPS (2),
-
-        /**
-         *
-         *
-         */
-        SMPTE_30_FPS (3);
-
-        int value;
-
-        SmpteTimecodeType(int value) {
-            this.value = value;
-        }
-
-        public int getIntValue() { return value; }
-    }
-
-    /**
-     *
      * @param time
      * @return
      */
@@ -59,7 +16,7 @@ public class SmpteTimecode {
         int seconds = ((int) time) % 60;
         int millis = ((int) (time * 1000.0)) % 1000;
 
-        return String.format("%02d:%02d:%02d:%03d - ",hours, minutes, seconds, millis);
+        return String.format("%02d:%02d:%02d:%03d - ", hours, minutes, seconds, millis);
     }
 
     /**
@@ -70,7 +27,6 @@ public class SmpteTimecode {
     }
 
     /**
-     *
      * @return
      */
     public static long getElapsedTimeSinceStartTime() {
@@ -78,10 +34,48 @@ public class SmpteTimecode {
     }
 
     /**
-     *
      * @return
      */
     public static long getStartTime() {
         return startTime;
+    }
+
+    public enum SmpteTimecodeType {
+        /**
+         * 24 fps
+         * 25 fps
+         * 30 Drop fps
+         * 30 fps
+         */
+
+        /**
+         *
+         */
+        SMPTE_24_FPS(0),
+
+        /**
+         *
+         */
+        SMPTE_25_FPS(1),
+
+        /**
+         *
+         */
+        SMPTE_30_DROP_FPS(2),
+
+        /**
+         *
+         */
+        SMPTE_30_FPS(3);
+
+        int value;
+
+        SmpteTimecodeType(int value) {
+            this.value = value;
+        }
+
+        public int getIntValue() {
+            return value;
+        }
     }
 }

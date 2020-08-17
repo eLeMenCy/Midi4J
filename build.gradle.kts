@@ -57,6 +57,7 @@ dependencies {
     implementation("net.java.dev.jna:jna:5.5.0")
     //implementation("com.google.guava:guava:29.0-jre")
     implementation("junit:junit:4.12")
+    implementation("org.jetbrains:annotations:16.0.2")
 
     // Use JUnit test framework
     testImplementation("junit:junit:4.12")

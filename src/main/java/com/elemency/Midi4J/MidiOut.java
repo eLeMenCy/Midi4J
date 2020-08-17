@@ -1,7 +1,7 @@
 package com.elemency.Midi4J;
 
-import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ public class MidiOut extends MidiDeviceMgr {
 
             // Remove the eventual semicolon form client name.
             // The semicolon is generally used as a separator between client and port name and id).
-            deviceName = deviceName.replaceAll(":"," ");
+            deviceName = deviceName.replaceAll(":", " ");
             super.deviceName = deviceName;
         }
         super.rtMidiDevice = create(api, deviceName);
@@ -38,13 +38,16 @@ public class MidiOut extends MidiDeviceMgr {
 
     /**
      *
-     *
      */
     @Override
     public void free() {
+        if (rtMidiDevice == null) {
+            throw new MidiException("This OUT device is null and its memory can't be freed.");
+        }
+
         try {
             lib.rtmidi_out_free(rtMidiDevice);
-            if (rtMidiDevice.ok == 0) throw new MidiException();
+            if (rtMidiDevice.ok == 0) throw new MidiException("");
             logger.info(getDeviceClassName() + " memory ... freed");
         } catch (Throwable throwable) {
 
@@ -56,6 +59,10 @@ public class MidiOut extends MidiDeviceMgr {
      */
     @Override
     public int getCurrentApiId() {
+
+        if (rtMidiDevice == null) {
+            throw new MidiException("This OUT device is null - can't find out about its Api ID.");
+        }
         return lib.rtmidi_out_get_current_api(rtMidiDevice);
     }
 
@@ -63,24 +70,19 @@ public class MidiOut extends MidiDeviceMgr {
      *
      */
     private RtMidiDevice create(int api, String clientName) {
-        RtMidiDevice midiDevice = lib.rtmidi_out_create(api, clientName);
-//        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
-        return midiDevice;
+
+        return lib.rtmidi_out_create(api, clientName);
     }
 
     /**
      *
      */
     public int sendMessage(byte[] message, int length) {
-        int result = 0;
+        if (rtMidiDevice == null) {
+            throw new MidiException("This OUT device is null and - send messages.");
+        }
 
-        if (rtMidiDevice.ok != 0) {
-            result = lib.rtmidi_out_send_message(rtMidiDevice, message, length);
-        }
-        else {
-            System.out.println("No out device found - Received data cannot be sent!");
-        }
-        return result;
+        return lib.rtmidi_out_send_message(rtMidiDevice, message, length);
     }
 
     /**
@@ -88,18 +90,10 @@ public class MidiOut extends MidiDeviceMgr {
      */
     public int sendMessage(MidiMessage midiMessage) {
 
-        int result = 0;
+        if (rtMidiDevice == null) {
+            throw new MidiException("This OUT device is null - can't send messages.");
+        }
 
-        if (rtMidiDevice.ok != 0) {
-            try {
-                result = lib.rtmidi_out_send_message(rtMidiDevice, midiMessage.getMidiData(), midiMessage.getMidiDataSize());
-            } catch (MidiException me) {
-                me.getMessage();
-            }
-        }
-        else {
-            System.out.println("No out device found - Received data cannot be sent!");
-        }
-        return result;
+        return lib.rtmidi_out_send_message(rtMidiDevice, midiMessage.getMidiData(), midiMessage.getMidiDataSize());
     }
 }
