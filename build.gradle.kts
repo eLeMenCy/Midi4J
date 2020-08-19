@@ -55,12 +55,20 @@ dependencies {
     implementation("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
     implementation("com.google.guava:guava:28.1-jre")
     implementation("net.java.dev.jna:jna:5.5.0")
-    //implementation("com.google.guava:guava:29.0-jre")
     implementation("junit:junit:4.12")
     implementation("org.jetbrains:annotations:16.0.2")
 
+
+//    implementation("com.google.guava:guava:29.0-jre")
+//    implementation("com.workable:error-handler:1.1.0")
+
     // Use JUnit test framework
-    testImplementation("junit:junit:4.12")
+//    testImplementation("junit:junit:4.12")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.3.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.3.1")
+
 }
 
 /********************************************************************************************
@@ -102,6 +110,10 @@ tasks {
 		        )
             )
         }
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 

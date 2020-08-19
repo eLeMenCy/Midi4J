@@ -102,12 +102,12 @@ public class App extends KeepAppRunning {
                 this.midi4jIn.listTargetDevices();
                 this.midi4jOut.listTargetDevices();
 
-                System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
+//                System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
                 midi4jIn.setDeviceName("tt");
                 System.out.println(midi4jIn.getDeviceName());
                 midi4jIn.setPortName("Huuuuh");
                 System.out.println(midi4jIn.getPortName());
-                System.out.println(midi4jIn.getTargetPortName(-2));
+//                System.out.println(midi4jIn.getTargetPortName(-2));
 
 
                 MidiMessage m1 = new MidiMessage(MidiMessage.createStatusByte(0x78, 1), 0);
@@ -141,11 +141,23 @@ public class App extends KeepAppRunning {
                 m6 = m6.withTimeStamp(6);
                 logger.info(m6.getDescription() + " timeStamp: " + m6.getTimeStamp());
 
+//                try {
                 // Native message Test
                 Pointer test = null;
                 NativeSize testSize = new NativeSize(0);
                 MidiMessage tc = new MidiMessage(test, testSize, 0);
                 logger.info(tc.getDescription());
+//                } catch(AppException e) {
+//
+//                    System.out.println("AppException::notifyUser(lookupErrorText():" + e);
+//                    System.out.println("AppException::notifyNonUsers(e):" + e);
+//
+//                } catch(Throwable t) {
+//
+//                    System.out.println("Throwable::notifyUser(lookupErrorText():" + t);
+//                    System.out.println("Throwable::notifyNonUsers(e):" + t);
+//                }
+
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();
             }

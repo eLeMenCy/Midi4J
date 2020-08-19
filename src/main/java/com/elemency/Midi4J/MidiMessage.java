@@ -15,12 +15,14 @@ public class MidiMessage implements Cloneable {
     private byte[] midiData;
     private double timeStamp = 0;
 
+    public MidiMessage() {
+    }
 
     /**
      * Creates a 3-byte short midi message.
      *
-     * @param byte0
-     * @param byte1
+     * @param byte0 Status byte (Status + Channel)
+     * @param byte1 Note Number
      * @param byte2
      * @param timeStamp
      */
@@ -28,8 +30,12 @@ public class MidiMessage implements Cloneable {
         midiDataSize = 3;
         this.timeStamp = timeStamp;
 
+        if (checkMessageLength(byte0) != 3) {
+            throw new MidiException("Status byte provided doesn't correspond to a 3 bytes midi message" + Integer.toHexString(byte0).toUpperCase());
+        }
+
         if (byte0 >= 0xF0) {
-            throw new MidiException("The Status of a 3 byte short message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
+            throw new MidiException("The Status of a 3 bytes message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
         }
 
         midiData = new byte[midiDataSize];
@@ -49,8 +55,12 @@ public class MidiMessage implements Cloneable {
         midiDataSize = 2;
         this.timeStamp = timeStamp;
 
+        if (checkMessageLength(byte0) != 2) {
+            throw new MidiException("Status byte provided doesn't correspond to a 2 bytes midi message" + Integer.toHexString(byte0).toUpperCase());
+        }
+
         if (byte0 >= 0xF0) {
-            throw new MidiException("The Status of a 2 byte short message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
+            throw new MidiException("The Status of a 2 bytes message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
         }
 
         midiData = new byte[this.midiDataSize];
@@ -68,8 +78,8 @@ public class MidiMessage implements Cloneable {
         midiDataSize = 1;
         this.timeStamp = timeStamp;
 
-        if (byte0 >= 0xF0) {
-            throw new MidiException("The Status of a 1 byte short message should be < 0xF0: 0x" + Integer.toHexString(byte0).toUpperCase());
+        if (checkMessageLength(byte0) != 1) {
+            throw new MidiException("Status byte provided doesn't correspond to a 1 byte midi message" + Integer.toHexString(byte0).toUpperCase());
         }
 
         midiData = new byte[this.midiDataSize];
@@ -107,24 +117,73 @@ public class MidiMessage implements Cloneable {
      */
     public MidiMessage(@NotNull Pointer midiData,
                        @NotNull NativeSize midiDataSize,
-                       double timeStamp) {
+                       double timeStamp)
+    {
         this.midiDataSize = midiDataSize.intValue();
         this.timeStamp = timeStamp;
 
 //        this.midiDataSize = 0;
 //        midiData = null;
 
-        if (midiData == null)
+        if (midiData == null) {
+//            AppException exception = new AppException();
+//            ErrorInfo info = exception.addInfo();
+//
+//            // Error Information Gathering
+//            info.setErrorId("MidiDataNativeNull");
+//            info.setContextId("MidiMessage");
+//
+//            info.setErrorType(ErrorType.CLIENT);
+//            info.setSeverity(ErrorLevel.ERROR);
+//
+//            info.setErrorDescription("The native midiData array was null.");
+//            info.setErrorCorrection("Make sure midiData parameter is not null.");
+//
+//            // Throw exception
+//            throw exception;
             throw new NullPointerException("A native Midi Message can't be null.");
+        }
 
-        if (this.midiDataSize < 1)
+        if (this.midiDataSize < 1) {
+//            AppException exception = new AppException();
+//            ErrorInfo info = exception.addInfo();
+//
+//            // Error Information Gathering
+//            info.setErrorId("midiData Null");
+//            info.setContextId("Midi Message");
+//
+//            info.setErrorType(ErrorType.CLIENT);
+//            info.setSeverity(ErrorLevel.ERROR);
+//
+//            info.setErrorDescription("The native data size was < 1");
+//            info.setErrorCorrection("Make sure native data size parameter is > 0.");
+//
+//            // Throw exception
+//            throw exception;
             throw new MidiException("A native Midi Message size should be > 0.");
+        }
 
         // Byte array to receive the event from native pointer.
         this.midiData = new byte[this.midiDataSize];
 
         // Read native memory data into our data byte array.
         midiData.read(0, this.midiData, 0, this.midiDataSize);
+    }
+
+    public static int checkMessageLength(int byte0) {
+        int cmd = byte0 & 0xFF;
+
+        int length = -1;
+
+        if (cmd >= 0x80 && cmd <= 0xBF || cmd >= 0xE0 && cmd <= 0xEF || cmd == 0xF2) {
+            length = 3;
+        } else if (cmd >= 0xC0 && cmd <= 0xDF || cmd == 0xF3 || cmd == 0xF5) {
+            length = 2;
+        } else if (cmd != 0xF0 && cmd != 0xF7){
+            length = 1;
+        }
+
+        return length;
     }
 
     /**
@@ -140,7 +199,8 @@ public class MidiMessage implements Cloneable {
     public static String getMidiNoteName(int noteNumber,
                                          boolean useSharps,
                                          boolean includeOctaveNumber,
-                                         int octaveNumForMiddleC) {
+                                         int octaveNumForMiddleC)
+    {
         String[] sharpNoteNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
         String[] flatNoteNames = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
 
@@ -163,6 +223,10 @@ public class MidiMessage implements Cloneable {
     public static MidiMessage createSysExMessage(byte[] sysexData, int dataSize, double timeStamp) {
         if (dataSize < 1) {
             throw new MidiException("A Sysex midi Message size should be > 0");
+        }
+
+        if (sysexData == null) {
+            throw new NullPointerException("A Sysex midi Message can't be null");
         }
 
         boolean headerExist = sysexData[0] == (byte) 0xF0;
@@ -214,6 +278,17 @@ public class MidiMessage implements Cloneable {
      */
     public static int createStatusByte(int command, int channel) {
         return ((command & 0xF0) | ((channel - 1) & 0x0F));
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getStatusByte() {
+        if (midiDataSize > 0 )
+            return (midiData[0] & 0xFF);
+
+        return 0;
     }
 
     /**
@@ -269,10 +344,11 @@ public class MidiMessage implements Cloneable {
      * the midi channel, in the range 1 to 16
      *
      * @param noteNumber the key number, 0 to 127
+     * @param timeStamp
      * @link isNoteOff
      */
-    public static MidiMessage noteOff(int channel, int noteNumber) {
-        return noteOff(channel, noteNumber, 0, 0);
+    public static MidiMessage noteOff(int channel, int noteNumber, double timeStamp) {
+        return noteOff(channel, noteNumber, 0, timeStamp);
     }
 
     /**
@@ -369,7 +445,7 @@ public class MidiMessage implements Cloneable {
      */
     public byte[] getMidiData() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't return it.");
+            throw new NullPointerException("midiData is 'null' - can't return it.");
         }
 
         return midiData;
@@ -395,7 +471,7 @@ public class MidiMessage implements Cloneable {
      */
     public String getDescription() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't return its description");
+            throw new NullPointerException("midiData is 'null' - can't return its description");
         }
 
         if (isNoteOn(false)) {
@@ -561,7 +637,7 @@ public class MidiMessage implements Cloneable {
         midiMessage = (MidiMessage) this.clone();
 
         if (midiMessage == null) {
-            throw new MidiException("Attempt to clone current midiMessage and change its timestamp failed.");
+            throw new NullPointerException("Attempt to clone current midiMessage and change its timestamp failed.");
         }
 
         midiMessage.timeStamp = newTimestamp;
@@ -574,7 +650,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getChannel() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get the Channel number.");
+            throw new NullPointerException("midiData is 'null' - can't get the Channel number.");
         }
 
         if ((midiData[0] & 0xF0) == 0xF0) {
@@ -595,7 +671,7 @@ public class MidiMessage implements Cloneable {
         }
 
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't set the Channel to " + number);
+            throw new NullPointerException("midiData is 'null' - can't set the Channel to " + number);
         }
 
         midiData[0] = (byte) ((midiData[0] & 0xF0) | ((number - 1) & 0xF));
@@ -609,7 +685,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isForChannel(int number) {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if current message applies to channel " + number);
+            throw new NullPointerException("midiData is 'null' - can't check if current message applies to channel " + number);
         }
 
         return (midiData[0] & 0xF) + 1 == (number & 0xF);
@@ -622,7 +698,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isSysEx() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a SysEx.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a SysEx.");
         }
 
         return (midiData[0] & 0xF0) == 0xF0;
@@ -660,7 +736,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isNoteOn(boolean returnTrueForVelocity0) {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Note ON.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Note ON.");
         }
 
         return ((midiData[0] & 0xF0) == 0x90) && (returnTrueForVelocity0 || midiData[2] != 0);
@@ -675,7 +751,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isNoteOff(boolean returnTrueForNoteOnVelocity0) {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a NoteOFF.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a NoteOFF.");
         }
 
         return ((midiData[0] & 0xF0) == 0x80)
@@ -693,7 +769,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isNoteOnOrOff() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a NoteON or NoteOFF.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a NoteON or NoteOFF.");
         }
 
         return ((midiData[0] & 0xF0) == 0x90 || (midiData[0] & 0xF0) == 0x80);
@@ -709,7 +785,7 @@ public class MidiMessage implements Cloneable {
 //        midiData = null;
 
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get Note Number.");
+            throw new NullPointerException("midiData is 'null' - can't get Note Number.");
         }
 
         return midiData[1];
@@ -725,7 +801,7 @@ public class MidiMessage implements Cloneable {
         int result = -1;
 
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't set a new note number.");
+            throw new NullPointerException("midiData is 'null' - can't set a new note number.");
         }
 
         if (isNoteOnOrOff() || isPolyAftertouch() || isChannelPressure())
@@ -739,7 +815,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getVelocity() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get Velocity.");
+            throw new NullPointerException("midiData is 'null' - can't get Velocity.");
         }
 
         if (isNoteOnOrOff())
@@ -755,7 +831,7 @@ public class MidiMessage implements Cloneable {
      */
     public void setVelocity(float newVelocity) {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't set a new velocity.");
+            throw new NullPointerException("midiData is 'null' - can't set a new velocity.");
         }
 
         if (isNoteOnOrOff())
@@ -787,7 +863,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isSustainPedalOn() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Sustain Pedal ON.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Sustain Pedal ON.");
         }
 
         return isControllerOfType(0x40) && midiData[2] >= 64;
@@ -801,7 +877,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isSustainPedalOff() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Sustain Pedal OFF.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Sustain Pedal OFF.");
         }
 
         return isControllerOfType(0x40) && midiData[2] < 64;
@@ -815,7 +891,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isSostenutoPedalOn() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Sostenuto Pedal ON.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Sostenuto Pedal ON.");
         }
 
         return isControllerOfType(0x42) && midiData[2] >= 64;
@@ -829,7 +905,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isSostenutoPedalOff() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Sostenuto Pedal OFF.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Sostenuto Pedal OFF.");
         }
 
         return isControllerOfType(0x42) && midiData[2] < 64;
@@ -843,7 +919,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isSoftPedalOn() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Soft Pedal ON.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Soft Pedal ON.");
         }
 
         return isControllerOfType(0x43) && midiData[2] >= 64;
@@ -857,7 +933,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isSoftPedalOff() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Soft Pedal OFF.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Soft Pedal OFF.");
         }
 
         return isControllerOfType(0x43) && midiData[2] < 64;
@@ -871,7 +947,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isProgramChange() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Program Change.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Program Change.");
         }
 
         return (midiData[0] & 0xF0) == 0xC0;
@@ -885,7 +961,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getProgramChangeNumber() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get a Program Change number.");
+            throw new NullPointerException("midiData is 'null' - can't get a Program Change number.");
         }
 
         return midiData[1];
@@ -899,7 +975,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isPitchWheel() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Pitch Wheel");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Pitch Wheel");
         }
 
         return (midiData[0] & 0xF0) == 0xE0;
@@ -913,7 +989,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getPitchWheelValue() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get a Pitch Wheel value.");
+            throw new NullPointerException("midiData is 'null' - can't get a Pitch Wheel value.");
         }
 
         return midiData[1] | midiData[2] << 7;
@@ -927,7 +1003,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isChannelPressure() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Channel Pressure.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Channel Pressure.");
         }
 
         return ((midiData[0] & 0xF0) == 0xD0);
@@ -941,7 +1017,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getChannelPressureValue() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get a Channel Pressure value.");
+            throw new NullPointerException("midiData is 'null' - can't get a Channel Pressure value.");
         }
 
         if (isChannelPressure()) {
@@ -958,7 +1034,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isPolyAftertouch() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Poly After Touch.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Poly After Touch.");
         }
 
         return ((midiData[0] & 0xF0) == 0xA0);
@@ -972,7 +1048,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getPolyAftertouchValue() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get a Poly After Touch value.");
+            throw new NullPointerException("midiData is 'null' - can't get a Poly After Touch value.");
         }
 
         if (isPolyAftertouch()) {
@@ -989,7 +1065,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isController() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Controller.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Controller.");
         }
 
         return ((midiData[0] & 0xF0) == 0xB0);
@@ -1046,7 +1122,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getControllerNumber() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get a Controller number.");
+            throw new NullPointerException("midiData is 'null' - can't get a Controller number.");
         }
 
         return midiData[1];
@@ -1060,7 +1136,7 @@ public class MidiMessage implements Cloneable {
      */
     public int getControllerValue() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't get a Controller value.");
+            throw new NullPointerException("midiData is 'null' - can't get a Controller value.");
         }
 
         return midiData[2];
@@ -1075,7 +1151,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isControllerOfType(int controllerType) {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check type of Controller.");
+            throw new NullPointerException("midiData is 'null' - can't check type of Controller.");
         }
 
         return ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == controllerType);
@@ -1089,7 +1165,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isAllNotesOff() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is an All Note OFF");
+            throw new NullPointerException("midiData is 'null' - can't check if it is an All Note OFF");
         }
 
         return ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == 123);
@@ -1102,7 +1178,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isAllSoundOff() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is an All Sound OFF.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is an All Sound OFF.");
         }
 
         return (midiData[1] == 120) && ((midiData[0] & 0xF0) == 0xB0);
@@ -1115,7 +1191,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isResetAllControllers() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Reset All Controllers.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Reset All Controllers.");
         }
 
         return ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == 121);
@@ -1135,7 +1211,7 @@ public class MidiMessage implements Cloneable {
      */
     public boolean isMetaEvent() {
         if (midiData == null) {
-            throw new MidiException("midiData is 'null' - can't check if it is a Meta Event.");
+            throw new NullPointerException("midiData is 'null' - can't check if it is a Meta Event.");
         }
 
         return (midiData[0] & 0xFF) == 0xFF;

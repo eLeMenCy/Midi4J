@@ -61,7 +61,7 @@ public class MidiOut extends MidiDeviceMgr {
     public int getCurrentApiId() {
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This OUT device is null - can't find out about its Api ID.");
+            throw new NullPointerException("This OUT device is null - can't find out about its Api ID.");
         }
         return lib.rtmidi_out_get_current_api(rtMidiDevice);
     }
@@ -79,7 +79,7 @@ public class MidiOut extends MidiDeviceMgr {
      */
     public int sendMessage(byte[] message, int length) {
         if (rtMidiDevice == null) {
-            throw new MidiException("This OUT device is null and - send messages.");
+            throw new NullPointerException("This OUT device is null and - send messages.");
         }
 
         return lib.rtmidi_out_send_message(rtMidiDevice, message, length);
@@ -91,7 +91,7 @@ public class MidiOut extends MidiDeviceMgr {
     public int sendMessage(MidiMessage midiMessage) {
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This OUT device is null - can't send messages.");
+            throw new NullPointerException("This OUT device is null - can't send messages.");
         }
 
         return lib.rtmidi_out_send_message(rtMidiDevice, midiMessage.getMidiData(), midiMessage.getMidiDataSize());

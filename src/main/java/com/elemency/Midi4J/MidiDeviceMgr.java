@@ -107,7 +107,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      */
     public void setDeviceName(String deviceName) {
         if (rtMidiDevice == null) {
-            throw new MidiException("This device is null - name can't be changed.");
+            throw new NullPointerException("This device is null - name can't be changed.");
         }
 
         String name = deviceName;
@@ -132,7 +132,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      */
     public void setPortName(String portName) {
         if (rtMidiDevice == null) {
-            throw new MidiException("This device is null, can't set its port name.");
+            throw new NullPointerException("This device is null, can't set its port name.");
         }
 
         if (portName.isEmpty()) {
@@ -149,7 +149,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     public boolean isDeviceOpen() {
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This device is null, can't check if its opened status.");
+            throw new NullPointerException("This device is null, can't check if its opened status.");
         }
 
         return lib.rtmidi_is_port_open(rtMidiDevice);
@@ -169,7 +169,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     public boolean connect(String portName, int toPortId, boolean autoConnect) {
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This device is null, can't connect it to its target.");
+            throw new NullPointerException("This device is null, can't connect it to its target.");
         }
 
         int deviceCount = getDeviceCount();
@@ -241,7 +241,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      */
     public int getDeviceCount() {
         if (rtMidiDevice == null) {
-            throw new MidiException("This device is null, can't count its possible targets.");
+            throw new NullPointerException("This device is null, can't count its possible targets.");
         }
 
         return lib.rtmidi_get_port_count(rtMidiDevice);
@@ -261,7 +261,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This device is null, can't get its details.");
+            throw new NullPointerException("This device is null, can't get its details.");
         }
 
         Map<String, String> fullDeviceDetails = new LinkedHashMap<>();
@@ -394,7 +394,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      */
     public void closeDevice() {
         if (rtMidiDevice == null) {
-            throw new MidiException("This device is null and can't be closed.");
+            throw new NullPointerException("This device is null and can't be closed.");
         }
 
         lib.rtmidi_close_port(rtMidiDevice);

@@ -134,7 +134,7 @@ public class MidiIn extends MidiDeviceMgr {
     public boolean cancelCallback() {
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This IN device is null - can't cancel is callback.");
+            throw new NullPointerException("This IN device is null - can't cancel is callback.");
         }
 
         logger.info("Cancelling IN callback...");
@@ -149,7 +149,7 @@ public class MidiIn extends MidiDeviceMgr {
     public void ignoreTypes(byte midiSysex, byte midiTime, byte midiSense) {
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This IN device is null - can't filter its incoming event types.");
+            throw new NullPointerException("This IN device is null - can't filter its incoming event types.");
         }
 
         lib.rtmidi_in_ignore_types(rtMidiDevice, midiSysex, midiTime, midiSense);
@@ -161,7 +161,7 @@ public class MidiIn extends MidiDeviceMgr {
     public double getMessage(ByteBuffer message, NativeSizeByReference size) {
 
         if (rtMidiDevice == null) {
-            throw new MidiException("This IN device is null - can't poll raw midi messages.");
+            throw new NullPointerException("This IN device is null - can't poll raw midi messages.");
         }
 
         double midiMessage = lib.rtmidi_in_get_message(rtMidiDevice, message, size);
