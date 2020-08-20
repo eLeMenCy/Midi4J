@@ -6,9 +6,7 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 
 //TODO: Merge the MidiDevice CLass with this one and then delete MidiDevice.
@@ -266,7 +264,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
         Map<String, String> fullDeviceDetails = new LinkedHashMap<>();
 
-        fullDeviceDetails.put("midiDeviceId", Integer.toString(portId));
         fullDeviceDetails.put("apiName", getCurrentApiName());
         fullDeviceDetails.put("targetPortType", getTargetDeviceType());
 
@@ -335,7 +332,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     /**
      * @return
      */
-    public Map<String, MidiDevice> listTargetDevices() {
+    public List<Map<String, String>> listTargetDevices() {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // | midiDeviceId | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
@@ -357,7 +354,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
         }
 
         // Build our device map.
-        Map<String, MidiDevice> midiDevices = new HashMap<>();
+        List<Map<String, String>> midiDevices = new ArrayList<>();
         for (int i = 0; i < deviceCount; i++) {
 
             Map<String, String> fullDeviceDetails = getFullDeviceDetails(i);
@@ -376,7 +373,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
                 continue;
             }
 
-            midiDevices.put(fullDeviceDetails.get("targetDeviceName"), new MidiDevice(rtMidiDevice, fullDeviceDetails));
+            midiDevices.add(fullDeviceDetails);
             logger.info(logMsg.toString());
         }
 

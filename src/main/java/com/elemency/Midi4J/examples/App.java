@@ -10,9 +10,7 @@ import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 //TODO: get all command tes here and use them in the junit test.
 
@@ -80,10 +78,12 @@ public class App extends KeepAppRunning {
                 System.out.println("Out device count: " + this.midi4jIn.getDeviceCount());
                 System.out.println("In device count: " + this.midi4jOut.getDeviceCount());
 
-                this.midi4jIn.listTargetDevices();
+                // List all available compatible Alsa Out device.
+                List<Map<String, String>> outDevices = this.midi4jIn.listTargetDevices();
                 this.midi4jIn.connect("IN", 2, true);
 
-                this.midi4jOut.listTargetDevices();
+                // List all available compatible Jack In device.
+                List<Map<String, String>> inDevices = this.midi4jOut.listTargetDevices();
                 this.midi4jOut.connect("OUT", 1, true);
 
                 System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getDeviceName());
@@ -99,8 +99,8 @@ public class App extends KeepAppRunning {
                 System.out.println("--------------------------------------------");
 
 
-                this.midi4jIn.listTargetDevices();
-                this.midi4jOut.listTargetDevices();
+                outDevices = this.midi4jIn.listTargetDevices();
+                inDevices = this.midi4jOut.listTargetDevices();
 
 //                System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
                 midi4jIn.setDeviceName("tt");
