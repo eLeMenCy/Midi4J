@@ -181,7 +181,7 @@ public class App extends KeepAppRunning {
                         e.printStackTrace();
                     }
 
-                    tmp.setVelocity(0);
+                    tmp.setFloatVelocity(0);
                     midi4jOut.sendMessage(tmp);
                     logger.info(tmp.getDescription());
                 }

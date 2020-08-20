@@ -356,10 +356,11 @@ public class MidiMessage implements Cloneable {
      *
      * @param channel       the midi channel, in the range 1 to 16
      * @param programNumber the midi program number, 0 to 127
+     * @param timeStamp
      * @link isProgramChange, getGMInstrumentName
      */
-    static MidiMessage programChange(int channel, int programNumber) {
-        return new MidiMessage(createStatusByte(0xC0, channel), programNumber & 0x7F);
+    static MidiMessage programChange(int channel, int programNumber, double timeStamp) {
+        return new MidiMessage(createStatusByte(0xC0, channel), programNumber & 0x7F, 0);
     }
 
     /**
@@ -367,9 +368,10 @@ public class MidiMessage implements Cloneable {
      *
      * @param channel  the midi channel, in the range 1 to 16
      * @param position the wheel position, in the range 0 to 16383
+     * @param timeStamp
      * @link isPitchWheel
      */
-    static MidiMessage pitchWheel(int channel, int position) {
+    static MidiMessage pitchWheel(int channel, int position, double timeStamp) {
         return new MidiMessage(createStatusByte(0xE0, channel), position & 127, (position >> 7) & 127, 0);
     }
 
@@ -378,9 +380,10 @@ public class MidiMessage implements Cloneable {
      *
      * @param channel  the midi channel: 1 to 16
      * @param pressure the pressure, 0 to 127
+     * @param timeStamp
      * @link isChannelPressure
      */
-    static MidiMessage channelPressureChange(int channel, int pressure) {
+    static MidiMessage channelPressureChange(int channel, int pressure, double timeStamp) {
         return new MidiMessage(createStatusByte(0xD0, channel), pressure & 0x7F, 0);
     }
 
@@ -390,10 +393,11 @@ public class MidiMessage implements Cloneable {
      * @param channel          the midi channel, in the range 1 to 16
      * @param noteNumber       the key number, 0 to 127
      * @param aftertouchAmount the amount of aftertouch, 0 to 127
+     * @param timeStamp
      * @link isAftertouch
      */
-    static MidiMessage aftertouchChange(int channel, int noteNumber, int aftertouchAmount) {
-        return new MidiMessage(createStatusByte(0xA0, channel), noteNumber & 0x7F, aftertouchAmount & 0x7F);
+    static MidiMessage aftertouchChange(int channel, int noteNumber, int aftertouchAmount, double timeStamp) {
+        return new MidiMessage(createStatusByte(0xA0, channel), noteNumber & 0x7F, aftertouchAmount & 0x7F, 0);
     }
 
     /**
@@ -402,9 +406,10 @@ public class MidiMessage implements Cloneable {
      * @param channel        the midi channel, in the range 1 to 16
      * @param controllerType the type of controller
      * @param value          the controller value
+     * @param timeStamp
      * @link isController
      */
-    static MidiMessage controllerEvent(int channel, int controllerType, int value) {
+    static MidiMessage controllerEvent(int channel, int controllerType, int value, double timeStamp) {
         return new MidiMessage(createStatusByte(0xB0, channel), (controllerType & 127), (value & 127), 0);
     }
 
@@ -415,7 +420,7 @@ public class MidiMessage implements Cloneable {
      * @link isAllNotesOff
      */
     public static MidiMessage allNotesOff(int channel) {
-        return controllerEvent(channel, 123, 0);
+        return controllerEvent(channel, 123, 0, 0);
     }
 
     /**
@@ -425,7 +430,7 @@ public class MidiMessage implements Cloneable {
      * @link isAllSoundOff
      */
     public static MidiMessage allSoundOff(int channel) {
-        return controllerEvent(channel, 120, 0);
+        return controllerEvent(channel, 120, 0, 0);
     }
 
     /**
@@ -435,7 +440,7 @@ public class MidiMessage implements Cloneable {
      * @link isResetAllControllers
      */
     public static MidiMessage allControllersOff(int channel) {
-        return controllerEvent(channel, 121, 0);
+        return controllerEvent(channel, 121, 0, 0);
     }
 
     /**
@@ -688,7 +693,7 @@ public class MidiMessage implements Cloneable {
             throw new NullPointerException("midiData is 'null' - can't check if current message applies to channel " + number);
         }
 
-        return (midiData[0] & 0xF) + 1 == (number & 0xF);
+        return (midiData[0] & 0xF) + 1 == number;
     }
 
     /**
@@ -829,7 +834,7 @@ public class MidiMessage implements Cloneable {
      *
      * @param newVelocity
      */
-    public void setVelocity(float newVelocity) {
+    public void setFloatVelocity(float newVelocity) {
         if (midiData == null) {
             throw new NullPointerException("midiData is 'null' - can't set a new velocity.");
         }
@@ -839,12 +844,26 @@ public class MidiMessage implements Cloneable {
     }
 
     /**
+     * Changes the velocity of a note-on or note-off message.
+     *
+     * @param newVelocity
+     */
+    public void setVelocity(int newVelocity) {
+        if (midiData == null) {
+            throw new NullPointerException("midiData is 'null' - can't set a new velocity.");
+        }
+
+        if (isNoteOnOrOff())
+            midiData[2] = (byte) newVelocity;
+    }
+
+    /**
      * Returns the velocity of a note-on or note-off message.
      *
      * @return
      */
     public float getFloatVelocity() {
-        return getVelocity() * (1.0f / 127.0f);
+        return (getVelocity() * 1.0f) / 127.0f;
     }
 
     /**
@@ -853,7 +872,7 @@ public class MidiMessage implements Cloneable {
      * @param scaleFactor
      */
     public void multiplyVelocity(float scaleFactor) {
-        setVelocity(getFloatVelocity() * scaleFactor);
+        setFloatVelocity(getFloatVelocity() * scaleFactor);
     }
 
     /**
@@ -1076,7 +1095,7 @@ public class MidiMessage implements Cloneable {
      * @param controllerNumber
      * @return
      */
-    private String getControllerName(int controllerNumber) {
+    public String getControllerName(int controllerNumber) {
         String[] ctrlNames = {
                 "Bank Select", "Modulation Wheel (coarse)", "Breath controller (coarse)",
                 "--",
