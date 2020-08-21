@@ -45,20 +45,20 @@ public class MidiIn extends MidiDeviceMgr {
     public MidiIn(App app) /*throws MidiException*/ {
         this.app = app;
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
-        super.rtMidiDevice = create(api, super.deviceName, 100);
+        super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
         setCallback(fromNative, "native", null);
     }
 
-    public MidiIn(int api, String deviceName, int queueSizeLimit, App app)/* throws MidiException*/ {
+    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, App app)/* throws MidiException*/ {
         this.app = app;
-        if (!deviceName.isEmpty()) {
+        if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon from client name.
             // The semicolon is generally used as a separator between client and port name and id).
-            deviceName = deviceName.replaceAll(":", " ");
-            super.deviceName = deviceName;
+            sourceDeviceName = sourceDeviceName.replaceAll(":", " ");
+            super.sourceDeviceName = sourceDeviceName;
         }
-        super.rtMidiDevice = create(api, super.deviceName, queueSizeLimit);
+        super.rtMidiDevice = create(api, super.sourceDeviceName, queueSizeLimit);
         setCallback(fromNative, "native", null);
     }
 
@@ -68,21 +68,21 @@ public class MidiIn extends MidiDeviceMgr {
     @Override
     public void close()/* throws MidiException*/ {
         cancelCallback();
-        closeDevice();
-        free();
+        closeSourceDevice();
+        freeMemory();
     }
 
     /**
      *
      */
     @Override
-    public void free() {
+    public void freeMemory() {
         if (rtMidiDevice == null) {
             throw new MidiException("This IN device is null and its memory can't be freed.");
         }
 
         lib.rtmidi_in_free(rtMidiDevice);
-        logger.info(getDeviceClassName() + " memory ... freed");
+        logger.info(getSourceDeviceClassName() + " memory ... freed");
     }
 
     /**
@@ -100,9 +100,9 @@ public class MidiIn extends MidiDeviceMgr {
     /**
      *
      */
-    private RtMidiDevice create(int api, String deviceName, int queueSizeLimit)/* throws MidiException*/ {
+    private RtMidiDevice create(int api, String sourceDeviceName, int queueSizeLimit)/* throws MidiException*/ {
 
-        return lib.rtmidi_in_create(api, deviceName, queueSizeLimit);
+        return lib.rtmidi_in_create(api, sourceDeviceName, queueSizeLimit);
     }
 
     /**

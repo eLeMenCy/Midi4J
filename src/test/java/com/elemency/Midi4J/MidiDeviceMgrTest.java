@@ -6,9 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class MidiDeviceMgrTest {
@@ -40,8 +37,8 @@ class MidiDeviceMgrTest {
 
     @Test
     void getDeviceClassName() {
-        assertEquals("MidiOut", midi4jOut.getDeviceClassName());
-        assertEquals("MidiIn", midi4jIn.getDeviceClassName());
+        assertEquals("MidiOut", midi4jOut.getSourceDeviceClassName());
+        assertEquals("MidiIn", midi4jIn.getSourceDeviceClassName());
     }
 
     @Test
@@ -52,8 +49,8 @@ class MidiDeviceMgrTest {
 
     @Test
     void getDeviceType() {
-        assertEquals("Out", midi4jOut.getDeviceType());
-        assertEquals("In", midi4jIn.getDeviceType());
+        assertEquals("Out", midi4jOut.getSourceDeviceType());
+        assertEquals("In", midi4jIn.getSourceDeviceType());
     }
 
     @Test
@@ -81,50 +78,50 @@ class MidiDeviceMgrTest {
 
     @Test
     void getDeviceName() {
-        assertEquals("Midi4J", midi4jOut.getDeviceName());
-        assertEquals("Midi4J", midi4jIn.getDeviceName());
+        assertEquals("Midi4J", midi4jOut.getSourceDeviceName());
+        assertEquals("Midi4J", midi4jIn.getSourceDeviceName());
     }
 
     @Test
     void setDeviceName() {
-        midi4jOut.setDeviceName("DeviceOUT");
-        midi4jIn.setDeviceName("DeviceIN");
-        assertEquals("DeviceOUT", midi4jOut.getDeviceName());
-        assertEquals("DeviceIN", midi4jIn.getDeviceName());
+        midi4jOut.setSourceDeviceName("DeviceOUT");
+        midi4jIn.setSourceDeviceName("DeviceIN");
+        assertEquals("DeviceOUT", midi4jOut.getSourceDeviceName());
+        assertEquals("DeviceIN", midi4jIn.getSourceDeviceName());
     }
 
     @Test
     void getPortName() {
-        midi4jOut.setPortName("");
-        midi4jIn.setPortName("");
-        assertEquals("OUT", midi4jOut.getPortName());
-        assertEquals("IN", midi4jIn.getPortName());
+        midi4jOut.setSourcePortName("");
+        midi4jIn.setSourcePortName("");
+        assertEquals("OUT", midi4jOut.getSourcePortName());
+        assertEquals("IN", midi4jIn.getSourcePortName());
 
-        midi4jOut.setPortName("PortOUT");
-        midi4jIn.setPortName("PortIN");
-        assertEquals("PortOUT", midi4jOut.getPortName());
-        assertEquals("PortIN", midi4jIn.getPortName());
+        midi4jOut.setSourcePortName("PortOUT");
+        midi4jIn.setSourcePortName("PortIN");
+        assertEquals("PortOUT", midi4jOut.getSourcePortName());
+        assertEquals("PortIN", midi4jIn.getSourcePortName());
     }
 
     @Test
     void setPortNameEmpty() {
-        midi4jOut.setPortName("");
-        midi4jIn.setPortName("");
-        assertEquals("OUT", midi4jOut.getPortName());
-        assertEquals("IN", midi4jIn.getPortName());
+        midi4jOut.setSourcePortName("");
+        midi4jIn.setSourcePortName("");
+        assertEquals("OUT", midi4jOut.getSourcePortName());
+        assertEquals("IN", midi4jIn.getSourcePortName());
     }
     @Test
     void setPortName() {
-        midi4jOut.setPortName("PortOUT");
-        midi4jIn.setPortName("PortIN");
-        assertEquals("PortOUT", midi4jOut.getPortName());
-        assertEquals("PortIN", midi4jIn.getPortName());
+        midi4jOut.setSourcePortName("PortOUT");
+        midi4jIn.setSourcePortName("PortIN");
+        assertEquals("PortOUT", midi4jOut.getSourcePortName());
+        assertEquals("PortIN", midi4jIn.getSourcePortName());
     }
 
     @Test
     void isDeviceOpen() {
-        assertFalse(midi4jOut.isDeviceOpen());
-        assertFalse(midi4jIn.isDeviceOpen());
+        assertFalse(midi4jOut.isSourceDeviceOpen());
+        assertFalse(midi4jIn.isSourceDeviceOpen());
     }
 
     @Test

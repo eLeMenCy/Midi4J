@@ -11,19 +11,19 @@ public class MidiOut extends MidiDeviceMgr {
 
     public MidiOut() {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
-        super.rtMidiDevice = create(api, super.deviceName);
+        super.rtMidiDevice = create(api, super.sourceDeviceName);
     }
 
-    public MidiOut(int api, String deviceName) {
+    public MidiOut(int api, String sourceDeviceName) {
 
-        if (!deviceName.isEmpty()) {
+        if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon form client name.
             // The semicolon is generally used as a separator between client and port name and id).
-            deviceName = deviceName.replaceAll(":", " ");
-            super.deviceName = deviceName;
+            sourceDeviceName = sourceDeviceName.replaceAll(":", " ");
+            super.sourceDeviceName = sourceDeviceName;
         }
-        super.rtMidiDevice = create(api, deviceName);
+        super.rtMidiDevice = create(api, sourceDeviceName);
     }
 
 
@@ -32,15 +32,15 @@ public class MidiOut extends MidiDeviceMgr {
      */
     @Override
     public void close() {
-        closeDevice();
-        free();
+        closeSourceDevice();
+        freeMemory();
     }
 
     /**
      *
      */
     @Override
-    public void free() {
+    public void freeMemory() {
         if (rtMidiDevice == null) {
             throw new MidiException("This OUT device is null and its memory can't be freed.");
         }
@@ -48,7 +48,7 @@ public class MidiOut extends MidiDeviceMgr {
         try {
             lib.rtmidi_out_free(rtMidiDevice);
             if (rtMidiDevice.ok == 0) throw new MidiException("");
-            logger.info(getDeviceClassName() + " memory ... freed");
+            logger.info(getSourceDeviceClassName() + " memory ... freed");
         } catch (Throwable throwable) {
 
         }
@@ -69,9 +69,9 @@ public class MidiOut extends MidiDeviceMgr {
     /**
      *
      */
-    private RtMidiDevice create(int api, String deviceName) {
+    private RtMidiDevice create(int api, String sourceDeviceName) {
 
-        return lib.rtmidi_out_create(api, deviceName);
+        return lib.rtmidi_out_create(api, sourceDeviceName);
     }
 
     /**

@@ -75,8 +75,8 @@ public class App extends KeepAppRunning {
                 this.midi4jIn = midi4jIn;
                 this.midi4jOut = midi4jOut;
 
-                System.out.println("Out device count: " + this.midi4jIn.getDeviceCount());
-                System.out.println("In device count: " + this.midi4jOut.getDeviceCount());
+                System.out.println("Out device count: " + this.midi4jIn.getTargetDeviceCount());
+                System.out.println("In device count: " + this.midi4jOut.getTargetDeviceCount());
 
                 // List all available compatible Alsa Out device.
                 List<Map<String, String>> outDevices = this.midi4jIn.listTargetDevices();
@@ -86,15 +86,19 @@ public class App extends KeepAppRunning {
                 List<Map<String, String>> inDevices = this.midi4jOut.listTargetDevices();
                 this.midi4jOut.connect("OUT", 1, true);
 
-                System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getDeviceName());
+                System.out.println("Out device count: " + this.midi4jIn.getTargetDeviceCount());
+                System.out.println("In device count: " + this.midi4jOut.getTargetDeviceCount());
+
+
+                System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getSourceDeviceName());
                 System.out.println("A possible target Device name is: " + this.midi4jIn.getTargetDeviceName(5));
                 System.out.println("and its Port name is: " + this.midi4jIn.getTargetPortName(5));
 
                 System.out.println("\nName of Out port id(" + 1 + ") is: " + this.midi4jIn.getTargetPortName(1));
                 System.out.println("Name of In port id(" + 0 + ") is: " + this.midi4jOut.getTargetPortName(0));
 
-                System.out.println("\nis midi4jIn device Open: " + midi4jIn.isDeviceOpen());
-                System.out.println("is midi4jOut device Open: " + midi4jOut.isDeviceOpen());
+                System.out.println("\nis midi4jIn device Open: " + midi4jIn.isSourceDeviceOpen());
+                System.out.println("is midi4jOut device Open: " + midi4jOut.isSourceDeviceOpen());
 
                 System.out.println("--------------------------------------------");
 
@@ -103,10 +107,10 @@ public class App extends KeepAppRunning {
                 inDevices = this.midi4jOut.listTargetDevices();
 
 //                System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
-                midi4jIn.setDeviceName("tt");
-                System.out.println(midi4jIn.getDeviceName());
-                midi4jIn.setPortName("Huuuuh");
-                System.out.println(midi4jIn.getPortName());
+                midi4jIn.setSourceDeviceName("tt");
+                System.out.println(midi4jIn.getSourceDeviceName());
+                midi4jIn.setSourcePortName("Huuuuh");
+                System.out.println(midi4jIn.getSourcePortName());
 //                System.out.println(midi4jIn.getTargetPortName(-2));
 
 
