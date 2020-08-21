@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 
-//TODO: Merge the MidiDevice CLass with this one and then delete MidiDevice.
-// Refactor all variable name other than those containing target to source
+//TODO: Refactor all device variable name other than those containing target to source
 // (i.e. deviceName -> sourceDeviceName, portName -> sourcePortName etc...)
 
 public abstract class MidiDeviceMgr implements AutoCloseable {
@@ -43,14 +42,14 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     /**
      *
      */
-    private String getTargetDeviceType() {
+    public String getTargetDeviceType() {
         return getDeviceClassName().equals("MidiIn") ? "Out" : "In";
     }
 
     /**
      * @return
      */
-    private String getDeviceType() {
+    public String getDeviceType() {
         return getDeviceClassName().equals("MidiIn") ? "In" : "Out";
     }
 
@@ -137,7 +136,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
             portName = getDeviceType().toUpperCase();
             logger.warn("A Port name can't be empty! It has been named '" + portName + "' (default port name)");
         }
-
+        this.portName = portName;
         lib.rtmidi_set_port_name(rtMidiDevice, portName);
     }
 

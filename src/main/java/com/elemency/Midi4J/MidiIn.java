@@ -100,9 +100,9 @@ public class MidiIn extends MidiDeviceMgr {
     /**
      *
      */
-    private RtMidiDevice create(int api, String clientName, int queueSizeLimit)/* throws MidiException*/ {
+    private RtMidiDevice create(int api, String deviceName, int queueSizeLimit)/* throws MidiException*/ {
 
-        return lib.rtmidi_in_create(api, clientName, queueSizeLimit);
+        return lib.rtmidi_in_create(api, deviceName, queueSizeLimit);
     }
 
     /**

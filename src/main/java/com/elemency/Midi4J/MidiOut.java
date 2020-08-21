@@ -69,9 +69,9 @@ public class MidiOut extends MidiDeviceMgr {
     /**
      *
      */
-    private RtMidiDevice create(int api, String clientName) {
+    private RtMidiDevice create(int api, String deviceName) {
 
-        return lib.rtmidi_out_create(api, clientName);
+        return lib.rtmidi_out_create(api, deviceName);
     }
 
     /**
