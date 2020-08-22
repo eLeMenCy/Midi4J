@@ -37,7 +37,7 @@ public class MidiOut extends MidiDeviceMgr {
     }
 
     /**
-     *
+     * Free the native memory used byt this source device instance.
      */
     @Override
     public void freeMemory() {
@@ -45,17 +45,15 @@ public class MidiOut extends MidiDeviceMgr {
             throw new MidiException("This OUT device is null and its memory can't be freed.");
         }
 
-        try {
-            lib.rtmidi_out_free(rtMidiDevice);
-            if (rtMidiDevice.ok == 0) throw new MidiException("");
-            logger.info(getSourceDeviceClassName() + " memory ... freed");
-        } catch (Throwable throwable) {
-
-        }
+        lib.rtmidi_out_free(rtMidiDevice);
+        if (rtMidiDevice.ok == 0) throw new MidiException("");
+        logger.info(getSourceDeviceClassName() + " memory ... freed");
     }
 
     /**
+     * Return the midi API name used by current device instance.
      *
+     * @return the midi API name used by current device instance.
      */
     @Override
     public int getCurrentApiId() {
@@ -67,7 +65,11 @@ public class MidiOut extends MidiDeviceMgr {
     }
 
     /**
+     * Create a new source midi OUT device based on selected midi api
      *
+     * @param api               chosen available api
+     * @param sourceDeviceName  name given to this new source midi device
+     * @return                  RtMidiDevice
      */
     private RtMidiDevice create(int api, String sourceDeviceName) {
 
@@ -75,7 +77,11 @@ public class MidiOut extends MidiDeviceMgr {
     }
 
     /**
+     * Send a midi message set into a byte[] to the driver
      *
+     * @param message   midi message as byte[] to be sent
+     * @param length    length of the midi message to be sent
+     * @return          int
      */
     public int sendMessage(byte[] message, int length) {
         if (rtMidiDevice == null) {
@@ -86,7 +92,10 @@ public class MidiOut extends MidiDeviceMgr {
     }
 
     /**
+     * Send a midi message set into MidiMessage instance to the driver
      *
+     * @param midiMessage   midi message to be sent
+     * @return              int
      */
     public int sendMessage(MidiMessage midiMessage) {
 

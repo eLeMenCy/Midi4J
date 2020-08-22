@@ -4,8 +4,9 @@ public class SmpteTimecode {
     private static long startTime = 0;
 
     /**
-     * @param time
-     * @return
+     * Get a microseconds time stamp converted and formatted to SMPTE timecode.
+     * @param time  time stamp to convert
+     * @return      String (i.e. 03:06:40:000 - )
      */
     public static String getTimecode(double time) {
 
@@ -20,26 +21,32 @@ public class SmpteTimecode {
     }
 
     /**
-     *
+     * Set the start time of the startime to current milliseconds.
      */
     public static void setStartTime() {
         startTime = System.currentTimeMillis();
     }
 
     /**
-     * @return
+     * get the time elapsed since start time.
+     * @return long
      */
     public static long getElapsedTimeSinceStartTime() {
         return System.currentTimeMillis() - startTime;
     }
 
     /**
-     * @return
+     * return the start time.
+     *
+     * @return long
      */
     public static long getStartTime() {
         return startTime;
     }
 
+    /**
+     * Frquently used SMPTE time rate.
+     */
     public enum SmpteTimecodeType {
         /**
          * 24 fps

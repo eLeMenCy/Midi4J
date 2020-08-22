@@ -17,13 +17,9 @@ import java.nio.ByteBuffer;
 public class MidiIn extends MidiDeviceMgr {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
     private App app = null;
+
     /**
-     * Midi In raw callback implementation.
-     *
-     * @param timeStamp     The time at which the message has been received.
-     * @param message       The midi message.
-     * @param messageSize   Size of the Midi message.
-     * @param userData      Additional user data.
+     * Midi In callback from native implementation.
      */
     public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
 
@@ -73,7 +69,7 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
-     *
+     * Free the native memory used byt this source device instance.
      */
     @Override
     public void freeMemory() {
@@ -98,7 +94,11 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
+     * Create a new source midi IN device based on selected midi api
      *
+     * @param api               chosen available api
+     * @param sourceDeviceName  name given to this new source midi device
+     * @return                  RtMidiDevice
      */
     private RtMidiDevice create(int api, String sourceDeviceName, int queueSizeLimit)/* throws MidiException*/ {
 
@@ -106,7 +106,12 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
+     * Set the midi in callback ready to receive midi message form the native driver.
      *
+     * @param callback      callback method name
+     * @param threadName    callback thread name - this appears in the log
+     * @param userData      user specific info from native
+     * @return              boolean
      */
     public boolean setCallback(MidiInCallback callback, String threadName, Pointer userData) /*throws Exception*/ {
 
@@ -129,7 +134,9 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
+     * Cancel the callback
      *
+     * @return boolean
      */
     public boolean cancelCallback() {
 
@@ -144,19 +151,28 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
+     * Filter out specific native midi messages.
+    /**
      *
+     * @param midiStatus    midi message status byte to filter out
+     * @param midiTime      midi message time to filter out
+     * @param midiSense     midi message sensing to filter out
      */
-    public void ignoreTypes(byte midiSysex, byte midiTime, byte midiSense) {
+    public void ignoreTypes(byte midiStatus, byte midiTime, byte midiSense) {
 
         if (rtMidiDevice == null) {
             throw new NullPointerException("This IN device is null - can't filter its incoming event types.");
         }
 
-        lib.rtmidi_in_ignore_types(rtMidiDevice, midiSysex, midiTime, midiSense);
+        lib.rtmidi_in_ignore_types(rtMidiDevice, midiStatus, midiTime, midiSense);
     }
 
     /**
+     * Get midi message from native via a polling loop instead of a callback.
      *
+     * @param message   ByteBuffer receiving the native raw midi message
+     * @param size      midi message size
+     * @return          time stamp
      */
     public double getMessage(ByteBuffer message, NativeSizeByReference size) {
 

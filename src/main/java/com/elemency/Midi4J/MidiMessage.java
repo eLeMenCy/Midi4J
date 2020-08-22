@@ -22,9 +22,9 @@ public class MidiMessage implements Cloneable {
      * Creates a 3-byte short midi message.
      *
      * @param byte0 Status byte (Status + Channel)
-     * @param byte1 Note Number
-     * @param byte2
-     * @param timeStamp
+     * @param byte1 data1 byte
+     * @param byte2 data2 byte
+     * @param timeStamp time stamp
      */
     public MidiMessage(int byte0, int byte1, int byte2, double timeStamp) {
         midiDataSize = 3;
@@ -47,9 +47,9 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a 2-byte short midi message.
      *
-     * @param byte0
-     * @param byte1
-     * @param timeStamp
+     * @param byte0 Status byte (Status + Channel)
+     * @param byte1 data1 byte
+     * @param timeStamp time stamp
      */
     public MidiMessage(int byte0, int byte1, double timeStamp) {
         midiDataSize = 2;
@@ -71,8 +71,8 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a 1-byte short midi message.
      *
-     * @param byte0
-     * @param timeStamp
+     * @param byte0 Status byte (Status + Channel)
+     * @param timeStamp time stamp
      */
     public MidiMessage(int byte0, double timeStamp) {
         midiDataSize = 1;
@@ -89,9 +89,9 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a midi message from a block of data.
      *
-     * @param midiData
-     * @param datasize
-     * @param timeStamp
+     * @param midiData  midi message set in a byte[]
+     * @param datasize  midi message size
+     * @param timeStamp time stamp
      */
     public MidiMessage(byte[] midiData, int datasize, double timeStamp) {
         midiDataSize = datasize;
@@ -111,9 +111,9 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a midi message from a native jna block of data.
      *
-     * @param midiData
-     * @param midiDataSize
-     * @param timeStamp
+     * @param midiData      midi message set in a jna pointer
+     * @param midiDataSize  midi message size (jnaerator native)
+     * @param timeStamp     time stamp
      */
     public MidiMessage(@NotNull Pointer midiData,
                        @NotNull NativeSize midiDataSize,
@@ -190,11 +190,11 @@ public class MidiMessage implements Cloneable {
      * Returns the name of a midi note number.
      * E.g "C", "D#", etc.
      *
-     * @param noteNumber          the midi note number, 0 to 127
-     * @param useSharps           if true, sharpened notes are used, e.g. "C#", otherwise they'll be flattened, e.g. "Db"
-     * @param includeOctaveNumber if true, the octave number will be appended to the string, e.g. "C#4"
-     * @param octaveNumForMiddleC if an octave number is being appended, this indicates the number that will be used for middle C's octave
-     * @link getMidiNoteInHertz
+     * @param noteNumber            the midi note number, 0 to 127
+     * @param useSharps             if true, sharpened notes are used, e.g. "C#", otherwise they'll be flattened, e.g. "Db"
+     * @param includeOctaveNumber   if true, the octave number will be appended to the string, e.g. "C#4"
+     * @param octaveNumForMiddleC   if an octave number is being appended, this indicates the number that will be used for middle C's octave
+     * @return                      String
      */
     public static String getMidiNoteName(int noteNumber,
                                          boolean useSharps,
@@ -219,6 +219,11 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a system-exclusive message.
      * The data passed in is wrapped with header and tail bytes of 0xF0 and 0xF7.
+     *
+     * @param sysexData     midi sysex message
+     * @param dataSize      midi sysex message size
+     * @param timeStamp     time stamp
+     * @return              Well formed Sysex midi message
      */
     public static MidiMessage createSysExMessage(byte[] sysexData, int dataSize, double timeStamp) {
         if (dataSize < 1) {
@@ -272,17 +277,20 @@ public class MidiMessage implements Cloneable {
     }
 
     /**
-     * @param command
-     * @param channel
-     * @return
+     * Create a status byte from the command nibble value and a midi channel value.
+     *
+     * @param command value in the range of 0 to 15
+     * @param channel value in the range of 1 to 16
+     * @return int of a complete status byte
      */
     public static int createStatusByte(int command, int channel) {
         return ((command & 0xF0) | ((channel - 1) & 0x0F));
     }
 
     /**
+     *get status byte of current midi message instance.
      *
-     * @return
+     * @return int current status byte
      */
     public int getStatusByte() {
         if (midiDataSize > 0 )
@@ -294,10 +302,12 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a key-down message (using an integer velocity).
      *
-     * @param channel    the midi channel, in the range 1 to 16
-     * @param noteNumber the key number, 0 to 127
-     * @param velocity   in the range 0 to 127
-     *                   see isNoteOn
+     * @param channel       the midi channel, in the range 1 to 16
+     * @param noteNumber    the key number, 0 to 127
+     * @param velocity      in the range 0 to 127
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isNoteOn
      */
     public static MidiMessage noteOn(int channel, int noteNumber, int velocity, double timeStamp) {
         return new MidiMessage(createStatusByte(0x90, channel), (noteNumber & 127), velocity, timeStamp);
@@ -306,10 +316,12 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a key-down message (using a floating-point velocity).
      *
-     * @param channel    the midi channel, in the range 1 to 16
-     * @param noteNumber the key number, 0 to 127
-     * @param velocity   in the range 0 to 1.0
-     *                   see isNoteOn
+     * @param channel       the midi channel, in the range 1 to 16
+     * @param noteNumber    the key number, 0 to 127
+     * @param velocity      in the range 0 to 1.0
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isNoteOn
      */
     public static MidiMessage noteOn(int channel, int noteNumber, float velocity, double timeStamp) {
         return noteOn(channel, noteNumber, (int) (127.0f * velocity), timeStamp);
@@ -318,10 +330,12 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a key-up message.
      *
-     * @param channel    the midi channel, in the range 1 to 16
-     * @param noteNumber the key number, 0 to 127
-     * @param velocity   in the range 0 to 127
-     * @link isNoteOff
+     * @param channel       the midi channel, in the range 1 to 16
+     * @param noteNumber    the key number, 0 to 127
+     * @param velocity      in the range 0 to 127
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isNoteOff
      */
     public static MidiMessage noteOff(int channel, int noteNumber, int velocity, double timeStamp) {
         return new MidiMessage(createStatusByte(0x80, channel), noteNumber, velocity, timeStamp);
@@ -330,10 +344,12 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a key-up message.
      *
-     * @param channel    the midi channel, in the range 1 to 16
-     * @param noteNumber the key number, 0 to 127
-     * @param velocity   in the range 0 to 1.0
-     * @link isNoteOff
+     * @param channel       the midi channel, in the range 1 to 16
+     * @param noteNumber    the key number, 0 to 127
+     * @param velocity      in the range 0 to 1.0
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isNoteOff
      */
     public static MidiMessage noteOff(int channel, int noteNumber, float velocity, double timeStamp) {
         return noteOff(channel, noteNumber, (int) (127.0f * velocity), timeStamp);
@@ -343,9 +359,11 @@ public class MidiMessage implements Cloneable {
      * Creates a key-up message.@param channel
      * the midi channel, in the range 1 to 16
      *
-     * @param noteNumber the key number, 0 to 127
-     * @param timeStamp
-     * @link isNoteOff
+     * @param channel       the midi channel, in the range 1 to 16
+     * @param noteNumber    the key number, 0 to 127
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isNoteOff
      */
     public static MidiMessage noteOff(int channel, int noteNumber, double timeStamp) {
         return noteOff(channel, noteNumber, 0, timeStamp);
@@ -356,8 +374,10 @@ public class MidiMessage implements Cloneable {
      *
      * @param channel       the midi channel, in the range 1 to 16
      * @param programNumber the midi program number, 0 to 127
-     * @param timeStamp
-     * @link isProgramChange, getGMInstrumentName
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isProgramChange
+     * @see                 MidiMessage#MidiMessage#getGMInstrumentName
      */
     static MidiMessage programChange(int channel, int programNumber, double timeStamp) {
         return new MidiMessage(createStatusByte(0xC0, channel), programNumber & 0x7F, 0);
@@ -366,10 +386,11 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a pitch-wheel move message.
      *
-     * @param channel  the midi channel, in the range 1 to 16
-     * @param position the wheel position, in the range 0 to 16383
-     * @param timeStamp
-     * @link isPitchWheel
+     * @param channel       the midi channel, in the range 1 to 16
+     * @param position      the wheel position, in the range 0 to 16383
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isPitchWheel
      */
     static MidiMessage pitchWheel(int channel, int position, double timeStamp) {
         return new MidiMessage(createStatusByte(0xE0, channel), position & 127, (position >> 7) & 127, 0);
@@ -378,10 +399,11 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a channel-pressure change event.
      *
-     * @param channel  the midi channel: 1 to 16
-     * @param pressure the pressure, 0 to 127
-     * @param timeStamp
-     * @link isChannelPressure
+     * @param channel       the midi channel: 1 to 16
+     * @param pressure      the pressure, 0 to 127
+     * @param timeStamp     microseconds
+     * @return              MidiMessage
+     * @see                 MidiMessage#isChannelPressure()
      */
     static MidiMessage channelPressureChange(int channel, int pressure, double timeStamp) {
         return new MidiMessage(createStatusByte(0xD0, channel), pressure & 0x7F, 0);
@@ -390,11 +412,12 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates an aftertouch message.
      *
-     * @param channel          the midi channel, in the range 1 to 16
-     * @param noteNumber       the key number, 0 to 127
-     * @param aftertouchAmount the amount of aftertouch, 0 to 127
-     * @param timeStamp
-     * @link isAftertouch
+     * @param channel           the midi channel, in the range 1 to 16
+     * @param noteNumber        the key number, 0 to 127
+     * @param aftertouchAmount  the amount of aftertouch, 0 to 127
+     * @param timeStamp         microseconds
+     * @return                  MidiMessage
+     * @see                     MidiMessage#isPolyAftertouch()
      */
     static MidiMessage aftertouchChange(int channel, int noteNumber, int aftertouchAmount, double timeStamp) {
         return new MidiMessage(createStatusByte(0xA0, channel), noteNumber & 0x7F, aftertouchAmount & 0x7F, 0);
@@ -403,11 +426,12 @@ public class MidiMessage implements Cloneable {
     /**
      * Creates a controller message.
      *
-     * @param channel        the midi channel, in the range 1 to 16
-     * @param controllerType the type of controller
-     * @param value          the controller value
-     * @param timeStamp
-     * @link isController
+     * @param channel           the midi channel, in the range 1 to 16
+     * @param controllerType    the type of controller
+     * @param value             the controller value
+     * @param timeStamp         time stamp
+     * @return                  MidiMessage
+     * @see                     MidiMessage#isController()
      */
     static MidiMessage controllerEvent(int channel, int controllerType, int value, double timeStamp) {
         return new MidiMessage(createStatusByte(0xB0, channel), (controllerType & 127), (value & 127), 0);
@@ -417,7 +441,8 @@ public class MidiMessage implements Cloneable {
      * Creates an all-notes-off message.
      *
      * @param channel the midi channel, in the range 1 to 16
-     * @link isAllNotesOff
+     * @return                  MidiMessage
+     * @see                 MidiMessage#isAllNotesOff
      */
     public static MidiMessage allNotesOff(int channel) {
         return controllerEvent(channel, 123, 0, 0);
@@ -427,7 +452,8 @@ public class MidiMessage implements Cloneable {
      * Creates an all-sound-off message.
      *
      * @param channel the midi channel, in the range 1 to 16
-     * @link isAllSoundOff
+     * @return                  MidiMessage
+     * @see                 MidiMessage#isAllSoundOff
      */
     public static MidiMessage allSoundOff(int channel) {
         return controllerEvent(channel, 120, 0, 0);
@@ -437,7 +463,8 @@ public class MidiMessage implements Cloneable {
      * Creates an all-controllers-off message.
      *
      * @param channel the midi channel, in the range 1 to 16
-     * @link isResetAllControllers
+     * @return                  MidiMessage
+     * @see                 MidiMessage#isResetAllControllers
      */
     public static MidiMessage allControllersOff(int channel) {
         return controllerEvent(channel, 121, 0, 0);
@@ -577,7 +604,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns raw midi data as a HexString.
      *
-     * @return
+     * @return String i.e. "Status 0x9F(159), 0x3D(61), 0x7C(124)"
      */
     public String midiDataToHexString() {
         String hexString = "No Midi data to process!";
@@ -609,7 +636,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns this message's timestamp.
      *
-     * @return
+     * @return double
      */
     public double getTimeStamp() {
         return timeStamp;
@@ -618,7 +645,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Changes the message's associated timestamp.
      *
-     * @param newTimestamp
+     * @param newTimestamp microseconds
      */
     public void setTimeStamp(double newTimestamp) {
         timeStamp = newTimestamp;
@@ -626,6 +653,8 @@ public class MidiMessage implements Cloneable {
 
     /**
      * Adds a value to the message's timestamp.
+     *
+     * @param delta the amount by which to increase the time stamp
      */
     public void addToTimeStamp(double delta) {
         timeStamp += delta;
@@ -634,8 +663,9 @@ public class MidiMessage implements Cloneable {
     /**
      * Return a copy of this message with a new timestamp.
      *
-     * @param newTimestamp
-     * @return
+     * @param newTimestamp the new timestamp in microseconds
+     * @return MidiMessage
+     * @throws CloneNotSupportedException --
      */
     public MidiMessage withTimeStamp(double newTimestamp) throws CloneNotSupportedException {
         MidiMessage midiMessage = null;
@@ -652,6 +682,8 @@ public class MidiMessage implements Cloneable {
 
     /**
      * Returns current message's midi channel.
+     *
+     * @return int
      */
     public int getChannel() {
         if (midiData == null) {
@@ -668,7 +700,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Changes the message's midi channel.
      *
-     * @param number
+     * @param number the midi channel, in the range 1 to 16
      */
     public void setChannel(int number) {
         if (number < 1 || number > 16) {
@@ -685,8 +717,8 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if the message applies to the given midi channel.
      *
-     * @param number
-     * @return
+     * @param number the midi channel, in the range 1 to 16
+     * @return boolean
      */
     public boolean isForChannel(int number) {
         if (midiData == null) {
@@ -699,7 +731,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this is a system-exclusive message.
      *
-     * @return
+     * @return boolean
      */
     public boolean isSysEx() {
         if (midiData == null) {
@@ -713,7 +745,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns a byte array of sysex data inside the message.
      *
-     * @return
+     * @return byte[]
      */
     public byte[] getSysExData() {
         return isSysEx() ? midiData : null;
@@ -722,7 +754,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the size of the sysex data.
      *
-     * @return
+     * @return int
      */
     public int getSysExDataSize() {
         if (midiDataSize < 1) {
@@ -736,8 +768,9 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'key-down' event.
      *
-     * @param returnTrueForVelocity0
-     * @return
+     * @param returnTrueForVelocity0    set to true to return that it is a note on
+     *                                  event when velocity is 0 the opposite otherwise.
+     * @return                          boolean
      */
     public boolean isNoteOn(boolean returnTrueForVelocity0) {
         if (midiData == null) {
@@ -751,8 +784,9 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'key-up' event.
      *
-     * @param returnTrueForNoteOnVelocity0
-     * @return
+     * @param returnTrueForNoteOnVelocity0  set to true to return that it is a note on
+     *                                      event when velocity is 0 the opposite otherwise.
+     * @return                              boolean
      */
     public boolean isNoteOff(boolean returnTrueForNoteOnVelocity0) {
         if (midiData == null) {
@@ -770,7 +804,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'key-down' or 'key-up' event.
      *
-     * @return
+     * @return boolean
      */
     public boolean isNoteOnOrOff() {
         if (midiData == null) {
@@ -784,7 +818,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the midi note number for note-on and note-off messages.
      *
-     * @return
+     * @return int
      */
     public int getNoteNumber() {
 //        midiData = null;
@@ -800,7 +834,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Changes the midi note number of a note-on or note-off message.
      *
-     * @param newNoteNumber
+     * @param newNoteNumber the midi note number, in the range 1 to 127
      */
     public void setNoteNumber(byte newNoteNumber) {
         int result = -1;
@@ -816,7 +850,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the velocity of a note-on or note-off message.
      *
-     * @return
+     * @return int
      */
     public int getVelocity() {
         if (midiData == null) {
@@ -832,7 +866,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Changes the velocity of a note-on or note-off message.
      *
-     * @param newVelocity
+     * @param newVelocity the note velocity, in the range 0.0F to 1.0F
      */
     public void setFloatVelocity(float newVelocity) {
         if (midiData == null) {
@@ -846,7 +880,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Changes the velocity of a note-on or note-off message.
      *
-     * @param newVelocity
+     * @param newVelocity the note velocity, in the range 0 to 127
      */
     public void setVelocity(int newVelocity) {
         if (midiData == null) {
@@ -860,7 +894,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the velocity of a note-on or note-off message.
      *
-     * @return
+     * @return float
      */
     public float getFloatVelocity() {
         return (getVelocity() * 1.0f) / 127.0f;
@@ -869,7 +903,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Multiplies the velocity of a note-on or note-off message by a given amount.
      *
-     * @param scaleFactor
+     * @param scaleFactor   the note velocity multiplicand, in the range 0.0F to 1.0F
      */
     public void multiplyVelocity(float scaleFactor) {
         setFloatVelocity(getFloatVelocity() * scaleFactor);
@@ -878,7 +912,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'sustain pedal down' controller message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isSustainPedalOn() {
         if (midiData == null) {
@@ -892,7 +926,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'sustain pedal up' controller message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isSustainPedalOff() {
         if (midiData == null) {
@@ -906,7 +940,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'sostenuto pedal down' controller message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isSostenutoPedalOn() {
         if (midiData == null) {
@@ -920,7 +954,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'sostenuto pedal up' controller message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isSostenutoPedalOff() {
         if (midiData == null) {
@@ -934,7 +968,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'soft pedal down' controller message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isSoftPedalOn() {
         if (midiData == null) {
@@ -948,7 +982,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a 'soft pedal up' controller message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isSoftPedalOff() {
         if (midiData == null) {
@@ -962,7 +996,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if the message is a program (patch) change message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isProgramChange() {
         if (midiData == null) {
@@ -976,7 +1010,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the new program number of a program change message.
      *
-     * @return
+     * @return  int
      */
     public int getProgramChangeNumber() {
         if (midiData == null) {
@@ -990,7 +1024,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if the message is a pitch-wheel move.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isPitchWheel() {
         if (midiData == null) {
@@ -1004,7 +1038,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the pitch wheel position from a pitch-wheel move message.
      *
-     * @return
+     * @return int
      */
     public int getPitchWheelValue() {
         if (midiData == null) {
@@ -1018,7 +1052,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if the message is a channel-pressure change event.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isChannelPressure() {
         if (midiData == null) {
@@ -1032,7 +1066,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the pressure from a channel pressure change message.
      *
-     * @return
+     * @return int
      */
     public int getChannelPressureValue() {
         if (midiData == null) {
@@ -1049,7 +1083,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if the message is a Polyphonic Aftertouch event.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isPolyAftertouch() {
         if (midiData == null) {
@@ -1063,7 +1097,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the amount of Poliphonic Aftertouch from an Aftertouch messages.
      *
-     * @return
+     * @return  int
      */
     public int getPolyAftertouchValue() {
         if (midiData == null) {
@@ -1080,7 +1114,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this is a midi controller message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isController() {
         if (midiData == null) {
@@ -1092,8 +1126,10 @@ public class MidiMessage implements Cloneable {
     }
 
     /**
-     * @param controllerNumber
-     * @return
+     * Return the name of the midi chosen controller if available, "--" otherwise.
+     *
+     * @param controllerNumber the controller number in the range of 0 to 127
+     * @return String
      */
     public String getControllerName(int controllerNumber) {
         String[] ctrlNames = {
@@ -1137,7 +1173,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the controller number of a controller message.
      *
-     * @return
+     * @return int
      */
     public int getControllerNumber() {
         if (midiData == null) {
@@ -1151,7 +1187,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns the controller value from a controller message.
      *
-     * @return
+     * @return int
      */
     public int getControllerValue() {
         if (midiData == null) {
@@ -1165,8 +1201,8 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this message is a controller message and if it has the specified controller type.
      *
-     * @param controllerType
-     * @return
+     * @param controllerType    the midi controller type in the range of 0 to 127
+     * @return                  boolean
      */
     public boolean isControllerOfType(int controllerType) {
         if (midiData == null) {
@@ -1180,7 +1216,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Checks whether this message is an all-notes-off message.
      *
-     * @return
+     * @return boolean
      */
     public boolean isAllNotesOff() {
         if (midiData == null) {
@@ -1193,7 +1229,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Checks whether this message is an all-sound-off message.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isAllSoundOff() {
         if (midiData == null) {
@@ -1206,7 +1242,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Checks whether this message is a reset all controllers message.
      *
-     * @return
+     * @return boolean
      */
     public boolean isResetAllControllers() {
         if (midiData == null) {
@@ -1217,7 +1253,9 @@ public class MidiMessage implements Cloneable {
     }
 
     /**
-     * @return
+     * Convert timestamp to SMPTE timecode format.
+     *
+     * @return String (i.e. 03:06:40:000 - )
      */
     public String timeStampAsTimecode() {
         return SmpteTimecode.getTimecode(timeStamp * 1000);
@@ -1226,7 +1264,7 @@ public class MidiMessage implements Cloneable {
     /**
      * Returns true if this event is a meta-event.
      *
-     * @return
+     * @return  boolean
      */
     public boolean isMetaEvent() {
         if (midiData == null) {
@@ -1281,7 +1319,7 @@ public class MidiMessage implements Cloneable {
     }
 
     /** Creates an end-of-track meta-event.
-     *  @link isEndOfTrackMetaEvent
+     *  @see                 MidiMessage#isEndOfTrackMetaEvent
      * /
     public static MidiMessage endOfTrack() {
     return null;

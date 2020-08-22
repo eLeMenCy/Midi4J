@@ -35,13 +35,13 @@ public interface RtMidiLibrary extends Library {
      *
      * @param apis      An array or a null value.<br>
      * @param apis_size Number of elements pointed to by apis<br>
-     * @return number of items needed for apis array if apis==NULL, or<br>
-     * number of items written to apis array otherwise.  A negative<br>
-     * return value indicates an error.<br>
-     * <p>
-     * See ref: RtMidi::getCompiledApi().<br>
-     * Original signature : <code>int rtmidi_get_compiled_api(RtMidiApi*, unsigned int)</code><br>
-     * <i>native declaration : RtMidi/rtmidi_c.h:114</i>
+     * @return          number of items needed for apis array if apis==NULL, or<br>
+     *                  number of items written to apis array otherwise.  A negative<br>
+     *                  return value indicates an error.<br>
+     *                  <p>
+     *                  See ref: RtMidi::getCompiledApi().<br>
+     *                  Original signature : <code>int rtmidi_get_compiled_api(RtMidiApi*, unsigned int)</code><br>
+     *                  <i>native declaration : RtMidi/rtmidi_c.h:114</i>
      */
     int rtmidi_get_compiled_api(IntBuffer apis, int apis_size);
 
@@ -50,6 +50,8 @@ public interface RtMidiLibrary extends Library {
      * See ref: RtMidi::getApiName().<br>
      * Original signature : <code>char* rtmidi_api_name(RtMidiApi)</code><br>
      * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/RtMidi/rtmidi_c.h:118</i>
+     * @param api   id of the desired midi api
+     * @return      String
      */
     String rtmidi_api_name(int api);
 
@@ -58,6 +60,8 @@ public interface RtMidiLibrary extends Library {
      * See ref: RtMidi::getApiDisplayName().<br>
      * Original signature : <code>char* rtmidi_api_display_name(RtMidiApi)</code><br>
      * <i>native declaration : RtMidi/rtmidi_c.h:122</i>
+     * @param api   api id of the desired midi api
+     * @return      String
      */
     String rtmidi_api_display_name(int api);
 
@@ -66,6 +70,8 @@ public interface RtMidiLibrary extends Library {
      * See ref :RtMidi::getCompiledApiByName().<br>
      * Original signature : <code>RtMidiApi rtmidi_compiled_api_by_name(const char*)</code><br>
      * <i>native declaration : RtMidi/rtmidi_c.h:126</i>
+     * @param name  name of the desired Midi Api
+     * @return  int
      */
     int rtmidi_compiled_api_by_name(String name);
 
@@ -73,6 +79,9 @@ public interface RtMidiLibrary extends Library {
      * Internal - Report an error.<br>
      * Original signature : <code>void rtmidi_error(RtMidiErrorType, const char*)</code><br>
      * <i>native declaration : RtMidi/rtmidi_c.h:129</i>
+     *
+     * @param type          error type to pass on driver
+     * @param errorString   error string to pass on driver
      */
     void rtmidi_error(int type, String errorString);
 
@@ -83,12 +92,13 @@ public interface RtMidiLibrary extends Library {
     /**
      * Open a MIDI port.<br>
      *
-     * @param device     Must be a valid device<br>
-     * @param portNumber Must be greater than 0<br>
-     * @param portName   Name for the application port.<br>
-     *                   See RtMidi::openPort().<br>
-     *                   Original signature : <code>void rtmidi_open_port(RtMidiPtr, unsigned int, const char*)</code><br>
-     *                   <i>native declaration : RtMidi/rtmidi_c.h:138</i>
+     * @param device        Must be a valid device<br>
+     * @param portNumber    Must be greater than 0<br>
+     * @param portName      Name for the application port<br>
+     * @param autoConnect   auto connect or not devices together<br>
+     *                      See RtMidi::openPort().<br>
+     *                      Original signature : <code>void rtmidi_open_port(RtMidiPtr, unsigned int, const char*)</code><br>
+     *                      <i>native declaration : RtMidi/rtmidi_c.h:138</i>
      */
     void rtmidi_open_port(RtMidiDevice device, int portNumber, String portName, boolean autoConnect);
 
@@ -121,6 +131,7 @@ public interface RtMidiLibrary extends Library {
      *               See RtMidi::isPortOpen().<br>
      *               Original signature : <code>void rtmidi_close_port(RtMidiPtr)</code><br>
      *               <i>native declaration : RtMidi/rtmidi_c.h:152</i>
+     * @return       boolean
      */
     boolean rtmidi_is_port_open(RtMidiDevice device);
 
@@ -131,6 +142,7 @@ public interface RtMidiLibrary extends Library {
      *               See RtMidi::getPortCount().<br>
      *               Original signature : <code>int rtmidi_get_port_count(RtMidiPtr)</code><br>
      *               <i>native declaration : RtMidi/rtmidi_c.h:157</i>
+     * @return       int
      */
     int rtmidi_get_port_count(RtMidiDevice device);
 
@@ -142,6 +154,7 @@ public interface RtMidiLibrary extends Library {
      *                   See RtMidi::getPortName().<br>
      *                   Original signature : <code>char* rtmidi_get_port_name(RtMidiPtr, unsigned int)</code><br>
      *                   <i>native declaration : RtMidi/rtmidi_c.h:162</i>
+     * @return           String
      */
     String rtmidi_get_port_name(RtMidiDevice device, int portNumber);
 
@@ -176,6 +189,7 @@ public interface RtMidiLibrary extends Library {
      * Create a default RtMidiInPtr value, with no initialization.<br>
      * Original signature : <code>RtMidiInPtr rtmidi_in_create_default()</code><br>
      * <i>native declaration : RtMidi/rtmidi_c.h:167</i>
+     * @return               RtMidiDevice
      */
     RtMidiDevice rtmidi_in_create_default();
 
@@ -191,6 +205,7 @@ public interface RtMidiLibrary extends Library {
      *                       See RtMidiIn::RtMidiIn().<br>
      *                       Original signature : <code>RtMidiInPtr rtmidi_in_create(RtMidiApi, const char*, unsigned int)</code><br>
      *                       <i>native declaration : RtMidi/rtmidi_c.h:180</i>
+     * @return               RtMidiDevice
      */
     RtMidiDevice rtmidi_in_create(int api, String clientName, int queueSizeLimit);
 
@@ -210,6 +225,7 @@ public interface RtMidiLibrary extends Library {
      *               See ref: RtMidiIn::getCurrentApi().<br>
      *               Original signature : <code>RtMidiApi rtmidi_in_get_current_api(RtMidiPtr)</code><br>
      *               <i>native declaration : RtMidi/rtmidi_c.h:187</i>
+     * @return       int
      */
     int rtmidi_in_get_current_api(RtMidiDevice device);
 
@@ -262,6 +278,7 @@ public interface RtMidiLibrary extends Library {
      *                See RtMidiIn::getMessage().<br>
      *                Original signature : <code>double rtmidi_in_get_message(RtMidiInPtr, unsigned char*, size_t*)</code><br>
      *                <i>native declaration : RtMidi/rtmidi_c.h:213</i>
+     * @return        double
      */
     double rtmidi_in_get_message(RtMidiDevice device, ByteBuffer message, NativeSizeByReference size);
 
@@ -273,6 +290,7 @@ public interface RtMidiLibrary extends Library {
      * Create a default RtMidiInPtr value, with no initialization.<br>
      * Original signature : <code>RtMidiOutPtr rtmidi_out_create_default()</code><br>
      * <i>native declaration : RtMidi/rtmidi_c.h:218</i>
+     * @return RtMidiDevice
      */
     RtMidiDevice rtmidi_out_create_default();
 
@@ -286,6 +304,7 @@ public interface RtMidiLibrary extends Library {
      *                   See RtMidiOut::RtMidiOut().<br>
      *                   Original signature : <code>RtMidiOutPtr rtmidi_out_create(RtMidiApi, const char*)</code><br>
      *                   <i>native declaration : RtMidi/rtmidi_c.h:229</i>
+     * @return           RtMidiDevice
      */
     RtMidiDevice rtmidi_out_create(int api, String clientName);
 
@@ -305,6 +324,7 @@ public interface RtMidiLibrary extends Library {
      *               See ref: RtMidiOut::getCurrentApi().<br>
      *               Original signature : <code>RtMidiApi rtmidi_out_get_current_api(RtMidiPtr)</code><br>
      *               <i>native declaration : RtMidi/rtmidi_c.h:236</i>
+     * @return        int
      */
     int rtmidi_out_get_current_api(RtMidiDevice device);
 
@@ -317,6 +337,7 @@ public interface RtMidiLibrary extends Library {
      *                See ref: RtMidiOut::sendMessage().<br>
      *                Original signature : <code>int rtmidi_out_send_message(RtMidiOutPtr, const unsigned char*, int)</code><br>
      *                <i>native declaration : RtMidi/rtmidi_c.h:240</i>
+     * @return        int
      */
     int rtmidi_out_send_message(RtMidiDevice device, byte[] message, int length);
 }

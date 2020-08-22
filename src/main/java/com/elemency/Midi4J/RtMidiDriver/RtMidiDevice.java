@@ -36,9 +36,11 @@ public class RtMidiDevice extends Structure {
     }
 
     /**
-     * @param instance C type : void*<br>
-     * @param data     C type : void*<br>
-     * @param errorMsg C type : const char*
+     *
+     * @param instance  C type : void*<br>
+     * @param data      C type : void*<br>
+     * @param ok        C type : byte <br>
+     * @param errorMsg  C type : const char*
      */
     public RtMidiDevice(Pointer instance, Pointer data, byte ok, Pointer errorMsg) {
         super();
