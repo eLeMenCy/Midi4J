@@ -8,6 +8,27 @@ import org.slf4j.LoggerFactory;
 
 // https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
 
+/*==============================================================================
+   Most methods and comments in this file are part of the JUCE library.
+   Copyright (c) 2020 - Raw Material Software Limited
+   JUCE is an open source library subject to commercial or open-source licensing.
+
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted provided that the above
+   copyright notice and this permission notice appear in all copies.
+
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
+  ==============================================================================*/
+/**
+ * A slightly modified juce_MidiMessage class, shamelessly taken from the exceptional Juce library and adapted to java.<br>
+ * The original C++ code can be found in the
+ * <a href="https://github.com/juce-framework/JUCE/blob/master/modules/juce_audio_basics/midi">
+ * audio basics module</a> section on github.
+ */
 public class MidiMessage implements Cloneable {
 
     private final Logger logger = LoggerFactory.getLogger(MidiMessage.class);
