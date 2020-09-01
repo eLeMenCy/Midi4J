@@ -77,7 +77,7 @@ public class MidiMessage implements Cloneable {
         this.timeStamp = timeStamp;
 
         if (checkMessageLength(byte0) != 2) {
-            throw new MidiException("Status byte provided doesn't correspond to a 2 bytes midi message" + Integer.toHexString(byte0).toUpperCase());
+            throw new MidiException("Status byte provided doesn't correspond to a 2 bytes midi message " + Integer.toHexString(byte0).toUpperCase());
         }
 
         if (byte0 >= 0xF0) {

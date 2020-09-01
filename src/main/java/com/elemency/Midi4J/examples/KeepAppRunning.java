@@ -12,12 +12,13 @@ public abstract class KeepAppRunning {
     private final Logger logger = LoggerFactory.getLogger(KeepAppRunning.class);
     protected boolean doQuit = false;
     protected Timer t = null;
+    private boolean displayTimecode = true;
+    private long displayTimecodeRate = 1000;
 
     protected abstract void Init() throws Exception;
 
     public void processMidiInMessage(double timeStamp, MidiMessage midiMessage, Pointer userData) {
     }
-
 
     public synchronized void doQuit() {
         t.cancel();
@@ -25,21 +26,12 @@ public abstract class KeepAppRunning {
     }
 
     public void keepRunning() throws InterruptedException {
-        while (!this.doQuit) {
-//            try {
-            long timeTillNextDisplayChange = 1000 - (SmpteTimecode.getElapsedTimeSinceStartTime() % 1000);
-
+        while (!doQuit) {
+            long timeTillNextDisplayChange = displayTimecodeRate - (SmpteTimecode.getElapsedTimeSinceStartTime() % displayTimecodeRate);
             Thread.sleep(timeTillNextDisplayChange);
-
-            System.out.println(SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()));
-//            } catch (MidiException me) {
-//                me.printStackTrace();
-
-            if (!doQuit) {
-//                logger.debug("heartbeat...");
+            if (displayTimecode) {
+                System.out.println(SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()));
             }
-//            }
-
         }
     }
 }

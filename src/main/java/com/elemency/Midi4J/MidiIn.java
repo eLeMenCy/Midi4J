@@ -16,37 +16,20 @@ import java.nio.ByteBuffer;
 
 public class MidiIn extends MidiDeviceMgr {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
-    private App app = null;
-
-    /**
-     * Midi In callback from native implementation.
-     */
-    public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
-
-        try {
-            /* Create a new MidiMessage (based on incoming native raw data) and
-            sends it to our application. */
-            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
-            this.app.processMidiInMessage(timeStamp, midiMessage, userData);
-
-        } catch (MidiException | NullPointerException me) {
-            me.printStackTrace();
-        }
-    };
 
     public MidiIn() {
 
     }
 
     public MidiIn(App app) /*throws MidiException*/ {
-        this.app = app;
+//        this.app = app;
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
-        setCallback(fromNative, "native", null);
+//        setCallback(fromNative, "native", null);
     }
 
-    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, App app)/* throws MidiException*/ {
-        this.app = app;
+    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit/*, App app*/)/* throws MidiException*/ {
+//        this.app = app;
         if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon from client name.
@@ -55,7 +38,7 @@ public class MidiIn extends MidiDeviceMgr {
             super.sourceDeviceName = sourceDeviceName;
         }
         super.rtMidiDevice = create(api, super.sourceDeviceName, queueSizeLimit);
-        setCallback(fromNative, "native", null);
+//        setCallback(fromNative, "native", null);
     }
 
     /**

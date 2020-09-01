@@ -276,13 +276,13 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     /**
      * Collect and store the full details of a target device based on its port ID.
      *
-     * @param targetPortId The id of the target device port.
+     * @param id The id of the target device port.
      * @return the selected target device full details.
      */
-    public Map<String, String> getTargetDeviceFullDetails(int targetPortId) {
+    public Map<String, String> getTargetDeviceFullDetails(int id) {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
-// | midiDeviceId | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
-// |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
+// |     id       | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
+// |--------------|---------|----------------|------------------|-----i----------------|----------------|--------------|------------|----------|----------|
 // |      0       |  ALSA   |     Out/In     |   Midi Through   | Midi Through Port-0 |       14       |      0       |-->  Midi4J |    In    |    IN    |
 // |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
 // |      1       |  Jack   |     Out/In     | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |-->  Midi4J |    Out   |    OUT   |
@@ -294,10 +294,11 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
         Map<String, String> fullDeviceDetails = new LinkedHashMap<>();
 
+        fullDeviceDetails.put("id", Integer.toString(id));
         fullDeviceDetails.put("apiName", getCurrentApiName());
         fullDeviceDetails.put("targetPortType", getTargetDeviceType());
 
-        String data = lib.rtmidi_get_port_name(rtMidiDevice, targetPortId);
+        String data = lib.rtmidi_get_port_name(rtMidiDevice, id);
 
         int semicolonIndex = data.indexOf(":");
         if (semicolonIndex > -1) {
@@ -319,7 +320,8 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
             fullDeviceDetails.put("targetPortId", ids.substring(semicolonIndex + 1));
         }
 
-        if (this.targetDevicePortId == targetPortId && isConnected) {
+        // Add Source device name/port to which this target device/port is connected.
+        if (this.targetDevicePortId == id && isConnected) {
             fullDeviceDetails.put("sourceDeviceName", (getSourceDeviceType().equals("In") ? "-->" : "<--") + this.sourceDeviceName);
             fullDeviceDetails.put("sourcePortName", this.sourcePortName);
             fullDeviceDetails.put("sourcePortType", getSourceDeviceType());
@@ -366,7 +368,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      *
      * @return the selected target device full detail list.
      */
-    public List<Map<String, String>> listTargetDevices() {
+    public List<Map<String, String>> listTargetDevices(boolean connectedOnly) {
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // | midiDeviceId | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
@@ -377,17 +379,17 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 
         int deviceCount = getTargetDeviceCount();
-        boolean tgtNameIsName = tgtNameIsName(0);
+        boolean srcNameIsTgt = sourceNameIsTarget(0);
 
         System.out.println();
-        if (deviceCount < 1 || tgtNameIsName) {
+        if (deviceCount < 1 || srcNameIsTgt) {
             logger.warn("There are no " + getCurrentApiName() + " Midi " +
                     getTargetDeviceType() + " ports" + (deviceCount > 1 ? "s" : "") + " available." +
-                    (deviceCount == 0 || tgtNameIsName ? " Are the " + getCurrentApiName() + " API and/or your Midi sw/hw running?" : ""));
+                    (deviceCount == 0 || srcNameIsTgt ? " Are the " + getCurrentApiName() + " API and/or your Midi sw/hw running?" : ""));
             return null;
         }
 
-        // Build our device map.
+        // Build our device list and display log.
         List<Map<String, String>> midiDevices = new ArrayList<>();
         for (int i = 0; i < deviceCount; i++) {
 
@@ -403,7 +405,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
             /* Remove current device and its target from the list to minimise the temptation of doing a midi loop
              * (this has also been done in the connect method to avoid auto connection */
-            if (tgtNameIsName(i)) {
+            if (sourceNameIsTarget(i) || (connectedOnly && !fullDeviceDetails.containsKey("sourceDeviceName"))) {
                 continue;
             }
 
@@ -411,18 +413,21 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
             logger.info(logMsg.toString());
         }
 
+        if (midiDevices.isEmpty())
+            logger.info("There are no " + getTargetDeviceType().toUpperCase() + " target devices connected to " + this.sourceDeviceName);
+
         return midiDevices;
     }
 
     /**
      * Check that current device instance in and out ports stay disconnected to avoid a midi loop.
      *
-     * @param targetPortId  The id of the target device port.
+     * @param targetDeviceId  The id of the target device port.
      * @return              True if target device name is the same as current device instance name, false otherwise.
      */
-    private boolean tgtNameIsName(int targetPortId) {
+    private boolean sourceNameIsTarget(int targetDeviceId) {
         // To Minimise Midi loops, bypasses current Midi4J source device to be listed as a possible target devices.
-        String tgtName = getTargetDeviceFullDetails(targetPortId).get("targetDeviceName");
+        String tgtName = getTargetDeviceFullDetails(targetDeviceId).get("targetDeviceName");
         return (tgtName != null) && (tgtName.contains(this.sourceDeviceName));
     }
 
