@@ -95,7 +95,7 @@ public class App extends KeepAppRunning {
 
                 // List all available target Jack In devices.
                 List<Map<String, String>> inDevices = this.midi4jOut.listTargetDevices(false);
-                for (int i = 1; i < 3; i++) {
+                for (int i = 0; i < 3; i++) {
                     this.midi4jOut.connect("OUT", i, true);
                 }
 

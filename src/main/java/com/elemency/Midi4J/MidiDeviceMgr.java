@@ -328,9 +328,11 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
         // Add Source device name/port to which this target device/port is connected.
         if (connectedTargets.containsKey(id)) {
-            fullDeviceDetails.put("sourceDeviceName", (getSourceDeviceType().equals("In") ? "-->" : "<--") + this.sourceDeviceName);
-            fullDeviceDetails.put("sourcePortName", this.sourcePortName);
-            fullDeviceDetails.put("sourcePortType", getSourceDeviceType());
+            if (connectedTargets.get(id)) {
+                fullDeviceDetails.put("sourceDeviceName", (getSourceDeviceType().equals("In") ? "-->" : "<--") + this.sourceDeviceName);
+                fullDeviceDetails.put("sourcePortName", this.sourcePortName);
+                fullDeviceDetails.put("sourcePortType", getSourceDeviceType());
+            }
         }
 
         return fullDeviceDetails;
