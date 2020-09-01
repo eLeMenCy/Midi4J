@@ -328,7 +328,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
         // Add Source device name/port to which this target device/port is connected.
         if (connectedTargets.containsKey(id)) {
-            boolean test = connectedTargets.get(id);
             fullDeviceDetails.put("sourceDeviceName", (getSourceDeviceType().equals("In") ? "-->" : "<--") + this.sourceDeviceName);
             fullDeviceDetails.put("sourcePortName", this.sourcePortName);
             fullDeviceDetails.put("sourcePortType", getSourceDeviceType());
@@ -344,16 +343,6 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      * @return the selected target device full details.
      */
     public String getTargetPortName(int targetDevicePortId) {
-//        if (getDeviceCount() < targetDeviceId) {
-//            return "Port doesn't exist";
-//        }
-//
-//        String tmp = getFullDeviceDetails(targetDeviceId).get("targetPortName");
-//        if (tmp == null || tmp.isEmpty()) {
-//            return "Port doesn't exist";
-//        }
-//
-//        return tmp;
 
         String result = "! UNKNOWN PORT !";
 
