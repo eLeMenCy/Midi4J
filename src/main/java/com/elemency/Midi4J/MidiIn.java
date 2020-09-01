@@ -17,19 +17,15 @@ import java.nio.ByteBuffer;
 public class MidiIn extends MidiDeviceMgr {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
 
-    public MidiIn() {
+//    public MidiIn() {
+//    }
 
-    }
-
-    public MidiIn(App app) /*throws MidiException*/ {
-//        this.app = app;
+    public MidiIn(App app) {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
-//        setCallback(fromNative, "native", null);
     }
 
-    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit/*, App app*/)/* throws MidiException*/ {
-//        this.app = app;
+    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit/*, App app*/) {
         if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon from client name.
@@ -38,14 +34,13 @@ public class MidiIn extends MidiDeviceMgr {
             super.sourceDeviceName = sourceDeviceName;
         }
         super.rtMidiDevice = create(api, super.sourceDeviceName, queueSizeLimit);
-//        setCallback(fromNative, "native", null);
     }
 
     /**
      * Called on try with resources exception thrown.
      */
     @Override
-    public void close()/* throws MidiException*/ {
+    public void close() {
         cancelCallback();
         closeSourceDevice();
         freeMemory();
@@ -83,7 +78,7 @@ public class MidiIn extends MidiDeviceMgr {
      * @param sourceDeviceName  name given to this new source midi device
      * @return                  RtMidiDevice
      */
-    private RtMidiDevice create(int api, String sourceDeviceName, int queueSizeLimit)/* throws MidiException*/ {
+    private RtMidiDevice create(int api, String sourceDeviceName, int queueSizeLimit) {
 
         return lib.rtmidi_in_create(api, sourceDeviceName, queueSizeLimit);
     }
@@ -96,7 +91,7 @@ public class MidiIn extends MidiDeviceMgr {
      * @param userData      user specific info from native
      * @return              boolean
      */
-    public boolean setCallback(MidiInCallback callback, String threadName, Pointer userData) /*throws Exception*/ {
+    public boolean setCallback(MidiInCallback callback, String threadName, Pointer userData)  {
 
         if (rtMidiDevice == null) {
             throw new MidiException("This IN device is null - can't set its callback.");

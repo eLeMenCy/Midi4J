@@ -24,7 +24,8 @@ import org.slf4j.LoggerFactory;
    DISCLAIMED.
   ==============================================================================*/
 /**
- * A slightly modified juce_MidiMessage class, shamelessly taken from the exceptional Juce library and adapted to java.<br>
+ * A slightly modified juce_MidiMessage class, shamelessly taken from the exceptional Juce library
+ * and translated to java.<br>
  * The original C++ code can be found in the
  * <a href="https://github.com/juce-framework/JUCE/blob/master/modules/juce_audio_basics/midi">
  * audio basics module</a> section on github.
@@ -142,9 +143,6 @@ public class MidiMessage implements Cloneable {
     {
         this.midiDataSize = midiDataSize.intValue();
         this.timeStamp = timeStamp;
-
-//        this.midiDataSize = 0;
-//        midiData = null;
 
         if (midiData == null) {
 //            AppException exception = new AppException();
@@ -857,7 +855,7 @@ public class MidiMessage implements Cloneable {
      *
      * @param newNoteNumber the midi note number, in the range 1 to 127
      */
-    public void setNoteNumber(byte newNoteNumber) {
+    public void setNoteNumber(int newNoteNumber) {
         int result = -1;
 
         if (midiData == null) {
@@ -865,7 +863,7 @@ public class MidiMessage implements Cloneable {
         }
 
         if (isNoteOnOrOff() || isPolyAftertouch() || isChannelPressure())
-            midiData[1] = newNoteNumber;
+            midiData[1] = (byte)newNoteNumber;
     }
 
     /**

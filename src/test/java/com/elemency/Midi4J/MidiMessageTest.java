@@ -461,7 +461,7 @@ class MidiMessageTest {
     void setNoteNumber() {
         final byte[] midiData = {(byte) 0x9F, 61, 124};
         msg = new MidiMessage(midiData, 3, 6);
-        msg.setNoteNumber((byte) 89);
+        msg.setNoteNumber(89);
         assertEquals(89, msg.getNoteNumber());
     }
 

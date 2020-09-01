@@ -17,8 +17,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     protected RtMidiDevice rtMidiDevice = null;
     protected String sourceDeviceName = "Midi4J";
     protected String sourcePortName = "??";
-    protected boolean isConnected = false;
-    protected int targetDevicePortId = -1;
+    protected Map<Integer, Boolean> connectedTargets = new LinkedHashMap<>();
 
     /**
      * Return a wrapped native Mididevice.
@@ -216,6 +215,13 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
             autoConnect = false;
         }
 
+        // Only 1 target OUT device can be connected to a IN device.
+        if (getSourceDeviceType().equals("In") && !connectedTargets.isEmpty()) {
+            connectedTargets.clear();
+            lib.rtmidi_close_port(rtMidiDevice);
+            logger.warn("You are trying to connect more than 1 OUT device to a IN device.");
+        }
+
         sourcePortName = sourcePortName.isEmpty() ? getSourceDeviceType().toUpperCase() : sourcePortName;
         lib.rtmidi_open_port(rtMidiDevice, toTargetPortId, sourcePortName, autoConnect);
 
@@ -227,8 +233,8 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
                         " port and " + getTargetDeviceName(toTargetPortId) + "'s " + getTargetDeviceType() +
                         " port (id " + toTargetPortId + ") have been opened succesfully" +
                         (autoConnect ? " and, at your request, connected together!" : " but, at your request, were left disconnected!");
-                targetDevicePortId = toTargetPortId;
-                isConnected = autoConnect;
+
+                connectedTargets.put(toTargetPortId, autoConnect);
                 this.sourcePortName = sourcePortName;
 
             } else {
@@ -321,7 +327,8 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
         }
 
         // Add Source device name/port to which this target device/port is connected.
-        if (this.targetDevicePortId == id && isConnected) {
+        if (connectedTargets.containsKey(id)) {
+            boolean test = connectedTargets.get(id);
             fullDeviceDetails.put("sourceDeviceName", (getSourceDeviceType().equals("In") ? "-->" : "<--") + this.sourceDeviceName);
             fullDeviceDetails.put("sourcePortName", this.sourcePortName);
             fullDeviceDetails.put("sourcePortType", getSourceDeviceType());
