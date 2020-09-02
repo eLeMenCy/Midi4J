@@ -2,7 +2,6 @@ package com.elemency.Midi4J;
 
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
-import com.elemency.Midi4J.examples.App;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
 import com.sun.jna.Callback;
@@ -13,19 +12,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.UUID;
 
 public class MidiIn extends MidiDeviceMgr {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
+    protected UUID uuid = UUID.randomUUID();
 
-//    public MidiIn() {
-//    }
 
-    public MidiIn(App app) {
+    public MidiIn(boolean userCallback) {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
+
+        if (!userCallback) {
+            String threadName = "native-" + sourceDeviceName;
+            setCallback(fromNative, threadName, null);
+        }
     }
 
-    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit/*, App app*/) {
+    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, boolean userCallback) {
         if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon from client name.
@@ -34,6 +38,19 @@ public class MidiIn extends MidiDeviceMgr {
             super.sourceDeviceName = sourceDeviceName;
         }
         super.rtMidiDevice = create(api, super.sourceDeviceName, queueSizeLimit);
+
+        if (!userCallback) {
+            String threadName = "native-" + sourceDeviceName;
+            setCallback(fromNative, threadName, null);
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public UUID getUuid() {
+        return uuid;
     }
 
     /**
@@ -159,7 +176,6 @@ public class MidiIn extends MidiDeviceMgr {
         }
 
         double midiMessage = lib.rtmidi_in_get_message(rtMidiDevice, message, size);
-//        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
         return midiMessage;
     }
 
@@ -178,4 +194,20 @@ public class MidiIn extends MidiDeviceMgr {
          */
         void process(double timeStamp, Pointer message, NativeSize messageSize, Pointer userData);
     }
+
+    /**
+     * Midi In callback from native implementation.
+     */
+    public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
+
+        try {
+            /* Create a new MidiMessage (based on incoming native raw data) and
+            sends it to our application. */
+            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
+            Broadcaster.broadcast(uuid, midiMessage, userData);
+
+        } catch (MidiException | NullPointerException me) {
+            me.printStackTrace();
+        }
+    };
 }

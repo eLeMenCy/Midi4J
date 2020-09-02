@@ -1,7 +1,9 @@
 package com.elemency.Midi4J.examples;
 
 import com.elemency.Midi4J.*;
+import com.elemency.Midi4J.Broadcaster.BroadcastListener;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
@@ -9,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class App extends KeepAppRunning {
+public class App extends KeepAppRunning implements BroadcastListener {
     private final Logger logger = LoggerFactory.getLogger(App.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
@@ -19,68 +21,43 @@ public class App extends KeepAppRunning {
         midiInApp.Init();
     }
 
-    /**
-     * Midi In callback from native implementation.
-     */
-    public final MidiIn.MidiInCallback fromMidi4jIn = (timeStamp, midiData, midiDataSize, userData) -> {
-
+    @Override
+    public void receiveMessage(UUID uuid, MidiMessage midiMessage, Pointer userData) {
         try {
-            /* Create a new MidiMessage (based on incoming native raw data) and
-            sends it to our application. */
-            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
-
             if (!doQuit) {
                 if (midiMessage.getControllerNumber() == 89 && midiMessage.getControllerValue() == 127) {
                     logger.info("quitting...");
+                    Broadcaster.unregister(this);
                     doQuit();
                     return;
                 }
             }
 
-            midi4jOut.sendMessage(midiMessage);
+            if (midi4jIn.getUuid().equals(uuid)) {
+                midi4jOut.sendMessage(midiMessage);
+            }
 
             logger.info(
                     SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
                             midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
             );
 
-        } catch (MidiException | NullPointerException me) {
+        } catch (MidiException | NullPointerException | IllegalStateException me) {
                 me.printStackTrace();
         }
-    };
-
-//    /**
-//     * Midi In callback from native implementation.
-//     */
-//    public final MidiIn.MidiInCallback fromMidi4j2In = (timeStamp, midiData, midiDataSize, userData) -> {
-//
-//        try {
-//            /* Create a new MidiMessage (based on incoming native raw data) and
-//            sends it to our application. */
-//            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
-//
-//            midi4j2Out.sendMessage(midiMessage);
-//
-//            logger.info(
-//                    SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
-//                            midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
-//            );
-//
-//        } catch (MidiException | NullPointerException me) {
-//            me.printStackTrace();
-//        }
-//    };
+    }
 
     @Override
     protected void Init() throws Exception {
 
         try (
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
-                MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100);
+                MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, false);
         ) {
-
             this.midi4jIn = midi4jIn;
             this.midi4jOut = midi4jOut;
+
+            Broadcaster.register(this);
 
             try {
                 System.out.println("Target Out device count: " + this.midi4jIn.getTargetDeviceCount());
@@ -89,9 +66,6 @@ public class App extends KeepAppRunning {
                 // List all available target Alsa OUT devices.
                 List<Map<String, String>> outDevices = this.midi4jIn.listTargetDevices(false);
                 this.midi4jIn.connect("IN", 2, true);
-
-                // Set both In source device callbacks.
-                midi4jIn.setCallback(fromMidi4jIn, "midi4jIn", null);
 
                 // List all available target Jack In devices.
                 List<Map<String, String>> inDevices = this.midi4jOut.listTargetDevices(false);
@@ -212,4 +186,5 @@ public class App extends KeepAppRunning {
 //            logger.error("An unrecoverable error occurred:\n e\n - quitting...");
         }
     }
+
 }
