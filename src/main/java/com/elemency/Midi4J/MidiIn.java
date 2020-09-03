@@ -12,11 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.util.UUID;
 
-public class MidiIn extends MidiDeviceMgr {
+public class MidiIn extends MidiDevice {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
-    protected UUID uuid = UUID.randomUUID();
 
 
     public MidiIn(boolean userCallback) {
@@ -43,14 +41,6 @@ public class MidiIn extends MidiDeviceMgr {
             String threadName = "native-" + sourceDeviceName;
             setCallback(fromNative, threadName, null);
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public UUID getUuid() {
-        return uuid;
     }
 
     /**

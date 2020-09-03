@@ -5,7 +5,7 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MidiOut extends MidiDeviceMgr {
+public class MidiOut extends MidiDevice {
     protected final Logger logger = LoggerFactory.getLogger(MidiOut.class);
 //    private final RtMidiLibrary lib = super.lib;
 

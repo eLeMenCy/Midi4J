@@ -3,7 +3,6 @@ package com.elemency.Midi4J.examples;
 import com.elemency.Midi4J.*;
 import com.elemency.Midi4J.Broadcaster.BroadcastListener;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
-import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public class App extends KeepAppRunning implements BroadcastListener {
                 }
             }
 
-            if (midi4jIn.getUuid().equals(uuid)) {
+            if (midi4jIn.getSourceDeviceUUID().equals(uuid)) {
                 midi4jOut.sendMessage(midiMessage);
             }
 

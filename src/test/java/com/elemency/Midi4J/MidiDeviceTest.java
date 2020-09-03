@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MidiDeviceMgrTest {
+class MidiDeviceTest {
 
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
@@ -18,7 +18,7 @@ class MidiDeviceMgrTest {
     void init()
     {
         MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
-        MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100);
+        MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, false);
         this.midi4jIn = midi4jIn;
         this.midi4jOut = midi4jOut;
     }
