@@ -18,7 +18,7 @@ public class MidiOut extends MidiDevice {
 
         if (!sourceDeviceName.isEmpty()) {
 
-            // Remove the eventual semicolon form client name.
+            // Remove the eventual semicolon from client name.
             // The semicolon is generally used as a separator between client and port name and id).
             sourceDeviceName = sourceDeviceName.replaceAll(":", " ");
             super.sourceDeviceName = sourceDeviceName;

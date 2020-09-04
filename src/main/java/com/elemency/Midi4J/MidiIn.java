@@ -53,7 +53,7 @@ public class MidiIn extends MidiDevice {
      *                          Set to 'false':
      *                              The default callback method, part of this class is automatically used.
      *                              The user must implement the 'broadcasterListener' interface and override
-     *                              the 'receiveMessage' method where all MidiIn messages of all MidiIn source
+     *                              the 'receiveMessage' method to which all MidiIn messages of all MidiIn source
      *                              device instances will be sent.
      */
     public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, boolean userCallback) {
@@ -122,7 +122,7 @@ public class MidiIn extends MidiDevice {
     }
 
     /**
-     * Set the midi in callback ready to receive midi message form the native driver.
+     * Set the midi in callback ready to receive midi message from the native driver.
      *
      * @param callback      callback method name
      * @param threadName    callback thread name - this appears in the log
