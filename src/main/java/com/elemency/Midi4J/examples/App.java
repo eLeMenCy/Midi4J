@@ -27,6 +27,7 @@ public class App extends KeepAppRunning implements BroadcastListener {
                 if (midiMessage.getControllerNumber() == 89 && midiMessage.getControllerValue() == 127) {
                     logger.info("quitting...");
                     Broadcaster.unregister(this);
+                    Broadcaster.shutdownBroadcaster();
                     doQuit();
                     return;
                 }

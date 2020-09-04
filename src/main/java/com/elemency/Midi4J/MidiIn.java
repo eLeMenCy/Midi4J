@@ -16,7 +16,20 @@ import java.nio.ByteBuffer;
 public class MidiIn extends MidiDevice {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
 
-
+    /**
+     * MidiIn simple constructor.
+     *
+     * @param userCallback  boolean
+     *                      Set to 'true':
+     *                          Allows users to set the MidiIn callback method directly in their applications
+     *                          (One callback per MidiIn source device instances created).
+     *
+     *                      Set to 'false':
+     *                          The default callback method, part of this class is automatically used.
+     *                          The user must implement the 'broadcasterListener' interface and override
+     *                          the 'receiveMessage' method where all MidiIn messages of all MidiIn source
+     *                          device instances will be sent.
+     */
     public MidiIn(boolean userCallback) {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
@@ -27,6 +40,22 @@ public class MidiIn extends MidiDevice {
         }
     }
 
+    /**
+     *
+     * @param api               The Api id (0= Unknown, 1=CoreMidi, 2=ALSA, 3=JACK, 4=Winmm, 5=Dummy)
+     * @param sourceDeviceName  The name of this Midi source instance.
+     * @param queueSizeLimit    Maximum buffer size.
+     * @param userCallback      boolean
+     *                          Set to 'true':
+     *                              Allows users to set the MidiIn callback method directly in their applications
+     *                              (One callback per MidiIn source device instances created).
+     *
+     *                          Set to 'false':
+     *                              The default callback method, part of this class is automatically used.
+     *                              The user must implement the 'broadcasterListener' interface and override
+     *                              the 'receiveMessage' method where all MidiIn messages of all MidiIn source
+     *                              device instances will be sent.
+     */
     public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, boolean userCallback) {
         if (!sourceDeviceName.isEmpty()) {
 
@@ -67,7 +96,9 @@ public class MidiIn extends MidiDevice {
     }
 
     /**
+     * Return the API id of the current MidiIn device instance.
      *
+     * @return int
      */
     @Override
     public int getCurrentApiId() {

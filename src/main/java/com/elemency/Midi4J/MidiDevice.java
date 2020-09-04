@@ -15,7 +15,7 @@ public abstract class MidiDevice implements AutoCloseable {
 //    protected MidiDevice midiDevice;
 
     protected RtMidiDevice rtMidiDevice = null;
-    protected UUID uuid = UUID.randomUUID();
+    protected final UUID uuid = UUID.randomUUID();
     protected String sourceDeviceName = "Midi4J";
     protected String sourcePortName = "??";
     protected Map<Integer, Boolean> connectedTargets = new LinkedHashMap<>();
@@ -77,9 +77,9 @@ public abstract class MidiDevice implements AutoCloseable {
     }
 
     /**
-     * Return the midi api ID used by current device instance.
+     * Return the API id of the current MidiIn device instance.
      *
-     * @return the midi api ID used by current device instance.
+     * @return int
      */
     public abstract int getCurrentApiId();
 
@@ -373,7 +373,7 @@ public abstract class MidiDevice implements AutoCloseable {
 
     /**
      * List all available target devices, for the current source device instance, together with their full details.
-     *
+     * @param connectedOnly only target devices connected to current source device.
      * @return the selected target device full detail list.
      */
     public List<Map<String, String>> listTargetDevices(boolean connectedOnly) {

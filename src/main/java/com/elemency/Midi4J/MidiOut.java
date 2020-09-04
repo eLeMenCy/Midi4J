@@ -51,9 +51,9 @@ public class MidiOut extends MidiDevice {
     }
 
     /**
-     * Return the midi API name used by current device instance.
+     * Return the API id of the current MidiIn device instance.
      *
-     * @return the midi API name used by current device instance.
+     * @return int
      */
     @Override
     public int getCurrentApiId() {
