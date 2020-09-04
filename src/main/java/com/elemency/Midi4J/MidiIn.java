@@ -17,15 +17,13 @@ import java.nio.ByteBuffer;
 public class MidiIn extends MidiDeviceMgr {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
 
-//    public MidiIn() {
-//    }
 
-    public MidiIn(App app) {
+    public MidiIn() {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
     }
 
-    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit/*, App app*/) {
+    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit) {
         if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon from client name.
