@@ -1,6 +1,4 @@
-package com.elemency.Midi4J.examples;
-
-import com.elemency.Midi4J.examples.App2.App2;
+package com.elemency.Midi4J.Examples;
 
 public class Main {
 

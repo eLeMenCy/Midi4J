@@ -1,4 +1,4 @@
-package com.elemency.Midi4J.examples;
+package com.elemency.Midi4J.Examples;
 
 import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.SmpteTimecode;

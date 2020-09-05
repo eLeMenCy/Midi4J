@@ -145,40 +145,10 @@ public class MidiMessage implements Cloneable {
         this.timeStamp = timeStamp;
 
         if (midiData == null) {
-//            AppException exception = new AppException();
-//            ErrorInfo info = exception.addInfo();
-//
-//            // Error Information Gathering
-//            info.setErrorId("MidiDataNativeNull");
-//            info.setContextId("MidiMessage");
-//
-//            info.setErrorType(ErrorType.CLIENT);
-//            info.setSeverity(ErrorLevel.ERROR);
-//
-//            info.setErrorDescription("The native midiData array was null.");
-//            info.setErrorCorrection("Make sure midiData parameter is not null.");
-//
-//            // Throw exception
-//            throw exception;
             throw new NullPointerException("A native Midi Message can't be null.");
         }
 
         if (this.midiDataSize < 1) {
-//            AppException exception = new AppException();
-//            ErrorInfo info = exception.addInfo();
-//
-//            // Error Information Gathering
-//            info.setErrorId("midiData Null");
-//            info.setContextId("Midi Message");
-//
-//            info.setErrorType(ErrorType.CLIENT);
-//            info.setSeverity(ErrorLevel.ERROR);
-//
-//            info.setErrorDescription("The native data size was < 1");
-//            info.setErrorCorrection("Make sure native data size parameter is > 0.");
-//
-//            // Throw exception
-//            throw exception;
             throw new MidiException("A native Midi Message size should be > 0.");
         }
 

@@ -1,4 +1,4 @@
-package com.elemency.Midi4J.examples;
+package com.elemency.Midi4J.Examples;
 
 import com.elemency.Midi4J.*;
 import com.elemency.Midi4J.Broadcaster.BroadcastListener;
@@ -138,22 +138,11 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener {
                 m6 = m6.withTimeStamp(6);
                 logger.info(m6.getDescription() + " timeStamp: " + m6.getTimeStamp());
 
-//                try {
                 // Native message Test
                 Pointer test = null;
                 NativeSize testSize = new NativeSize(0);
                 MidiMessage tc = new MidiMessage(test, testSize, 0);
                 logger.info(tc.getDescription());
-//                } catch(AppException e) {
-//
-//                    System.out.println("AppException::notifyUser(lookupErrorText():" + e);
-//                    System.out.println("AppException::notifyNonUsers(e):" + e);
-//
-//                } catch(Throwable t) {
-//
-//                    System.out.println("Throwable::notifyUser(lookupErrorText():" + t);
-//                    System.out.println("Throwable::notifyNonUsers(e):" + t);
-//                }
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();
