@@ -6,14 +6,19 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String appType = "";
+//        String appType = "";
+        String appType = "callback";
 
-        if ("app2".equals(appType)) {
-            final App2 awbst = new App2();
-            awbst.init();
-        } else {
-            final WithCallbacks awcb = new WithCallbacks();
-            awcb.init();
+        switch (appType) {
+            case "callback":
+                final WithCallbacks awcb = new WithCallbacks();
+                awcb.init();
+                break;
+
+            default:
+                final WithBroadcaster awbst = new WithBroadcaster();
+                awbst.init();
+                break;
         }
     }
 
