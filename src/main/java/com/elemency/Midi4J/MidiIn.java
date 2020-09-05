@@ -13,16 +13,50 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
-public class MidiIn extends MidiDeviceMgr {
+public class MidiIn extends MidiDevice {
     protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
 
-
-    public MidiIn() {
+    /**
+     * MidiIn simple constructor.
+     *
+     * @param userCallback  boolean
+     *                      Set to 'true':
+     *                          Allows users to set the MidiIn callback method directly in their applications
+     *                          (One callback per MidiIn source device instances created).
+     *
+     *                      Set to 'false':
+     *                          The default callback method, part of this class is automatically used.
+     *                          The user must implement the 'broadcasterListener' interface and override
+     *                          the 'receiveMessage' method where all MidiIn messages of all MidiIn source
+     *                          device instances will be sent.
+     */
+    public MidiIn(boolean userCallback) {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
+
+        if (!userCallback) {
+            String threadName = "native-" + sourceDeviceName;
+            setCallback(fromNative, threadName, null);
+        }
     }
 
-    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit) {
+    /**
+     *
+     * @param api               The Api id (0= Unknown, 1=CoreMidi, 2=ALSA, 3=JACK, 4=Winmm, 5=Dummy)
+     * @param sourceDeviceName  The name of this Midi source instance.
+     * @param queueSizeLimit    Maximum buffer size.
+     * @param userCallback      boolean
+     *                          Set to 'true':
+     *                              Allows users to set the MidiIn callback method directly in their applications
+     *                              (One callback per MidiIn source device instances created).
+     *
+     *                          Set to 'false':
+     *                              The default callback method, part of this class is automatically used.
+     *                              The user must implement the 'broadcasterListener' interface and override
+     *                              the 'receiveMessage' method to which all MidiIn messages of all MidiIn source
+     *                              device instances will be sent.
+     */
+    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, boolean userCallback) {
         if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon from client name.
@@ -31,6 +65,11 @@ public class MidiIn extends MidiDeviceMgr {
             super.sourceDeviceName = sourceDeviceName;
         }
         super.rtMidiDevice = create(api, super.sourceDeviceName, queueSizeLimit);
+
+        if (!userCallback) {
+            String threadName = "native-" + sourceDeviceName;
+            setCallback(fromNative, threadName, null);
+        }
     }
 
     /**
@@ -57,7 +96,9 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
+     * Return the API id of the current MidiIn device instance.
      *
+     * @return int
      */
     @Override
     public int getCurrentApiId() {
@@ -81,7 +122,7 @@ public class MidiIn extends MidiDeviceMgr {
     }
 
     /**
-     * Set the midi in callback ready to receive midi message form the native driver.
+     * Set the midi in callback ready to receive midi message from the native driver.
      *
      * @param callback      callback method name
      * @param threadName    callback thread name - this appears in the log
@@ -156,7 +197,6 @@ public class MidiIn extends MidiDeviceMgr {
         }
 
         double midiMessage = lib.rtmidi_in_get_message(rtMidiDevice, message, size);
-//        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
         return midiMessage;
     }
 
@@ -175,4 +215,20 @@ public class MidiIn extends MidiDeviceMgr {
          */
         void process(double timeStamp, Pointer message, NativeSize messageSize, Pointer userData);
     }
+
+    /**
+     * Midi In callback from native implementation.
+     */
+    public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
+
+        try {
+            /* Create a new MidiMessage (based on incoming native raw data) and
+            sends it to our application. */
+            MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
+            Broadcaster.broadcast(uuid, midiMessage, userData);
+
+        } catch (MidiException | NullPointerException me) {
+            me.printStackTrace();
+        }
+    };
 }

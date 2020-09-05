@@ -5,7 +5,7 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MidiOut extends MidiDeviceMgr {
+public class MidiOut extends MidiDevice {
     protected final Logger logger = LoggerFactory.getLogger(MidiOut.class);
 //    private final RtMidiLibrary lib = super.lib;
 
@@ -18,7 +18,7 @@ public class MidiOut extends MidiDeviceMgr {
 
         if (!sourceDeviceName.isEmpty()) {
 
-            // Remove the eventual semicolon form client name.
+            // Remove the eventual semicolon from client name.
             // The semicolon is generally used as a separator between client and port name and id).
             sourceDeviceName = sourceDeviceName.replaceAll(":", " ");
             super.sourceDeviceName = sourceDeviceName;
@@ -51,9 +51,9 @@ public class MidiOut extends MidiDeviceMgr {
     }
 
     /**
-     * Return the midi API name used by current device instance.
+     * Return the API id of the current MidiIn device instance.
      *
-     * @return the midi API name used by current device instance.
+     * @return int
      */
     @Override
     public int getCurrentApiId() {

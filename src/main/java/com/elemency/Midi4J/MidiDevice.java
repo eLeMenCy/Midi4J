@@ -8,13 +8,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public abstract class MidiDeviceMgr implements AutoCloseable {
+public abstract class MidiDevice implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
-    private final Logger logger = LoggerFactory.getLogger(MidiDeviceMgr.class);
+    private final Logger logger = LoggerFactory.getLogger(MidiDevice.class);
 
 //    protected MidiDevice midiDevice;
 
     protected RtMidiDevice rtMidiDevice = null;
+    protected final UUID uuid = UUID.randomUUID();
     protected String sourceDeviceName = "Midi4J";
     protected String sourcePortName = "??";
     protected Map<Integer, Boolean> connectedTargets = new LinkedHashMap<>();
@@ -26,6 +27,15 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
      */
     public RtMidiDevice getRtMidiDevice() {
         return rtMidiDevice;
+    }
+
+    /**
+     * Return current source device object UUID.
+     *
+     * @return uuid
+     */
+    public UUID getSourceDeviceUUID() {
+        return uuid;
     }
 
     /**
@@ -67,9 +77,9 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
     }
 
     /**
-     * Return the midi api ID used by current device instance.
+     * Return the API id of the current MidiIn device instance.
      *
-     * @return the midi api ID used by current device instance.
+     * @return int
      */
     public abstract int getCurrentApiId();
 
@@ -363,7 +373,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
     /**
      * List all available target devices, for the current source device instance, together with their full details.
-     *
+     * @param connectedOnly only target devices connected to current source device.
      * @return the selected target device full detail list.
      */
     public List<Map<String, String>> listTargetDevices(boolean connectedOnly) {
@@ -393,7 +403,7 @@ public abstract class MidiDeviceMgr implements AutoCloseable {
 
             Map<String, String> fullDeviceDetails = getTargetDeviceFullDetails(i);
 
-            // Build a logMsg with each array elements separated by '|'.
+            // Build a logMsg with each map elements separated by '|'.
             StringBuilder logMsg = new StringBuilder();
             for (String value : fullDeviceDetails.values()) {
                 if (value.equals("--"))
