@@ -11,7 +11,6 @@ import java.util.Timer;
 public abstract class KeepRunning {
     private final Logger logger = LoggerFactory.getLogger(KeepRunning.class);
     protected boolean doQuit = false;
-    protected Timer t = null;
     private final boolean DISPLAY_TIMECODE = true;
     private final long DISPLAY_TIMECODE_RATE = 1000;
 
@@ -21,7 +20,6 @@ public abstract class KeepRunning {
     }
 
     public synchronized void doQuit() {
-        t.cancel();
         this.doQuit = true;
     }
 

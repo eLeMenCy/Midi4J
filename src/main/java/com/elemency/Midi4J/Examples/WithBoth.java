@@ -54,14 +54,6 @@ public class WithBoth extends KeepRunning implements BroadcastListener {
             sends it to our application. */
             MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
 
-//            if (!doQuit) {
-//                if (midiMessage.getControllerNumber() == 89 && midiMessage.getControllerValue() == 127) {
-//                    logger.info("quitting...");
-//                    doQuit();
-//                    return;
-//                }
-//            }
-
             midi4j2Out.sendMessage(midiMessage);
 
             logger.info(
@@ -89,131 +81,41 @@ public class WithBoth extends KeepRunning implements BroadcastListener {
             this.midi4j2In = midi4j2In;
             this.midi4j2Out = midi4j2Out;
 
-            Broadcaster.register(this);
-
             try {
                 System.out.println("Target Out device count: " + this.midi4jIn.getTargetDeviceCount());
                 System.out.println("Target In device count: " + this.midi4jOut.getTargetDeviceCount());
 
                 // List all available target Alsa OUT devices.
-                List<Map<String, String>> outDevices = this.midi4jIn.listTargetDevices(false);
+                List<Map<String, String>> outDevices;
+                outDevices= this.midi4jIn.listTargetDevices(false);
                 this.midi4jIn.connect("IN", 2, true);
                 this.midi4j2In.connect("IN", 2, true);
 
-                // Set both In source device callbacks.
+                // Register our listener app to the Broadcaster.
+                Broadcaster.register(this);
+
+                // Set midi4j2In callback.
                 midi4j2In.setCallback(fromMidi4j2In, "midi4j2In", null);
 
                 // List all available target Jack In devices.
-                List<Map<String, String>> inDevices = this.midi4jOut.listTargetDevices(false);
-//                for (int i = 1; i < 3; i++) {
-//                    this.midi4jOut.connect("OUT", i, true);
-//                }
+                List<Map<String, String>> inDevices;
+                inDevices = this.midi4jOut.listTargetDevices(false);
                 this.midi4jOut.connect("OUT", 1, true);
                 this.midi4j2Out.connect("OUT", 2, true);
 
-
-                System.out.println("Out device count: " + this.midi4jIn.getTargetDeviceCount());
-                System.out.println("In device count: " + this.midi4jOut.getTargetDeviceCount());
-
-                System.out.println("\nThis Midi In Device name is: " + this.midi4jIn.getSourceDeviceName());
-                System.out.println("A possible target Device name is: " + this.midi4jIn.getTargetDeviceName(5));
-                System.out.println("and its Port name is: " + this.midi4jIn.getTargetPortName(5));
-
-                System.out.println("\nName of Out port id(" + 1 + ") is: " + this.midi4jIn.getTargetPortName(1));
-                System.out.println("Name of In port id(" + 0 + ") is: " + this.midi4jOut.getTargetPortName(0));
-
-                System.out.println("\nis midi4jIn device Open: " + midi4jIn.isSourceDeviceOpen());
-                System.out.println("is midi4jOut device Open: " + midi4jOut.isSourceDeviceOpen());
-
-                System.out.println("--------------------------------------------");
-
-                outDevices = this.midi4jIn.listTargetDevices(false);
-                inDevices = this.midi4jOut.listTargetDevices(false);
-                outDevices = this.midi4j2In.listTargetDevices(false);
-                inDevices = this.midi4j2Out.listTargetDevices(false);
-
-//                System.out.println("------: " + this.midi4jIn.getTargetDeviceName(85));
-                midi4jIn.setSourceDeviceName("tt");
-                System.out.println(midi4jIn.getSourceDeviceName());
-                midi4jIn.setSourcePortName("Huuuuh");
-                System.out.println(midi4jIn.getSourcePortName());
-//                System.out.println(midi4jIn.getTargetPortName(-2));
-
-                MidiMessage m1 = new MidiMessage(MidiMessage.createStatusByte(0x78, 1), 0);
-//                logger.info(m1.getDescription());
-
-                // Short 2 byte message test
-                MidiMessage m2 = new MidiMessage(MidiMessage.createStatusByte(0x73, 1), (60 & 127), 0);
-                logger.info(m2.getDescription());
-
-                // Short 3 byte message test
-                MidiMessage m3 = new MidiMessage(MidiMessage.createStatusByte(0x80, 1), (60 & 127), 80, 0);
-                logger.info(m3.getDescription());
-
-                // Short message test via MidiMessage::byte[] constructor.
-                byte[] tmp = {(byte) 0x91, 75, 81, 78};
-                MidiMessage m4 = new MidiMessage(tmp, tmp.length, 0);
-                logger.info(m4.getDescription());
-
-                // SysEx message test using MidiMessage constructor.
-                byte[] tmp2 = {(byte) 0xF0, 60, 81, 123, 5, (byte) 0xF7};
-                MidiMessage m5 = new MidiMessage(tmp2, tmp2.length, 0);
-                logger.info(m5.getDescription());
-
-                // SysEx message test using createSysExMessage().
-                byte[] tmp3 = {(byte) 0xF0, 61, 82, 124, 6, (byte) 0xF7};
-                m5 = MidiMessage.createSysExMessage(tmp3, tmp3.length, 0);
-                logger.info(m5.getDescription());
-
-                // Replace midimessage timeStamp
-                MidiMessage m6 = new MidiMessage(MidiMessage.createStatusByte(0x90, 1), (60 & 127), (85 & 127), 1000);
-                m6 = m6.withTimeStamp(6);
-                logger.info(m6.getDescription() + " timeStamp: " + m6.getTimeStamp());
-
-                // Native message Test
-                Pointer test = null;
-                NativeSize testSize = new NativeSize(0);
-                MidiMessage tc = new MidiMessage(test, testSize, 0);
-                logger.info(tc.getDescription());
+                outDevices = this.midi4jIn.listTargetDevices(true);
+                inDevices = this.midi4jOut.listTargetDevices(true);
+                outDevices = this.midi4j2In.listTargetDevices(true);
+                inDevices = this.midi4j2Out.listTargetDevices(true);
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();
             }
 
-            t = new Timer();
-            TimerTask tt = new TimerTask() {
-                @Override
-                public void run() {
-
-                    Random random = new Random();
-                    int note = random.nextInt(127);
-                    int velocity = random.nextInt(127);
-
-                    MidiMessage tmp = MidiMessage.noteOn(1, note, velocity, 0);
-                    midi4jOut.sendMessage(tmp);
-                    logger.info(tmp.getDescription());
-
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    tmp.setFloatVelocity(0);
-                    midi4jOut.sendMessage(tmp);
-                    logger.info(tmp.getDescription());
-                }
-            };
-
-//            t.schedule(tt,1000,250);
-
             keepRunning();
 
         } catch (MidiException me) {
             logger.error(String.valueOf(me));
-
-//        } catch( Exception e) {
-//            logger.error("An unrecoverable error occurred:\n e\n - quitting...");
         }
     }
 }
