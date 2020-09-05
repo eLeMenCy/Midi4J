@@ -2,7 +2,6 @@ package com.elemency.Midi4J;
 
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
-import com.elemency.Midi4J.examples.App;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
 import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
 import com.sun.jna.Callback;

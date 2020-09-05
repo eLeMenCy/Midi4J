@@ -8,14 +8,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Timer;
 
-public abstract class KeepAppRunning {
-    private final Logger logger = LoggerFactory.getLogger(KeepAppRunning.class);
+public abstract class KeepRunning {
+    private final Logger logger = LoggerFactory.getLogger(KeepRunning.class);
     protected boolean doQuit = false;
     protected Timer t = null;
     private boolean displayTimecode = true;
     private long displayTimecodeRate = 1000;
 
-    protected abstract void Init() throws Exception;
+    protected abstract void init() throws Exception;
 
     public void processMidiInMessage(double timeStamp, MidiMessage midiMessage, Pointer userData) {
     }

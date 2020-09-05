@@ -9,17 +9,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class App extends KeepAppRunning {
-    private final Logger logger = LoggerFactory.getLogger(App.class);
+public class WithCallbacks extends KeepRunning {
+    private final Logger logger = LoggerFactory.getLogger(WithCallbacks.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
     private MidiIn midi4j2In = null;
     private MidiOut midi4j2Out = null;
 
-    public static void main(String[] args) throws Exception {
-        App midiInApp = new App();
-        midiInApp.Init();
-    }
+//    public static void main(String[] args) throws Exception {
+//        WithCallbacks midiInApp = new WithCallbacks();
+//        midiInApp.Init();
+//    }
 
     /**
      * Midi In callback from native implementation.
@@ -74,7 +74,7 @@ public class App extends KeepAppRunning {
     };
 
     @Override
-    protected void Init() throws Exception {
+    protected void init() throws Exception {
 
         try (
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");

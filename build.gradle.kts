@@ -119,6 +119,7 @@ tasks {
 
 application {
     // Define the main class for the application.
-    mainClassName = "com.elemency.Midi4J.examples.App"
+//    mainClassName = "com.elemency.Midi4J.examples.App"
+    mainClassName = "com.elemency.Midi4J.examples.Main"
 }
 
