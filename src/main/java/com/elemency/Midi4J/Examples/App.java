@@ -61,6 +61,16 @@ public class App {
                 break;
             }
 
+            case "seq": {
+                System.out.println("\n\n--------------------");
+                System.out.println("| Simple Sequencer |");
+                System.out.println("--------------------\n");
+
+                final SimpleSequencer simpleSequencer = new SimpleSequencer();
+                simpleSequencer.init();
+                break;
+            }
+
             default: {
                 System.out.println("\n\n---------------------------");
                 System.out.println("| Method with Broadcaster |");

@@ -112,6 +112,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener {
                 me.printStackTrace();
             }
 
+            // Keep our application going.
             keepRunning();
 
         } catch (MidiException me) {

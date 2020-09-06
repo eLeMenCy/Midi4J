@@ -16,9 +16,6 @@ public abstract class KeepRunning {
 
     protected abstract void init() throws Exception;
 
-    public void processMidiInMessage(double timeStamp, MidiMessage midiMessage, Pointer userData) {
-    }
-
     public synchronized void doQuit() {
         this.doQuit = true;
     }

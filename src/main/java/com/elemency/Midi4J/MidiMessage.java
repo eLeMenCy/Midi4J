@@ -37,9 +37,6 @@ public class MidiMessage implements Cloneable {
     private byte[] midiData;
     private double timeStamp = 0;
 
-    public MidiMessage() {
-    }
-
     /**
      * Creates a 3-byte short midi message.
      *
@@ -176,8 +173,26 @@ public class MidiMessage implements Cloneable {
     }
 
     /**
+     * Returns the name of a midi note number assuming sharpened notes
+     * with Octave number appended and octave 3 for Middle C.
+     * E.g "C5", "D#3", "--" etc.
+     *
+     * @param noteNumber            the midi note number, 0 to 127
+     * @return                      String
+     */
+    public static String getMidiNoteName(int noteNumber)
+    {
+        if (noteNumber > 0 && noteNumber < 128) {
+            String s = getMidiNoteName(noteNumber, true, true, 3);
+            return s;
+        }
+
+        return "--";
+    }
+
+    /**
      * Returns the name of a midi note number.
-     * E.g "C", "D#", etc.
+     * E.g "C5", "D#3", "--" etc.
      *
      * @param noteNumber            the midi note number, 0 to 127
      * @param useSharps             if true, sharpened notes are used, e.g. "C#", otherwise they'll be flattened, e.g. "Db"

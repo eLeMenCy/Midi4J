@@ -112,6 +112,7 @@ public class WithCallbacks extends KeepRunning {
                 me.printStackTrace();
             }
 
+            // Keep our application going.
             keepRunning();
 
         } catch (MidiException me) {
