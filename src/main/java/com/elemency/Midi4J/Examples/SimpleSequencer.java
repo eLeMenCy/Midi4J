@@ -12,8 +12,20 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * inspired from Sand, software and sound
- * http://sandsoftwaresound.net/source/arduino-project-source/simple-midi-sequencer/
+ * Simple sequencer inspired from
+ * <a href="http://sandsoftwaresound.net/source/arduino-project-source/simple-midi-sequencer/">Sand,software and sound code</a><br><br>
+ *
+ * I have set the sequence to the intro of one of my favourite track by
+ * Alan Walker - <a href="https://www.youtube.com/watch?v=60ItHLz5WEA">Faded</a><br>
+ *
+ * Obviously the monodic sequence definitively doesn't do justice to the original but
+ * demonstrates how simple it can be to send midi messages to any available device.<br><br>
+ *
+ * KNOWN ISSUE:<br>
+ * Last note sticking when aborting the application while the sequence plays.<br>
+ * I have yet to find a way to elegantly shutdown all running threads when aborting the console application.<br>
+ * The best way right now is to let the application go thru its
+ * full cycle (2 loops) until it quits by itself<br>- Any suggestions welcome! -
  */
 public class SimpleSequencer extends KeepRunning {
     private final Logger logger = LoggerFactory.getLogger(SimpleSequencer.class);
@@ -34,7 +46,6 @@ public class SimpleSequencer extends KeepRunning {
     private final int CHANNEL = 1;
     private final int VELOCITY = 80;
     private final int TEMPO = 110;
-    // Alan Walker - Faded (Intro)
     private final int[][] SEQUENCE = {
     // Note {number, duration}
             {65, 4},                // F3
@@ -72,8 +83,8 @@ public class SimpleSequencer extends KeepRunning {
             {62, 4}                 // D3
     };
 
-
-    public class Task extends TimerTask {
+    // Sequencer engine
+    public class SequencerEngine extends TimerTask {
 
         private void playMidiNote(int velocity) {
             MidiMessage midiMessage;
@@ -88,28 +99,32 @@ public class SimpleSequencer extends KeepRunning {
         @Override
         public void run() {
 
+            // Note duration has expired send a key up message (note OFF) to driver.
             playMidiNote(0);
 
+            // Set new note and new duration
             note = SEQUENCE[seqStep][0];
             long duration = (int)((float)60 * 4 / SEQUENCE[seqStep][1] / TEMPO * 1000);
 
+            // Loop amount reached -> quit the application.
             if (loopIndex == loopAmount) {
                 t.cancel();
                 doQuit();
                 return;
             }
 
+            // Get some random velocity with offset and send new note to driver.
             Random random = new Random();
-            int velocity = random.nextInt(127);
-
             playMidiNote(VELOCITY + random.nextInt(127 - VELOCITY));
 
+            // Increment sequence to next step
             if (++seqStep > SEQUENCE.length - 1) {
                 loopIndex ++;
                 seqStep = 0;
             }
 
-            t.schedule(new Task(), duration);
+            // Reschedule timer with next note duration;
+            t.schedule(new SequencerEngine(), duration);
         }
     }
 
@@ -133,10 +148,11 @@ public class SimpleSequencer extends KeepRunning {
                 me.printStackTrace();
             }
 
+            // The number of time our sequence will repeat before quitting.
             loopAmount = 2;
 
             // Start playing the sequence within 1 second.
-            t.schedule(new Task(), 1000);
+            t.schedule(new SequencerEngine(), 1000);
 
             // Keep our application going.
             keepRunning();

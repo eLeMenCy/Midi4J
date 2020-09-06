@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * This sample illustrates how both a Broadcaster/Listener and a user Callback can be used
+ * together to handle incoming messages from their respective native MidiIn source device.
+ */
 public class WithBoth extends KeepRunning implements BroadcastListener {
     private final Logger logger = LoggerFactory.getLogger(WithBoth.class);
     private MidiIn midi4jIn = null;
@@ -17,6 +21,9 @@ public class WithBoth extends KeepRunning implements BroadcastListener {
     private MidiIn midi4j2In = null;
     private MidiOut midi4j2Out = null;
 
+    /**
+     * Midi In BroadcastListener receiving all messages from both native MidiIn source devices.
+     */
     @Override
     public void receiveMessage(UUID uuid, MidiMessage midiMessage, Pointer userData) {
         try {
@@ -30,6 +37,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener {
                 }
             }
 
+            // Message Routing (only needed when more than one device uses the broadcaster).
             if (midi4jIn.getSourceDeviceUUID().equals(uuid)) {
                 midi4jOut.sendMessage(midiMessage);
             }
@@ -45,7 +53,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener {
     }
 
     /**
-     * Midi In callback from native implementation.
+     * Midi In callback receiving messages from native MidiIn source device 2.
      */
     public final MidiIn.MidiInCallback fromMidi4j2In = (timeStamp, midiData, midiDataSize, userData) -> {
 

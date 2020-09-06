@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * This sample illustrates how user callbacks (one per source device) are set to handle
+ * incoming messages from our 2 native MidiIn source devices respectively.
+ */
 public class WithCallbacks extends KeepRunning {
     private final Logger logger = LoggerFactory.getLogger(WithCallbacks.class);
     private MidiIn midi4jIn = null;
@@ -17,7 +21,7 @@ public class WithCallbacks extends KeepRunning {
     private MidiOut midi4j2Out = null;
 
     /**
-     * Midi In callback from native implementation.
+     * Midi In callback 1 receiving messages from native MidiIn source device 1.
      */
     public final MidiIn.MidiInCallback fromMidi4jIn = (timeStamp, midiData, midiDataSize, userData) -> {
 
@@ -47,7 +51,7 @@ public class WithCallbacks extends KeepRunning {
     };
 
     /**
-     * Midi In callback from native implementation.
+     * Midi In callback 2 receiving messages from native MidiIn source device 2.
      */
     public final MidiIn.MidiInCallback fromMidi4j2In = (timeStamp, midiData, midiDataSize, userData) -> {
 

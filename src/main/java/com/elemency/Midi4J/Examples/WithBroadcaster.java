@@ -10,6 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * This sample illustrates how to use the Broadcaster/listener system to handle
+ * all messages coming from our 2 native MidiIn source devices and reroute them
+ * to the relevant connected target device.
+ */
 public class WithBroadcaster extends KeepRunning implements BroadcastListener {
     private final Logger logger = LoggerFactory.getLogger(WithBroadcaster.class);
     private MidiIn midi4jIn = null;
@@ -17,6 +22,9 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener {
     private MidiIn midi4j2In = null;
     private MidiOut midi4j2Out = null;
 
+    /**
+     * Midi In BroadcastListener receiving all messages from both native MidiIn source devices.
+     */
     @Override
     public void receiveMessage(UUID uuid, MidiMessage midiMessage, Pointer userData) {
         try {
@@ -30,6 +38,7 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener {
                 }
             }
 
+            // Message Routing.
             if (midi4jIn.getSourceDeviceUUID().equals(uuid)) {
                 midi4jOut.sendMessage(midiMessage);
 
@@ -97,5 +106,4 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener {
             logger.error(String.valueOf(me));
         }
     }
-
 }
