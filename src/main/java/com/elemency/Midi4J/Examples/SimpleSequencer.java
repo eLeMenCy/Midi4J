@@ -32,27 +32,44 @@ public class SimpleSequencer extends KeepRunning {
 
     // ----- CHANGE TO YOUR HEART CONTENT -----
     private final int CHANNEL = 1;
-    private final int VELOCITY = 60;
+    private final int VELOCITY = 80;
     private final int TEMPO = 110;
     // Alan Walker - Faded (Intro)
     private final int[][] SEQUENCE = {
-    // {Note number, Note duration}
-                {65, 4},            // F3
-                {65, 4},            // F3
-                {65, 4},            // F3
-                {69, 4},            // A3
-                {74, 4},            // D4
-                {74, 4},            // D4
-                {74, 4},            // D4
-                {72, 4},            // C4
-                {69, 4},            // A3
-                {69, 4},            // A3
-                {69, 4},            // A3
-                {69, 4},            // A3
-                {64, 4},            // E3
-                {64, 4},            // E3
-                {64, 4},            // E3
-                {62, 4}             // D3
+    // Note {number, duration}
+            {65, 4},                // F3
+            {65, 4},                // F3
+            {65, 4},                // F3
+            {69, 4},                // A3
+            {74, 4},                // D4
+            {74, 4},                // D4
+            {74, 4},                // D4
+            {72, 4},                // C4
+            {69, 4},                // A3
+            {69, 4},                // A3
+            {69, 4},                // A3
+            {69, 4},                // A3
+            {64, 4},                // E3
+            {64, 4},                // E3
+            {64, 4},                // E3
+            {62, 4},                // D3
+            {65, 4},                // F3
+            {65, 4},                // F3
+            {65, 4},                // F3
+            {69, 4},                // A3
+            {74, 4},                // D4
+            {74, 4},                // D4
+            {74, 4},                // D4
+            {77, 8},                // C4
+            {74, 8},                // C4
+            {72, 4},                // A3
+            {69, 4},                // A3
+            {69, 4},                // A3
+            {69, 4},                // A3
+            {64, 4},                // E3
+            {64, 4},                // E3
+            {64, 4},                // E3
+            {62, 4}                 // D3
     };
 
 
@@ -85,7 +102,7 @@ public class SimpleSequencer extends KeepRunning {
             Random random = new Random();
             int velocity = random.nextInt(127);
 
-            playMidiNote(random.nextInt(VELOCITY) + (127 - VELOCITY) );
+            playMidiNote(VELOCITY + random.nextInt(127 - VELOCITY));
 
             if (++seqStep > SEQUENCE.length - 1) {
                 loopIndex ++;
