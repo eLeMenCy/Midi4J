@@ -19,7 +19,7 @@ import java.util.TimerTask;
  * Alan Walker - <a href="https://www.youtube.com/watch?v=60ItHLz5WEA">Faded</a><br>
  *
  * Obviously the monodic sequence definitively doesn't do justice to the original but
- * demonstrates how simple it can be to send midi messages to any available device.<br><br>
+ * demonstrates how simple it can be to send midi messages to any connected device(s).<br><br>
  *
  * KNOWN ISSUE:<br>
  * Last note sticking when aborting the application while the sequence plays.<br>
