@@ -18,7 +18,7 @@ package com.elemency.Midi4J.Examples;
  * Handles all midi incoming events from MidiIn sourcedevices thru a centralised<br>
  * broadcaster/listener system.<br><br>
  *
- * Callback option<br>
+ * Callbacks option<br>
  * Handles all midi incoming events thru user callbacks (one per MidiIn device)<br><br>
  *
  * Both option<br>
