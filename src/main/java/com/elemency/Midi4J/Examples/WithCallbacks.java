@@ -13,7 +13,8 @@ import java.util.*;
  * This sample illustrates how user callbacks (one per source device) are set to handle
  * incoming messages from our 2 native MidiIn source devices respectively.
  */
-public class WithCallbacks extends KeepRunning {
+public class WithCallbacks extends KeepRunning implements AppOption {
+    private final String sampleTitle = "Method with User Callbacks";
     private final Logger logger = LoggerFactory.getLogger(WithCallbacks.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
@@ -73,7 +74,11 @@ public class WithCallbacks extends KeepRunning {
     };
 
     @Override
-    protected void init() throws Exception {
+    public void init() throws Exception {
+
+        System.out.println("\n\n------------------------------");
+        System.out.println("| " + sampleTitle + " |");
+        System.out.println("------------------------------\n");
 
         try (
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");

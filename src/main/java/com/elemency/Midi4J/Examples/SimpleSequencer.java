@@ -15,11 +15,11 @@ import java.util.TimerTask;
  * Simple sequencer inspired from
  * <a href="http://sandsoftwaresound.net/source/arduino-project-source/simple-midi-sequencer/">Sand,software and sound code</a><br><br>
  *
- * I have set the sequence to the intro of one of my favourite track by
- * Alan Walker - <a href="https://www.youtube.com/watch?v=60ItHLz5WEA">Faded</a><br>
+ * The sequence is the intro of one of my favourite tracks by Alan Walker
+ * <a href="https://www.youtube.com/watch?v=60ItHLz5WEA"> - Faded - </a><br>
  *
  * Obviously the monodic sequence definitively doesn't do justice to the original but
- * demonstrates how simple it can be to send midi messages to any connected device(s).<br><br>
+ * demonstrates how simple it can be to send midi messages to any connected device(s) using a single timer.<br><br>
  *
  * KNOWN ISSUE:<br>
  * Last note sticking when aborting the application while the sequence plays.<br>
@@ -27,7 +27,8 @@ import java.util.TimerTask;
  * The best way right now is to let the application go thru its
  * full cycle (2 loops) until it quits by itself<br>- Any suggestions welcome! -
  */
-public class SimpleSequencer extends KeepRunning {
+public class SimpleSequencer extends KeepRunning implements AppOption {
+    private final String sampleTitle = "Simple Sequencer";
     private final Logger logger = LoggerFactory.getLogger(SimpleSequencer.class);
     // Midi Out device which will send our messages to an available target Midi In Device.
     private MidiOut midi4jOut = null;
@@ -129,7 +130,11 @@ public class SimpleSequencer extends KeepRunning {
     }
 
     @Override
-    protected void init() throws Exception {
+    public void init() throws Exception {
+
+        System.out.println("\n\n--------------------");
+        System.out.println("| " + sampleTitle + " |");
+        System.out.println("--------------------\n");
 
         try (
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J")

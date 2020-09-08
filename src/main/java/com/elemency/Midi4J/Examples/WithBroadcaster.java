@@ -15,7 +15,8 @@ import java.util.*;
  * all messages coming from our 2 native MidiIn source devices and reroute them
  * to the relevant connected target device.
  */
-public class WithBroadcaster extends KeepRunning implements BroadcastListener {
+public class WithBroadcaster extends KeepRunning implements BroadcastListener, AppOption {
+    private final String sampleTitle = "Method with Broadcaster";
     private final Logger logger = LoggerFactory.getLogger(WithBroadcaster.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
@@ -57,7 +58,11 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener {
     }
 
     @Override
-    protected void init() throws Exception {
+    public void init() throws Exception {
+
+        System.out.println("\n\n---------------------------");
+        System.out.println("| " + sampleTitle + " |");
+        System.out.println("---------------------------\n");
 
         try (
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
