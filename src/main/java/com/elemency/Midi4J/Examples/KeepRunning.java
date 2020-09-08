@@ -10,9 +10,9 @@ import java.util.Timer;
 
 /**
  * Self explanatory.<br>
- * This is currently the best way I found to keep the console application
- * up and running.<br>
- * I am sure there are better ways - Any suggestions welcome!
+ * This is currently the best way I found (but likely not the most elegant) to keep the console
+ * application up and running.<br>
+ * - Any suggestions welcome! -
  */
 public abstract class KeepRunning {
     private final Logger logger = LoggerFactory.getLogger(KeepRunning.class);
