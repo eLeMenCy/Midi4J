@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.IntBuffer;
 
-
+/**
+ * Midi APIs
+ */
 public class RtMidi {
 
     private final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
