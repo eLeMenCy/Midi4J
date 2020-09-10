@@ -5,7 +5,7 @@ package com.elemency.Midi4J.Examples;
  * application. The 4th option is a very simple monodic sequencer.<br><br>
  *
  * Midi4J allows the reception, per device, of midi IN messages, either via a centralised
- * broadcaster/Listener and/or via user implemented callback(s).<br><br>
+ * Broadcaster/Listener and/or via user implemented Callback(s).<br><br>
  *
  * To start the sample with one or the other option, type the following arg in your gradle
  * console or in the 'Arguments' field of Intellij [run] Configurations window:<br>
@@ -15,15 +15,15 @@ package com.elemency.Midi4J.Examples;
  * &nbsp; &nbsp; run --args="sequencer"<br><br>
  *
  * Broadcaster option (default)<br>
- * Handles all midi incoming events from MidiIn sourcedevices thru a centralised<br>
+ * Handles all midi incoming events from MidiIn source devices thru a centralised
  * broadcaster/listener system.<br><br>
  *
  * Callbacks option<br>
  * Handles all midi incoming events thru user callbacks (one per MidiIn device)<br><br>
  *
  * Both option<br>
- * As hinted earlier, the 2 main options can be used together in the same app by constructing MidiIn devices with the
- * correct userCallback param.<br>
+ * As hinted earlier, the 2 main options can be used together in the same app by constructing
+ * MidiIn devices with thecorrect userCallback param.<br>
  * Set to false, the device will use broadcast mode, set to true, the opposite.<br><br>
  *
  * In Depth:<br>
@@ -33,15 +33,24 @@ package com.elemency.Midi4J.Examples;
  * Callback(s) is/are called directly by the native driver and need to be set (one per In device) in user's app.<br><br>
  *
  * Sequencer option<br>
- * Just a very simple and crude monodic sequencer using a timer as its engine.
+ * Just a very simple and crude monodic sequencer using a timer as its engine - no MidiIn.
  */
 public class App {
 
-    public static void main(String[] args) throws Exception {
+    /**
+     * Application bootloader
+     * @param args flag to switch one or the other sample.
+     */
+    public static void main(String[] args) {
 
-        //A factory is used to launch the correct sample based on the option passed thru args[0]
-        // with 'broadcaster' being the default.*/
+        // Launch the correct sample (WithBroadcaster, WithCallbacks, WithBoth or SimpleSequencer)
+        // based on respective args ('broadcaster', 'callbacks', 'both' or 'sequencer') passed thru args[0]
+        // with 'broadcaster' being the default.
         AppOption option = AppOptionsFactory.getAppOption(args.length > 0 ? args[0] : "broadcaster");
-        option.init();
+        try {
+            option.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -60,7 +60,7 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener, A
     @Override
     public void init() throws Exception {
 
-        System.out.println("\n\n---------------------------");
+        System.out.println("---------------------------");
         System.out.println("| " + sampleTitle + " |");
         System.out.println("---------------------------\n");
 
@@ -95,10 +95,10 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener, A
                 this.midi4jOut.connect("OUT", 1, true);
                 this.midi4j2Out.connect("OUT", 2, true);
 
-                outDevices = this.midi4jIn.listTargetDevices(false);
-                inDevices = this.midi4jOut.listTargetDevices(false);
-                outDevices = this.midi4j2In.listTargetDevices(false);
-                inDevices = this.midi4j2Out.listTargetDevices(false);
+                outDevices = this.midi4jIn.listTargetDevices(true);
+                inDevices = this.midi4jOut.listTargetDevices(true);
+                outDevices = this.midi4j2In.listTargetDevices(true);
+                inDevices = this.midi4j2Out.listTargetDevices(true);
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();

@@ -76,7 +76,7 @@ public class WithCallbacks extends KeepRunning implements AppOption {
     @Override
     public void init() throws Exception {
 
-        System.out.println("\n\n------------------------------");
+        System.out.println("------------------------------");
         System.out.println("| " + sampleTitle + " |");
         System.out.println("------------------------------\n");
 

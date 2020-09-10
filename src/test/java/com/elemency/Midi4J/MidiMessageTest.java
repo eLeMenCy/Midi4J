@@ -13,11 +13,6 @@ class MidiMessageTest {
     final byte[] sysexExpected = {(byte) 0xF0, 61, 82, 124, 6, (byte) 0xF7};
     MidiMessage msg;
 
-    @BeforeEach
-    void init() {
-        msg = new MidiMessage();
-    }
-
     @Nested
     class MidiMessageConstructors {
 
