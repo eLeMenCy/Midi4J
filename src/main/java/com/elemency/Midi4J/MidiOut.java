@@ -37,7 +37,7 @@ public class MidiOut extends MidiDevice {
     }
 
     /**
-     * Free the native memory used byt this source device instance.
+     * Free the native memory used by this source device instance.
      */
     @Override
     public void freeMemory() {
@@ -51,7 +51,7 @@ public class MidiOut extends MidiDevice {
     }
 
     /**
-     * Return the API id of the current MidiIn device instance.
+     * Return the API ID of the current MidiIn device instance.
      *
      * @return int
      */

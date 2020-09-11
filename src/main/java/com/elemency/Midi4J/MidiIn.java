@@ -19,22 +19,22 @@ public class MidiIn extends MidiDevice {
     /**
      * MidiIn simple constructor.
      *
-     * @param userCallback  boolean
+     * @param withUserCallback  boolean
      *                      Set to 'true':
      *                          Allows users to set the MidiIn callback method directly in their applications
      *                          (One callback per MidiIn source device instances created).
      *
      *                      Set to 'false':
-     *                          The default callback method, part of this class is automatically used.
+     *                          The default callback method, internal to this class, is automatically used.
      *                          The user must implement the 'broadcasterListener' interface and override
      *                          the 'receiveMessage' method where all MidiIn messages of all MidiIn source
      *                          device instances will be sent.
      */
-    public MidiIn(boolean userCallback) {
+    public MidiIn(boolean withUserCallback) {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
 
-        if (!userCallback) {
+        if (!withUserCallback) {
             String threadName = "native-" + sourceDeviceName;
             setCallback(fromNative, threadName, null);
         }
@@ -45,18 +45,18 @@ public class MidiIn extends MidiDevice {
      * @param api               The Api id (0= Unknown, 1=CoreMidi, 2=ALSA, 3=JACK, 4=Winmm, 5=Dummy)
      * @param sourceDeviceName  The name of this Midi source instance.
      * @param queueSizeLimit    Maximum buffer size.
-     * @param userCallback      boolean
+     * @param withUserCallback  boolean
      *                          Set to 'true':
      *                              Allows users to set the MidiIn callback method directly in their applications
      *                              (One callback per MidiIn source device instances created).
      *
      *                          Set to 'false':
-     *                              The default callback method, part of this class is automatically used.
+     *                              The default callback method, internal to this class, is automatically used.
      *                              The user must implement the 'broadcasterListener' interface and override
      *                              the 'receiveMessage' method to which all MidiIn messages of all MidiIn source
      *                              device instances will be sent.
      */
-    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, boolean userCallback) {
+    public MidiIn(int api, String sourceDeviceName, int queueSizeLimit, boolean withUserCallback) {
         if (!sourceDeviceName.isEmpty()) {
 
             // Remove the eventual semicolon from client name.
@@ -66,7 +66,7 @@ public class MidiIn extends MidiDevice {
         }
         super.rtMidiDevice = create(api, super.sourceDeviceName, queueSizeLimit);
 
-        if (!userCallback) {
+        if (!withUserCallback) {
             String threadName = "native-" + sourceDeviceName;
             setCallback(fromNative, threadName, null);
         }
@@ -83,7 +83,7 @@ public class MidiIn extends MidiDevice {
     }
 
     /**
-     * Free the native memory used byt this source device instance.
+     * Free the native memory used by this source device instance.
      */
     @Override
     public void freeMemory() {
@@ -96,7 +96,7 @@ public class MidiIn extends MidiDevice {
     }
 
     /**
-     * Return the API id of the current MidiIn device instance.
+     * Return the API ID of the current MidiIn device instance.
      *
      * @return int
      */
@@ -203,7 +203,7 @@ public class MidiIn extends MidiDevice {
     /**
      * Midi In interface callback from native.
      * See ref RtMidiIn::RtMidiCallback.
-     * <i>native declaration : /run/media/elemency/Data/Prjs/SandBox/Midi/RtMidi/rtmidi_c.h</i>
+     * <i>native declaration : rtmidi_c.h</i>
      */
     public interface MidiInCallback extends Callback {
 

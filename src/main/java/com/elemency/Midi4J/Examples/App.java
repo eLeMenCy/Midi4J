@@ -21,15 +21,15 @@ package com.elemency.Midi4J.Examples;
  * Callbacks option<br>
  * Handles all midi incoming events thru user callbacks (one per MidiIn device)<br><br>
  *
- * Both option<br>
+ * Both options<br>
  * As hinted earlier, the 2 main options can be used together in the same app by constructing
- * MidiIn devices with thecorrect userCallback param.<br>
+ * MidiIn devices with the correct user Callback param.<br>
  * Set to false, the device will use broadcast mode, set to true, the opposite.<br><br>
  *
  * In Depth:<br>
- * A Broadcaster, is called by native driver callback(s) automatically set within each MidiIn instance at construction
- * time, all messages are received by our app via the implementation of the BroadcasterListener interface and its
- * overridden method.<br>
+ * A Broadcaster, is called by native driver internal callback(s) automatically set within each MidiIn instance at
+ * construction time, all messages are received by our app via the implementation of the BroadcasterListener interface
+ * and its overridden method.<br>
  * Callback(s) is/are called directly by the native driver and need to be set (one per In device) in user's app.<br><br>
  *
  * Sequencer option<br>

@@ -19,11 +19,11 @@ import java.util.TimerTask;
  * <a href="https://www.youtube.com/watch?v=60ItHLz5WEA"> - Faded - </a><br>
  *
  * Obviously the monodic sequence definitively doesn't do justice to the original but
- * demonstrates how simple it can be to send midi messages to any connected device(s) using a single timer.<br><br>
+ * demonstrates how simple it can be to send midi messages in Midi4J to any connected device(s) using a single timer.<br><br>
  *
  * KNOWN ISSUE:<br>
  * Last note sticking when aborting the application while the sequence plays.<br>
- * I have yet to find a way to elegantly shutdown all running threads when aborting the console application.<br>
+ * I have yet to find a way to elegantly shutdown all running threads when hot shutting down the console application.<br>
  * The best way right now is to let the application go thru its
  * full cycle (2 loops) until it quits by itself<br>- Any suggestions welcome! -
  */

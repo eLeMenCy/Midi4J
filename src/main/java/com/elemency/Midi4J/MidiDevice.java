@@ -182,7 +182,7 @@ public abstract class MidiDevice implements AutoCloseable {
     }
 
     /**
-     * Free the native memory used byt this source device instance.
+     * Free the native memory used by this source device instance.
      */
     public abstract void freeMemory();
 
@@ -290,9 +290,9 @@ public abstract class MidiDevice implements AutoCloseable {
     }
 
     /**
-     * Collect and store the full details of a target device based on its port ID.
+     * Collect and store the full details of a target device based on its ID.
      *
-     * @param id The id of the target device port.
+     * @param id The id of the target device.
      * @return the selected target device full details.
      */
     public Map<String, String> getTargetDeviceFullDetails(int id) {
@@ -351,7 +351,7 @@ public abstract class MidiDevice implements AutoCloseable {
     /**
      * Return the name of a target device port based on its ID.
      *
-     * @param targetDevicePortId The id of the target device port.
+     * @param targetDevicePortId The ID of the target device port.
      * @return the selected target device full details.
      */
     public String getTargetPortName(int targetDevicePortId) {
@@ -430,7 +430,7 @@ public abstract class MidiDevice implements AutoCloseable {
     /**
      * Check that current device instance in and out ports stay disconnected to avoid a midi loop.
      *
-     * @param targetDeviceId  The id of the target device port.
+     * @param targetDeviceId  The ID of the target device port.
      * @return              True if target device name is the same as current device instance name, false otherwise.
      */
     private boolean sourceNameIsTarget(int targetDeviceId) {

@@ -4,7 +4,7 @@ public class SmpteTimecode {
     private static long startTime = 0;
 
     /**
-     * Get a microseconds time stamp converted and formatted to SMPTE timecode.
+     * Get a milliseconds time stamp converted and formatted to SMPTE timecode.
      * @param time  time stamp to convert
      * @return      String (i.e. 03:06:40:000 - )
      */
@@ -21,7 +21,7 @@ public class SmpteTimecode {
     }
 
     /**
-     * Set the start time of the startime to current milliseconds.
+     * Set the start time to current milliseconds.
      */
     public static void setStartTime() {
         startTime = System.currentTimeMillis();
@@ -45,7 +45,7 @@ public class SmpteTimecode {
     }
 
     /**
-     * Frquently used SMPTE time rate.
+     * Frequently used SMPTE time rates.
      */
     public enum SmpteTimecodeType {
         /**
