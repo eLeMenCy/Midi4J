@@ -1,54 +1,102 @@
 ####Midi4J - (Rt)Midi for java 
+#####Overview
 W.I.P. of a small Java [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
-library bridged to the excellent
-[RtMidi](https://github.com/thestk/rtmidi) 
-multi platform native midi library (slightly revisited) using 
+library bridged to a *(slightly revisited)*
+[RtMidi](http://www.music.mcgill.ca/~gary/rtmidi/index.html)
+cross platform C++ midi library using 
 [JNA](https://github.com/java-native-access/jna) and 
 [JnAerator](https://github.com/nativelibs4java/JNAerator). 
 
-This has been done as I needed a tiny library for future projects but also as a fun exercise in my spare time to:
-- Re-level-up my knowledge of the Midi protocol. 
-- Learn how to:
-    - Create a small library (my first one).
-    - Use JNA and the amazing (sadly not developed anymore) JnAerator.
-      JNA utility (to bridge the C/C++ & Java worlds together).
-- Discover:
-    - Some of the intricacies of the Alsa and Jack API.
-    - Java development under Linux.
-    - Junit, Exceptions, Javadoc, Markdown etc...
-    
-One important thing to be aware of (which, I must admit, has tripped me for quite a while at the beginning) when 
-querying devices/ports under RtMidi (or likely most, if not all, other Midi libraries) is that it always relates 
-to available opposite (target) devices. For example:
-```javascript
-    // RtMidi C excerpt to get port count.
-    RtMidiIn *midiin = 0;
-    midiin = new RtMidiIn();
+#####What is RtMidi?
+It is a set of classes providing a common API (Application Programming Interface) for realtime 
+MIDI input/output across Linux *(ALSA, JACK)*, Macintosh OS X *(CoreMIDI, JACK)*, and Windows *(Multimedia Library)* 
+operating systems.
 
-    unsigned int nPorts = midiin->getPortCount();
+#####Huuuh! Another Java midi library... Why?
+Well, it was done in vue of future projects and as a fun exercise in my spare time to:
+- Re-level-up my knowledge of the Midi protocol. 
+- Learn:
+    - How to create a small library with native binding *(my first one)*.
+    - JNA and the *(sadly not developed anymore)* JnAerator utility *(to bridge the C/C++ & Java worlds together)*.
+
+- Discover:
+    - The Alsa and Jack API.
+    - Java development under Linux.
+    - Junit, Exceptions, Javadoc, Markdown, UML etc...
+    
+![Midi4J Diagram](images/midi4j_class_diagram.png)
+
+#####Philosophy:
+One thing has tripped me quite a bit, at the beginning of using RtMidi*, querying devices/ports always results 
+to available **opposite** (target) devices...
+
+For example:
+```javascript
+// RtMidi C excerpt to get port count.
+RtMidiIn *midiin = 0;
+midiin = new RtMidiIn();
+
+unsigned int nPorts = midiin->getPortCount();
 ```
 returns the number of available **Midi Out** devices *(not available Midi In devices)* even if reading the code 
 could make one think otherwise.
 
-To try to ease this notion, Midi4J device instances are always known as **source** devices/ports whilst all 
-other devices/ports available on the system, are known as **target** devices/ports. 
-This is reflected in Midi4J's name and signature of every device methods, fields and variables...
+To try to ease the possible confusion in Midi4J:
+- Users created device instances are always known as **source** devices/ports
+- All other devices/ports available on the system, are known as **target** devices/ports. 
 ```javascript
-    // Same as above in java with Midi4J naming convention.
-    boolean withUserCallback = false;
-    MidiIn midi4jIn = new MidiIn(withUserCallback);
+// Same as above in java with Midi4J naming convention.
+boolean withUserCallback = false;
+MidiIn midi4jIn = new MidiIn(withUserCallback);
 
-    int nPorts = midi4jIn.getTargetDeviceCount();
+int nPorts = midi4jIn.getTargetDeviceCount();
 ```
-...and I hope it makes things clearer.
+but also for other reasons such has:
+- To conform to Java's own naming conventions.
+- Trying to make method names and signatures self-explanatory.
+the Midi4J's API is different from RtMidi.
 
-Midi4J is still in its infancy and I am sure there are quite a few bugs lurking around. Still, right now it seems to 
-hold quite well with all the simple things I have thrown at it under the Jack and Alsa Midi API, at least under Linux 
-as I do not have the facility to test on Windows nor on Mac.
+#####Very simple example
+Sends a D4 note on channel 1 for 1 seconds to IN target device and quit. 
+More advanced samples are available in the Examples package.
+```javascript
+import com.elemency.Midi4J.MidiMessage;
+import com.elemency.Midi4J.MidiOut;
+import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 
-Regarding the license, it will likely be one of the 3 permissive licenses below:
-- Apache License 2.0
-- BSD License
-- ISC license.
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        MidiOut midi4jOut = new MidiOut(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J");
 
-Anyway, thank you for your interest - have fun with it!
+        if (midi4jOut.getTargetDeviceCount() < 1) {
+            System.out.println("No target device available - quitting...");
+            return;
+        }
+
+        midi4jOut.connect("OUT", 0, true); // src Port name, tgt port ID, auto connect
+        midi4jOut.sendMessage(MidiMessage.noteOn(1, 74, 100, 0)); // Channel, note, velocity, time stamp
+        Thread.sleep(1000);
+        midi4jOut.sendMessage(MidiMessage.noteOn(1, 74, 0, 0));
+    }
+}
+```
+
+#####Licensing
+- Midi4J's license has yet to be defined, it will likely be one or two of the 3 permissive licenses below:
+    - Apache License 2.0
+    - ISC license
+    - MIT License
+
+- RtMidi is distributed under its own modified MIT License which can be found in the 
+LICENSE file.
+
+#####Further Notes
+Midi4J is still in its infancy and quite a few bugs are likely to be lurking around. 
+Still, right now it seems to hold quite well with all I have thrown at it under the Jack and Alsa
+Midi API, at least under Linux as I do not have the facility to test on Windows nor on macOs.
+
+Thank you for your interest - have fun with it!
+
+#####Addendum:
+**(this likely applies also to most, if not all, other Sound/Midi libraries)*.
+

@@ -6,29 +6,20 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+
 // https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
 
-/*==============================================================================
-   Most methods and comments in this file are part of the JUCE library.
-   Copyright (c) 2020 - Raw Material Software Limited
-   JUCE is an open source library subject to commercial or open-source licensing.
-
-   The code included in this file is provided under the terms of the ISC license
-   http://www.isc.org/downloads/software-support-policy/isc-license
-   Permission to use, copy, modify, and/or distribute this software for any
-   purpose with or without fee is hereby granted provided that the above
-   copyright notice and this permission notice appear in all copies.
-
-   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
-   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
-   DISCLAIMED.
-  ==============================================================================*/
-/**
- * A slightly modified juce_MidiMessage class, shamelessly taken from the exceptional Juce library
- * and translated to java.<br>
- * The original C++ code can be found in the
- * <a href="https://github.com/juce-framework/JUCE/blob/master/modules/juce_audio_basics/midi">
- * audio basics module</a> section on github.
+/*
+ * A modified juce_MidiMessage class translated from the C++ Juce library to java.<br>
+ * The original C++ code can be found in the audio basics module section on github.
+ * https://github.com/juce-framework/JUCE/blob/master/modules/juce_audio_basics/midi">
+ *
+ * Most methods Copyright (c) 2020 - Raw Material Software Limited
+ * All code by RMS ltd is licensed under the ICS license (see LICENSE file for more details)
+ *
+ * Some methods Copyright (c) 2020 - eLeMenCy
+ * All code by LMC is licensed under the ----- license (see LICENSE file for more details)
  */
 public class MidiMessage implements Cloneable {
 
@@ -49,7 +40,7 @@ public class MidiMessage implements Cloneable {
         midiDataSize = 3;
         this.timeStamp = timeStamp;
 
-        if (checkMessageLength(byte0) != 3) {
+        if (getMessageLength(byte0) != 3) {
             throw new MidiException("Status byte provided doesn't correspond to a 3 bytes midi message" + Integer.toHexString(byte0).toUpperCase());
         }
 
@@ -74,7 +65,7 @@ public class MidiMessage implements Cloneable {
         midiDataSize = 2;
         this.timeStamp = timeStamp;
 
-        if (checkMessageLength(byte0) != 2) {
+        if (getMessageLength(byte0) != 2) {
             throw new MidiException("Status byte provided doesn't correspond to a 2 bytes midi message " + Integer.toHexString(byte0).toUpperCase());
         }
 
@@ -97,7 +88,7 @@ public class MidiMessage implements Cloneable {
         midiDataSize = 1;
         this.timeStamp = timeStamp;
 
-        if (checkMessageLength(byte0) != 1) {
+        if (getMessageLength(byte0) != 1) {
             throw new MidiException("Status byte provided doesn't correspond to a 1 byte midi message" + Integer.toHexString(byte0).toUpperCase());
         }
 
@@ -127,7 +118,7 @@ public class MidiMessage implements Cloneable {
         this.midiData = midiData;
     }
 
-    /**
+    /***
      * Creates a midi message from a native jna block of data.
      *
      * @param midiData      midi message set in a jna pointer
@@ -156,7 +147,12 @@ public class MidiMessage implements Cloneable {
         midiData.read(0, this.midiData, 0, this.midiDataSize);
     }
 
-    public static int checkMessageLength(int byte0) {
+    /***
+     * Returns the message length based on status byte.
+     * @param byte0 status byte of message to be measured.
+     * @return int
+     */
+    public static int getMessageLength(int byte0) {
         int cmd = byte0 & 0xFF;
 
         int length = -1;
@@ -172,7 +168,7 @@ public class MidiMessage implements Cloneable {
         return length;
     }
 
-    /**
+    /***
      * Returns the name of a midi note number assuming sharpened notes
      * with Octave number appended and octave 3 for Middle C.
      * E.g "C5", "D#3", "--" etc.
@@ -220,7 +216,45 @@ public class MidiMessage implements Cloneable {
         return "--";
     }
 
-    /**
+    /***
+     *  Returns the number of a midi note name
+     * @param   noteName    E.g "C#3" or "Cb3" etc.
+     * @return              the corresponding note number.
+     */
+    public static int getMidiNoteNumber(String noteName, int octaveNumForMiddleC) {
+
+        int noteNumber = -1;
+        String[] sharpNoteNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+        String[] flatNoteNames = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
+
+        if (noteName.equals("") ||
+                !Arrays.toString(sharpNoteNames).contains(noteName.substring(0,1)) ||
+                !Character.isDigit(noteName.charAt(noteName.length() - 1)))
+        {
+            throw new MidiException("Please enter a valid note name \"A, B, C, D, E, F or G\" " +
+                    "followed by '#' or 'b' and an octave number between 1 to 9, i.e 'C#3'");
+        }
+
+        int octaveNumber = Integer.parseInt(noteName.substring(noteName.length() - 1));
+
+        String note = noteName.substring(0, noteName.length() - 1);
+        String[] noteNames = sharpNoteNames;
+
+        if (Misc.getSymbolIndex(noteName) == -1) { // its a flat
+            noteNames = flatNoteNames;
+        }
+
+        for (int i = 0; i < noteNames.length; i++) {
+            if (noteNames[i].equals(note)) {
+                noteNumber = (5 - octaveNumForMiddleC + octaveNumber) * 12 + i;
+                break;
+            }
+        }
+
+        return noteNumber;
+    }
+
+    /***
      * Creates a system-exclusive message.
      * The data passed in is wrapped with header and tail bytes of 0xF0 and 0xF7.
      *
@@ -280,7 +314,7 @@ public class MidiMessage implements Cloneable {
         return new MidiMessage(result, dataSize + sizeIncrease, 0);
     }
 
-    /**
+    /***
      * Create a status byte from the command nibble value and a midi channel value.
      *
      * @param command value in the range of 0 to 15
@@ -291,8 +325,8 @@ public class MidiMessage implements Cloneable {
         return ((command & 0xF0) | ((channel - 1) & 0x0F));
     }
 
-    /**
-     *get status byte of current midi message instance.
+    /***
+     * Get status byte of current midi message instance.
      *
      * @return int current status byte
      */
@@ -474,7 +508,7 @@ public class MidiMessage implements Cloneable {
         return controllerEvent(channel, 121, 0, 0);
     }
 
-    /**
+    /***
      * Get the current midi data block
      *
      * @return byte[]
@@ -487,7 +521,7 @@ public class MidiMessage implements Cloneable {
         return midiData;
     }
 
-    /**
+    /***
      * Get the current midi data block size
      *
      * @return int
@@ -605,7 +639,7 @@ public class MidiMessage implements Cloneable {
         return "Midi message description (HexString): " + midiDataToHexString();
     }
 
-    /**
+    /***
      * Returns raw midi data as a HexString.
      *
      * @return String i.e. "Status 0x9F(159), 0x3D(61), 0x7C(124)"
@@ -637,7 +671,7 @@ public class MidiMessage implements Cloneable {
         return hexString;
     }
 
-    /**
+    /***
      * Returns this message's timestamp.
      *
      * @return double
@@ -646,7 +680,7 @@ public class MidiMessage implements Cloneable {
         return timeStamp;
     }
 
-    /**
+    /***
      * Changes the message's associated timestamp.
      *
      * @param newTimestamp microseconds
@@ -655,7 +689,7 @@ public class MidiMessage implements Cloneable {
         timeStamp = newTimestamp;
     }
 
-    /**
+    /***
      * Adds a value to the message's timestamp.
      *
      * @param delta the amount by which to increase the time stamp
@@ -782,7 +816,6 @@ public class MidiMessage implements Cloneable {
         }
 
         return ((midiData[0] & 0xF0) == 0x90) && (returnTrueForVelocity0 || midiData[2] != 0);
-
     }
 
     /**
@@ -802,7 +835,6 @@ public class MidiMessage implements Cloneable {
                 && (returnTrueForNoteOnVelocity0
                 && (midiData[2] == 0)
                 && ((midiData[0] & 0xF0) == 0x90));
-
     }
 
     /**
@@ -825,7 +857,6 @@ public class MidiMessage implements Cloneable {
      * @return int
      */
     public int getNoteNumber() {
-//        midiData = null;
 
         if (midiData == null) {
             throw new NullPointerException("midiData is 'null' - can't get Note Number.");
@@ -1256,7 +1287,7 @@ public class MidiMessage implements Cloneable {
         return ((midiData[0] & 0xF0) == 0xB0) && (midiData[1] == 121);
     }
 
-    /**
+    /***
      * Convert timestamp to SMPTE timecode format.
      *
      * @return String (i.e. 03:06:40:000 - )
@@ -1278,6 +1309,7 @@ public class MidiMessage implements Cloneable {
         return (midiData[0] & 0xFF) == 0xFF;
     }
 
+    /*
     //TODO: Implement these methods as well??
     /**
      * Returns true if this is an active-sense message.
@@ -1551,6 +1583,5 @@ public class MidiMessage implements Cloneable {
 
     }
      */
-
 }
         

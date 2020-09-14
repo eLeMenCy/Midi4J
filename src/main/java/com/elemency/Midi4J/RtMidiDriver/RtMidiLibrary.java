@@ -19,7 +19,7 @@ import java.nio.IntBuffer;
  * @author eLeMenCy
  */
 public interface RtMidiLibrary extends Library {
-    String JNA_LIBRARY_NAME = "RtMidiLibrary";
+    String JNA_LIBRARY_NAME = "RtMidiLibrary_4xx";
     NativeLibrary JNA_NATIVE_LIB = NativeLibrary.getInstance(RtMidiLibrary.JNA_LIBRARY_NAME);
     RtMidiLibrary INSTANCE = Native.load(RtMidiLibrary.JNA_LIBRARY_NAME, RtMidiLibrary.class);
 

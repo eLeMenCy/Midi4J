@@ -25,7 +25,7 @@ class MidiMessageTest {
             assertEquals(65, msg.getNoteNumber());
             assertEquals(120, msg.getVelocity());
             assertEquals(0.94F, msg.getFloatVelocity(), 0.01);
-            assertEquals(3, MidiMessage.checkMessageLength(0x90));
+            assertEquals(3, MidiMessage.getMessageLength(0x90));
             assertEquals(3, msg.getMidiDataSize());
             assertEquals(0x90, msg.getStatusByte());
             assertEquals(0, msg.getTimeStamp());
@@ -41,7 +41,7 @@ class MidiMessageTest {
         {
             msg = new MidiMessage(0xC0, 65, 0);
             assertEquals(65, msg.getNoteNumber());
-            assertEquals(2, MidiMessage.checkMessageLength(0xC0));
+            assertEquals(2, MidiMessage.getMessageLength(0xC0));
             assertEquals(2, msg.getMidiDataSize());
             assertEquals(0xC0, msg.getStatusByte());
             assertEquals(0, msg.getTimeStamp());
@@ -56,7 +56,7 @@ class MidiMessageTest {
         void constructor1BytesMidiMessage()
         {
             msg = new MidiMessage(0xF8, 0);
-            assertEquals(1, MidiMessage.checkMessageLength(0xF8));
+            assertEquals(1, MidiMessage.getMessageLength(0xF8));
             assertEquals(1, msg.getMidiDataSize());
             assertEquals(0xF8, msg.getStatusByte()/* | 0xF8*/);
             assertEquals(0, msg.getTimeStamp());
@@ -73,7 +73,7 @@ class MidiMessageTest {
             assertEquals(61, msg.getNoteNumber());
             assertEquals(124, msg.getVelocity());
             assertEquals(0.98F, msg.getFloatVelocity(), 0.01);
-            assertEquals(3, MidiMessage.checkMessageLength(0x90));
+            assertEquals(3, MidiMessage.getMessageLength(0x90));
             assertEquals(3, msg.getMidiDataSize());
             assertEquals(0x9F, msg.getStatusByte());
             assertEquals(6, msg.getTimeStamp());
@@ -116,7 +116,7 @@ class MidiMessageTest {
             "247, -1",
     })
     void checkMessageLength(int byte0, int expected) {
-        assertEquals(expected, MidiMessage.checkMessageLength(byte0), ()-> "Byte0= : " + byte0 + "Expected: " + expected);
+        assertEquals(expected, MidiMessage.getMessageLength(byte0), ()-> "Byte0= : " + byte0 + "Expected: " + expected);
 
     }
 
@@ -124,6 +124,14 @@ class MidiMessageTest {
     void getMidiNoteName() {
         assertEquals("C3", MidiMessage.getMidiNoteName(60, true, true, 3));
         assertEquals("--", MidiMessage.getMidiNoteName(129, true, true, 3));
+    }
+
+
+    @Test
+    void getMidiNoteNumber() {
+        assertEquals(78, MidiMessage.getMidiNoteNumber("F#4", 3));
+        assertEquals(60, MidiMessage.getMidiNoteNumber("C3", 3));
+        assertEquals(61, MidiMessage.getMidiNoteNumber("Db3", 3));
     }
 
     @Nested

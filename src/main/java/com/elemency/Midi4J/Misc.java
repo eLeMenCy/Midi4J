@@ -8,7 +8,7 @@ public class Misc {
     public static int getSymbolIndex(String text) {
         int index = -1;
 
-        // Find the firs occurence of a non alphanumeric char.
+        // Find the first occurrence of a non alphanumeric char.
         String pattern = "([^A-Za-z0-9])";
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(text);
