@@ -1,3 +1,35 @@
+/*
+ * Copyright (C) 2020 - eLeMenCy
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ * This file incorporates work derived and translated to Java from the
+ *      C++ juce_MidiMessage class part of the JUCE library and is covered
+ *      by the following copyright and permission notice:
+ *
+ *      Copyright (c) 2020 - Raw Material Software Limited
+ *
+ *      The incorporated code, part of this file, is provided under the terms of
+ *      the ISC license
+ *      http://www.isc.org/downloads/software-support-policy/isc-license
+ *      Permission to use, copy, modify, and/or distribute this software for any
+ *      purpose with or without fee is hereby granted provided that the above
+ *      copyright notice and this permission notice appear in all copies.
+ *
+ *      JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+ *      EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+ *      DISCLAIMED.
+ */
+
 package com.elemency.Midi4J;
 
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
@@ -8,18 +40,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-// https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
-
-/*
- * A modified juce_MidiMessage class translated from the C++ Juce library to java.<br>
- * The original C++ code can be found in the audio basics module section on github.
- * https://github.com/juce-framework/JUCE/blob/master/modules/juce_audio_basics/midi">
+/**
  *
- * Most methods Copyright (c) 2020 - Raw Material Software Limited
- * All code by RMS ltd is licensed under the ICS license (see LICENSE file for more details)
+ * A Utility class to handle Midi messages.
  *
- * Some methods Copyright (c) 2020 - eLeMenCy
- * All code by LMC is licensed under the ----- license (see LICENSE file for more details)
+ * Interesting link(s)
+ * https://www.nyu.edu/classes/bello/FMT_files/9_MIDI_code.pdf
  */
 public class MidiMessage implements Cloneable {
 
@@ -218,8 +244,11 @@ public class MidiMessage implements Cloneable {
 
     /***
      *  Returns the number of a midi note name
-     * @param   noteName    E.g "C#3" or "Cb3" etc.
-     * @return              the corresponding note number.
+     * @param   noteName            E.g "C#3" or "Cb3" etc.
+     * @param octaveNumForMiddleC   if an octave number is being appended, this indicates the number
+     *                              that will be used for middle C's octave
+     *
+     * @return                      the corresponding note number.
      */
     public static int getMidiNoteNumber(String noteName, int octaveNumForMiddleC) {
 
@@ -1308,280 +1337,5 @@ public class MidiMessage implements Cloneable {
 
         return (midiData[0] & 0xFF) == 0xFF;
     }
-
-    /*
-    //TODO: Implement these methods as well??
-    /**
-     * Returns true if this is an active-sense message.
-     *
-     * @return
-     * /
-    public boolean isActiveSense() {
-    return (midiMessage[0] & 0xFE) == 0xFE;
-    }
-
-    /**
-     * Returns a meta-event's type number.
-     *
-     * @return
-     * /
-    public int getMetaEventType() {
-    return (midiMessage[0] & 0xFF) != 0xFF ? -1 : midiMessage[1];
-    }
-
-    /**
-     * Returns a pointer to the data in a meta-event.
-     * /
-    public Pointer getMetaEventData() {
-    return null;
-    }
-
-    /**
-     * Returns the length of the data for a meta-event.
-     *
-     * @return
-     * /
-    public int getMetaEventLength() {
-    return 0;
-    }
-
-    /**
-     * Returns true if this is a 'track' meta-event.
-     *
-     * @return
-     * /
-    public boolean isTrackMetaEvent() {
-    return false;
-    }
-
-    /** Creates an end-of-track meta-event.
-     *  @see                 MidiMessage#isEndOfTrackMetaEvent
-     * /
-    public static MidiMessage endOfTrack() {
-    return null;
-    }
-
-    /**
-     * Returns true if this is an 'end-of-track' meta-event.
-     *
-     * @return
-     * /
-    public boolean isEndOfTrackMetaEvent() {
-    return false;
-    }
-
-    /**
-     * Returns true if this is an 'track name' meta-event.
-     *
-     * @return
-     * /
-    public boolean isTrackNameEvent() {
-    return false;
-    }
-
-    /**
-     * Returns true if this is a 'text' meta-event.
-     *
-     * @return
-     * /
-    public boolean isTextMetaEvent() {
-    return false;
-    }
-
-    /**
-     * Returns the text from a text meta-event.
-     *
-     * @return
-     * /
-    public String getTextFromTextMetaEvent() {
-    return "0";
-    }
-
-    /**
-     * Returns true if this is a 'tempo' meta-event.
-     *
-     * @return
-     * /
-    public boolean isTempoMetaEvent() {
-    return false;
-    }
-
-    /**
-     * Returns the tick length from a tempo meta-event.
-     *
-     * @param timeFormat
-     * @return
-     * /
-    public double getTempoMetaEventTickLength(short timeFormat) {
-    return 0;
-    }
-
-    /**
-     * Calculates the seconds-per-quarter-note from a tempo meta-event.
-     *
-     * @return
-     * /
-    public double getTempoSecondsPerQuarterNote() {
-    return 0;
-    }
-
-    /**
-     * Returns true if this is a 'time-signature' meta-event.
-     *
-     * @return
-     * /
-    public boolean isTimeSignatureMetaEvent() {
-    return false;
-    }
-
-    /**
-     * Returns the time-signature values from a time-signature meta-event.
-     * /
-    public void getTimeSignatureInfo(int numerator, int denominator) {
-
-    }
-
-    /**
-     * Returns true if this is a 'key-signature' meta-event.
-     *
-     * @return
-     * /
-    public boolean isKeySignatureMetaEvent() {
-    return false;
-    }
-
-    /**
-     * Returns the key from a key-signature meta-event.
-     *
-     * @return
-     * /
-    public int getKeySignatureNumberOfSharpsOrFlats() {
-    return 0;
-    }
-
-    /**
-     * Returns true if this key-signature event is major, or false if it's minor.
-     *
-     * @return
-     * /
-    public boolean isKeySignatureMajorKey() {
-    return false;
-    }
-
-    /**
-     * Returns true if this is a 'channel' meta-event.
-     *
-     * @return
-     * /
-    public boolean isMidiChannelMetaEvent() {
-    return false;
-    }
-
-    /**
-     * Returns the channel number from a channel meta-event.
-     *
-     * @return
-     * /
-    public int getMidiChannelMetaEventChannel() {
-    return 0;
-    }
-
-    /**
-     * Returns true if this is a midi start event.
-     *
-     * @return
-     * /
-    public boolean isMidiStart() {
-    return false;
-    }
-
-    /**
-     * Returns true if this is a midi continue event.
-     *
-     * @return
-     * /
-    public boolean isMidiContinue() {
-    return false;
-    }
-
-    /**
-     * Returns true if this is a midi stop event.
-     *
-     * @return
-     * /
-    public boolean isMidiStop() {
-    return false;
-    }
-
-    /**
-     * Returns true if this is a midi clock event.
-     *
-     * @return
-     * /
-    public boolean isMidiClock() {
-    return false;
-    }
-
-    /**
-     * Returns true if this is a song-position-pointer message.
-     *
-     * @return
-     * /
-    public boolean isSongPositionPointer() {
-    return false;
-    }
-
-    /**
-     * Returns the midi beat-number of a song-position-pointer message.
-     *
-     * @return
-     * /
-    public int getSongPositionPointerMidiBeat() {
-    return 0;
-    }
-
-    /**
-     * Returns true if this is a quarter-frame midi timecode message.
-     *
-     * @return
-     * /
-    public boolean isQuarterFrame() {
-    return false;
-    }
-
-    /**
-     * Returns the sequence number of a quarter-frame midi timecode message.
-     *
-     * @return
-     * /
-    public int getQuarterFrameSequenceNumber() {
-    return 0;
-    }
-
-    /**
-     * Returns the value from a quarter-frame message.
-     *
-     * @return
-     * /
-    public int getQuarterFrameValue() {
-    return 0;
-    }
-
-    /**
-     * Returns true if this is a full-frame midi timecode message.
-     *
-     * @return
-     * /
-    public boolean isFullFrame() {
-    return false;
-    }
-
-    /**
-     * Extracts the timecode information from a full-frame midi timecode message.
-     * /
-    public void getFullFrameParameters(int hours, int minutes, int seconds, int frames, SmpteTimecodeType timecodeType) {
-
-    }
-     */
 }
         

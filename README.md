@@ -13,11 +13,11 @@ MIDI input/output across Linux *(ALSA, JACK)*, Macintosh OS X *(CoreMIDI, JACK)*
 operating systems.
 
 #####Huuuh! Another Java midi library... Why?
-Well, it was done in vue of future projects and as a fun exercise in my spare time to:
+Well, it was done in view of future projects and as a fun exercise in my spare time to:
 - Re-level-up my knowledge of the Midi protocol. 
 - Learn:
     - How to create a small library with native binding *(my first one)*.
-    - JNA and the *(sadly not developed anymore)* JnAerator utility *(to bridge the C/C++ & Java worlds together)*.
+    - JNA and the *(sadly no longer developed)* JnAerator utility *(to bridge the C/C++ & Java worlds together)*.
 
 - Discover:
     - The Alsa and Jack API.
@@ -41,7 +41,7 @@ unsigned int nPorts = midiin->getPortCount();
 returns the number of available **Midi Out** devices *(not available Midi In devices)* even if reading the code 
 could make one think otherwise.
 
-To try to ease the possible confusion in Midi4J:
+In Midi4J, to try to ease the possible confusion:
 - Users created device instances are always known as **source** devices/ports
 - All other devices/ports available on the system, are known as **target** devices/ports. 
 ```javascript
@@ -51,14 +51,15 @@ MidiIn midi4jIn = new MidiIn(withUserCallback);
 
 int nPorts = midi4jIn.getTargetDeviceCount();
 ```
-but also for other reasons such has:
+but also for other reasons such as:
 - To conform to Java's own naming conventions.
 - Trying to make method names and signatures self-explanatory.
-the Midi4J's API is different from RtMidi.
+
+therefore, the Midi4J's API is different from RtMidi.
 
 #####Very simple example
-Sends a D4 note on channel 1 for 1 seconds to IN target device and quit. 
-More advanced samples are available in the Examples package.
+Sends a D4 note on channel 1 for 1 second to IN target device and quit. 
+More advanced samples are available in the 'Examples' package.
 ```javascript
 import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.MidiOut;
@@ -82,13 +83,13 @@ public class Main {
 ```
 
 #####Licensing
-- Midi4J's license has yet to be defined, it will likely be one or two of the 3 permissive licenses below:
-    - Apache License 2.0
-    - ISC license
-    - MIT License
+- Midi4J is licensed under the Apache license V2.0 except for the MidiMessage class which
+incorporates work derived and translated from the JUCE library and licensed under the ISC License.
 
-- RtMidi is distributed under its own modified MIT License which can be found in the 
-LICENSE file.
+- RtMidi is distributed under its own modified MIT License.
+
+Further details can be found in the LICENSE file.
+
 
 #####Further Notes
 Midi4J is still in its infancy and quite a few bugs are likely to be lurking around. 
@@ -96,6 +97,7 @@ Still, right now it seems to hold quite well with all I have thrown at it under 
 Midi API, at least under Linux as I do not have the facility to test on Windows nor on macOs.
 
 Thank you for your interest - have fun with it!
+
 
 #####Addendum:
 **(this likely applies also to most, if not all, other Sound/Midi libraries)*.
