@@ -1,12 +1,8 @@
 package com.elemency.Midi4J.RtMidiDriver;
 
 import com.elemency.Midi4J.MidiIn;
-import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Pointer;
-
+import com.sun.jna.*;
+import com.sun.jna.ptr.ByReference;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -280,7 +276,7 @@ public interface RtMidiLibrary extends Library {
      *                <i>native declaration : RtMidi/rtmidi_c.h:213</i>
      * @return        double
      */
-    double rtmidi_in_get_message(RtMidiDevice device, ByteBuffer message, NativeSizeByReference size);
+    double rtmidi_in_get_message(RtMidiDevice device, ByteBuffer message, size_tByReference size);
 
     /* *********************************************************************************************************************
      * 											           RtMidiDevice OUT API
@@ -340,4 +336,67 @@ public interface RtMidiLibrary extends Library {
      * @return        int
      */
     int rtmidi_out_send_message(RtMidiDevice device, byte[] message, int length);
+
+    /**
+     * Represents the <code>size_t</code> C data type, which may be 32 or 64 bits
+     * on different systems and store the maximum size of a theoretically possible
+     * object of any type (including array).
+     * size_t is commonly used for array indexing and loop counting.
+     *
+     * May optionally indicate an unsigned attribute, such that when a value is
+     * extracted into a larger-sized container (e.g. <code>int</code> retrieved
+     * via {@link Number#longValue}, the value will be unsigned.  Default behavior
+     * is signed.
+     *
+     * Adapted from com.sun.jna.NativeLong
+     */
+    class size_t extends IntegerType {
+
+        /** Size of a native size_t, in bytes. */
+        public static final int SIZE = Native.SIZE_T_SIZE;
+
+        /** Create a zero-valued size_t. */
+        public size_t() {
+            this(0);
+        }
+
+        /**
+         * Create a size_t with the given value.
+         * @param value  from which size_t will be created.
+         */
+        public size_t(long value) {
+            super(SIZE, value);
+        }
+    }
+
+    /**
+     * Provides a "pointer to size_t" functionality.
+     * Often used in C code to return values to the caller in addition to a function result.
+     *
+     * Adapted from com.sun.jna.LongByReference
+     */
+    class size_tByReference extends ByReference {
+
+        /** Create a zero-valued size_t ref */
+        public size_tByReference() {
+            this(new size_t(0));
+        }
+
+        /**
+         * Create a size_t ref with the given value.
+         * @param value  from which size_t will be created.
+         */
+        public size_tByReference(size_t value) {
+            super(size_t.SIZE);
+            setValue(value);
+        }
+
+        public void setValue(size_t value) {
+            getPointer().setLong(0, value.longValue());
+        }
+
+        public size_t getValue() {
+            return new size_t(getPointer().getLong(0));
+        }
+    }
 }

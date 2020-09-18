@@ -52,9 +52,9 @@ dependencies {
 
     // These dependencies are used internally, and not exposed to consumers on their own compile classpath.
     implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("com.nativelibs4java:jnaerator-runtime:0.13-SNAPSHOT")
     implementation("com.google.guava:guava:28.1-jre")
     implementation("net.java.dev.jna:jna:5.5.0")
+//    implementation("net.java.dev.jna:jna-platform:5.5.0")
     implementation("junit:junit:4.12")
     implementation("org.jetbrains:annotations:16.0.2")
 

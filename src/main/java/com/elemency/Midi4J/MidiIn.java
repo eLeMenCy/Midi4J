@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 - eLeMenCy
+ * Copyright (C) 2020 - eLeMenCy, All Rights Reserved
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
@@ -17,15 +17,10 @@ package com.elemency.Midi4J;
 
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
-import com.ochafik.lang.jnaerator.runtime.NativeSize;
-import com.ochafik.lang.jnaerator.runtime.NativeSizeByReference;
-import com.sun.jna.Callback;
-import com.sun.jna.CallbackThreadInitializer;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
+import com.sun.jna.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.nio.ByteBuffer;
 
 public class MidiIn extends MidiDevice {
@@ -205,8 +200,8 @@ public class MidiIn extends MidiDevice {
      * @param size      midi message size
      * @return          time stamp
      */
-    public double getMessage(ByteBuffer message, NativeSizeByReference size) {
-
+    //TODO: build another sample app to test this method.
+    public double getMessage(ByteBuffer message, RtMidiLibrary.size_tByReference size) {
         if (rtMidiDevice == null) {
             throw new NullPointerException("This IN device is null - can't poll raw midi messages.");
         }
@@ -228,7 +223,7 @@ public class MidiIn extends MidiDevice {
          * @param messageSize Size of the Midi message.
          * @param userData    Additional user data for the callback.
          */
-        void process(double timeStamp, Pointer message, NativeSize messageSize, Pointer userData);
+        void process(double timeStamp, Pointer message, RtMidiLibrary.size_t messageSize, Pointer userData);
     }
 
     /**

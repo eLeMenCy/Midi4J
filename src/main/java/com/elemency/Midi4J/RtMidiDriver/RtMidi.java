@@ -3,7 +3,6 @@ package com.elemency.Midi4J.RtMidiDriver;
 import com.elemency.Midi4J.MidiDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.nio.IntBuffer;
 
 /**

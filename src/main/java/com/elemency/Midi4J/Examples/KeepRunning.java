@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 - eLeMenCy
+ * Copyright (C) 2020 - eLeMenCy, All Rights Reserved
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
@@ -15,13 +15,9 @@
 
 package com.elemency.Midi4J.Examples;
 
-import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.SmpteTimecode;
-import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Timer;
 
 /**
  * Self explanatory.<br>

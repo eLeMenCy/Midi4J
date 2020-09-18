@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 - eLeMenCy
+ * Copyright (C) 2020 - eLeMenCy, All Rights Reserved
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
@@ -32,12 +32,10 @@
 
 package com.elemency.Midi4J;
 
-import com.ochafik.lang.jnaerator.runtime.NativeSize;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import com.sun.jna.Pointer;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 
 /**
@@ -151,8 +149,8 @@ public class MidiMessage implements Cloneable {
      * @param midiDataSize  midi message size (jnaerator native)
      * @param timeStamp     time stamp
      */
-    public MidiMessage(@NotNull Pointer midiData,
-                       @NotNull NativeSize midiDataSize,
+    public MidiMessage(Pointer midiData,
+                       RtMidiLibrary.size_t midiDataSize,
                        double timeStamp)
     {
         this.midiDataSize = midiDataSize.intValue();
