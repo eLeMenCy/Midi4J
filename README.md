@@ -17,12 +17,12 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
 - Learn:
     - How to create a small library with native binding *(my first one)*.
     - JNA *(to bind the C/C++ & Java worlds together)* 
+    - The Alsa and Jack API.
+    - Junit, Exceptions, Javadoc, Markdown, UML etc...
 
 - Discover:
-    - The Alsa and Jack API.
     - Java development under Linux.
     - The sadly no longer developed [JnAerator](https://github.com/nativelibs4java/JNAerator) JNA utility.
-    - Junit, Exceptions, Javadoc, Markdown, UML etc...
     
 ![Midi4J Diagram](images/midi4j_class_diagram.png)
 
