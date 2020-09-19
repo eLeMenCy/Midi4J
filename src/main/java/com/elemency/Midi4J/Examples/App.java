@@ -63,8 +63,8 @@ public class App {
      */
     public static void main(String[] args) {
 
-        // Launch the correct sample (WithBroadcaster, WithCallbacks, WithBoth or SimpleSequencer)
-        // based on respective args ('broadcaster', 'callbacks', 'both' or 'sequencer') passed thru args[0]
+        // Launch the correct sample (WithBroadcaster, WithCallbacks, WithBoth, WithLoop or SimpleSequencer)
+        // based on respective args ('broadcaster', 'callbacks', 'both', 'loop' or 'sequencer') passed thru args[0]
         // with 'broadcaster' being the default.
         AppOption option = AppOptionsFactory.getAppOption(args.length > 0 ? args[0] : "broadcaster");
         try {

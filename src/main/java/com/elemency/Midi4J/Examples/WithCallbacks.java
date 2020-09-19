@@ -19,7 +19,6 @@ import com.elemency.Midi4J.*;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.*;
 
 /**
  * This sample illustrates how user callbacks (one per source device) are set to handle
@@ -109,8 +108,9 @@ public class WithCallbacks extends KeepRunning implements AppOption {
                 System.out.println("Target In device count: " + this.midi4jOut.getTargetDeviceCount());
 
                 // List all available target Alsa OUT devices.
-                List<Map<String, String>> outDevices;
-                outDevices = this.midi4jIn.listTargetDevices(false);
+                this.midi4jIn.listTargetDevices(false);
+
+                // Attempt to connect source IN devices to their respective target OUT counterparts.
                 this.midi4jIn.connect("IN", 2, true);
                 this.midi4j2In.connect("IN", 2, true);
 
@@ -119,15 +119,17 @@ public class WithCallbacks extends KeepRunning implements AppOption {
                 midi4j2In.setCallback(fromMidi4j2In, "midi4j2In", null);
 
                 // List all available target Jack In devices.
-                List<Map<String, String>> inDevices;
-                inDevices = this.midi4jOut.listTargetDevices(false);
+                this.midi4jOut.listTargetDevices(false);
+
+                // Attempt to connect source OUT devices to their respective target IN counterparts.
                 this.midi4jOut.connect("OUT", 1, true);
                 this.midi4j2Out.connect("OUT", 2, true);
 
-                outDevices = this.midi4jIn.listTargetDevices(true);
-                inDevices = this.midi4jOut.listTargetDevices(true);
-                outDevices = this.midi4j2In.listTargetDevices(true);
-                inDevices = this.midi4j2Out.listTargetDevices(true);
+                // List connected target devices only.
+                this.midi4jIn.listTargetDevices(true);
+                this.midi4jOut.listTargetDevices(true);
+                this.midi4j2In.listTargetDevices(true);
+                this.midi4j2Out.listTargetDevices(true);
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();

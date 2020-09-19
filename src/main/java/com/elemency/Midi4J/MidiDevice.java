@@ -266,9 +266,6 @@ public abstract class MidiDevice implements AutoCloseable {
             logger.info(msg);
 
             return true;
-//        }
-//        else {
-//            System.out.println(getNativeMsg());
         }
 
         return false;

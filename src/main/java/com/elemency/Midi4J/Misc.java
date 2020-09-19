@@ -55,21 +55,6 @@ public class Misc {
          Midi4J@IN:IN 48:1
         */
 
-//        String result = name;
-//
-//        // Find the firs occurence of a non alphanumeric char.
-//        String pattern = "([^A-Za-z0-9])";
-//        Pattern p = Pattern.compile(pattern);
-//        Matcher m = p.matcher(name);
-//
-//        // A non alpha numeric char is found...
-//        if (m.find()) {
-//            // Find its position...
-//            int separator = name.indexOf(m.group(0));
-//            // Extract the substring from char 0 to symbol position - 1
-//            result = name.substring(0, separator);
-//        }
-
         String result = name;
         int index = getSymbolIndex(name);
 
@@ -90,7 +75,6 @@ public class Misc {
 
         if (matcher.find()) {
             result = data.substring(matcher.start(), matcher.end());
-//            System.out.println("client:port -> " + result);
         }
 
         return result;

@@ -158,10 +158,14 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             try {
                 System.out.println("Target In device count: " + this.midi4jOut.getTargetDeviceCount());
 
+                // List all available target Jack In devices.
                 this.midi4jOut.listTargetDevices(false);
+
+                // Attempt to connect source OUT device to its target IN device counterpart.
                 this.midi4jOut.connect("OUT", 2, true);
 
-                this.midi4jOut.listTargetDevices(false);
+                // List connected target device only.
+                this.midi4jOut.listTargetDevices(true);
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();

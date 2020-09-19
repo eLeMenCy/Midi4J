@@ -55,24 +55,4 @@ public class MidiException extends RuntimeException {
     public MidiException(String msg, Throwable cause) {
         super(msg, cause);
     }
-
-//    /***************************************************************************
-//     * <code>MidiException</code> instance created without detailed message.
-//     */
-//    public String getMessage(RtMidiDevice device) {
-//        byte[] buffer = device.errorMsg.getByteArray(0,128);
-//        buffer = Arrays.copyOfRange(buffer, 16, 128);
-//        String msg = new String(buffer, StandardCharsets.UTF_8);
-//
-//        return msg.substring(0, msg.indexOf('\0'));
-//    }
-//
-//    /**
-//     * <code>MidiException</code> instance created with detailed native message.
-//     */
-//    public MidiException(RtMidiDevice device) {
-//        logger.info(getMessage(device));
-//    }
-
-
 }

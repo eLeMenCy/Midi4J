@@ -23,9 +23,6 @@ import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * This sample illustrates how midi messages can be gathered via a crude game loop (polling).
  */
@@ -60,15 +57,18 @@ public class WithLoop /*extends KeepRunning*/ implements AppOption {
                 System.out.println("Target In device count: " + this.midi4jOut.getTargetDeviceCount());
 
                 // List all available target Alsa OUT devices.
-                List<Map<String, String>> outDevices;
                 this.midi4jIn.listTargetDevices(false);
+
+                // Attempt to connect source IN devices to its respective target OUT device counterpart.
                 this.midi4jIn.connect("IN", 2, true);
 
                 // List all available target Jack In devices.
-                List<Map<String, String>> inDevices;
                 this.midi4jOut.listTargetDevices(false);
+
+                // Attempt to connect source OUT devices to its respective target IN device counterpart.
                 this.midi4jOut.connect("OUT", 1, true);
 
+                // List connected target devices only.
                 this.midi4jIn.listTargetDevices(true);
                 this.midi4jOut.listTargetDevices(true);
 

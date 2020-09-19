@@ -132,9 +132,6 @@ public class MidiMessage implements Cloneable {
         midiDataSize = datasize;
         this.timeStamp = timeStamp;
 
-//        this.midiDataSize = 0;
-//        midiData = null;
-
         if (midiDataSize < 1) {
             throw new MidiException("A multibyte message size should be > 0");
         }
@@ -573,7 +570,6 @@ public class MidiMessage implements Cloneable {
         }
 
         if (isNoteOn(false)) {
-//            return String.format("%02d:%02d:%02d:%03d - ",hours, minutes, seconds, millis);
 
             return String.format(
                     "Note ON  %-4s Velocity %03d Channel %02d",
@@ -693,9 +689,8 @@ public class MidiMessage implements Cloneable {
                     midiData[i] & 0xFF
             );
             hexString += i < midiDataSize - 1 ? ", " : "";
-
-//                hexString += "0x" + Integer.toHexString(midiData[i] & 0xFF) + "(" + (midiData[i] & 0xFF) + "), ";
         }
+
         return hexString;
     }
 
