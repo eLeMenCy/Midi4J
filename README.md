@@ -4,8 +4,7 @@ W.I.P. of a small Java [Midi](http://www.planetoftunes.com/midi-sequencing/midi-
 library bridged to a *(slightly revisited)*
 [RtMidi](http://www.music.mcgill.ca/~gary/rtmidi/index.html)
 cross platform C++ midi library using 
-[JNA](https://github.com/java-native-access/jna) and 
-[JnAerator](https://github.com/nativelibs4java/JNAerator). 
+[JNA](https://github.com/java-native-access/jna). 
 
 #####What is RtMidi?
 It is a set of classes providing a common API (Application Programming Interface) for realtime 
@@ -17,11 +16,12 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
 - Re-level-up my knowledge of the Midi protocol. 
 - Learn:
     - How to create a small library with native binding *(my first one)*.
-    - JNA and the *(sadly no longer developed)* JnAerator utility *(to bridge the C/C++ & Java worlds together)*.
+    - JNA *(to bind the C/C++ & Java worlds together)* 
 
 - Discover:
     - The Alsa and Jack API.
     - Java development under Linux.
+    - The sadly no longer developed [JnAerator](https://github.com/nativelibs4java/JNAerator) JNA utility.
     - Junit, Exceptions, Javadoc, Markdown, UML etc...
     
 ![Midi4J Diagram](images/midi4j_class_diagram.png)
@@ -41,8 +41,8 @@ unsigned int nPorts = midiin->getPortCount();
 returns the number of available **Midi Out** devices *(not available Midi In devices)* even if reading the code 
 could make one think otherwise.
 
-In Midi4J, to try to ease the possible confusion:
-- Users created device instances are always known as **source** devices/ports
+So, in Midi4J, to try to ease possible confusions:
+- User's created device instances are known as **source** devices/ports.
 - All other devices/ports available on the system, are known as **target** devices/ports. 
 ```javascript
 // Same as above in java with Midi4J naming convention.
@@ -55,7 +55,7 @@ but also for other reasons such as:
 - To conform to Java's own naming conventions.
 - Trying to make method names and signatures self-explanatory.
 
-therefore, the Midi4J's API is different from RtMidi.
+this therefore implies that the Midi4J's API is different from RtMidi.
 
 #####Very simple example
 Sends a D4 note on channel 1 for 1 second to IN target device and quit. 
@@ -66,7 +66,7 @@ import com.elemency.Midi4J.MidiOut;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         MidiOut midi4jOut = new MidiOut(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J");
 
         if (midi4jOut.getTargetDeviceCount() < 1) {
@@ -91,13 +91,19 @@ incorporates work derived and translated from the JUCE library and licensed unde
 Further details can be found in the LICENSE file.
 
 
-#####Further Notes
+#####Please Note
 Midi4J is still in its infancy and quite a few bugs are likely to be lurking around. 
-Still, right now it seems to hold quite well with all I have thrown at it under the Jack and Alsa
-Midi API, at least under Linux as I do not have the facility to test on Windows nor on macOs.
+Still, right now it seems to hold quite well, at least under Linux (Jack and Alsa Midi API), 
+as I do not have the facility to test on Windows nor on macOs.
 
 Thank you for your interest - have fun with it!
 
+
+#####Known issues
+Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a
+```javascript
+java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2.
+```
 
 #####Addendum:
 **(this likely applies also to most, if not all, other Sound/Midi libraries)*.
