@@ -25,9 +25,6 @@ import java.util.*;
 public abstract class MidiDevice implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
     private final Logger logger = LoggerFactory.getLogger(MidiDevice.class);
-
-//    protected MidiDevice midiDevice;
-
     protected RtMidiDevice rtMidiDevice = null;
     protected final UUID uuid = UUID.randomUUID();
     protected String sourceDeviceName = "Midi4J";
@@ -464,36 +461,4 @@ public abstract class MidiDevice implements AutoCloseable {
         lib.rtmidi_close_port(rtMidiDevice);
         logger.info(getSourceDeviceClassName() + "(" + getSourceDeviceName() + ") " + "device ... closed");
     }
-
-
-//    /**
-//     *
-//     */
-//    public void displayErrorFromNative() {
-//        String msgRaw = "";
-//        String msg = "";
-//
-//        byte[] bbuf = this.midiDevice.errorMsg.getByteArray(0, 128);
-//        msgRaw = new String(bbuf, StandardCharsets.UTF_8);
-//        System.out.println("errorMsg raw: " + msgRaw);
-//
-//        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
-//        msg = new String(bbuf, StandardCharsets.UTF_8);
-//        msg = msg.substring(0, msg.indexOf('\0'));
-//
-//        System.out.println("errorMsg cleaned: " + msg + "\nlength: " + msg.length());
-//    }
-
-//    /**
-//     *
-//     */
-//    protected String getNativeMsg() {
-//        String msg;
-//        byte[] bbuf = this.midiDevice.errorMsg.getByteArray(0,128);
-//        bbuf = Arrays.copyOfRange(bbuf, 16, 128);
-//
-//        msg = new String(bbuf, StandardCharsets.UTF_8);
-////        return msg.substring(0, msg.indexOf('\0'));
-//        return msg;
-//    }
 }

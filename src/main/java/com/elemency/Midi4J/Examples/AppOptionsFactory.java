@@ -39,6 +39,7 @@ public class AppOptionsFactory {
                     "\trun --args=\"\" or simply 'run' (without quotes) to launch the sample with 'broadcaster' (default).\n" +
                     "\trun --args=\"callbacks\" to launch the sample with callback(s).\n" +
                     "\trun --args=\"both\" to launch the sample with both a callback and a broadcaster.\n" +
+                    "\trun --args=\"loop\" to launch the crude game loop (polling) sample.\n" +
                     "\trun --args=\"sequencer\" to launch the simple sequencer sample.\n\n" +
                     "Reverting to default method (--args=\"broadcaster\")\n" +
                     "---------------------------------------------------------------------------------------------------\n"
@@ -54,6 +55,7 @@ public class AppOptionsFactory {
         CALLBACKS(WithCallbacks::new),
         BROADCASTER(WithBroadcaster::new),
         BOTH(WithBoth::new),
+        LOOP(WithLoop::new),
         SEQUENCER(SimpleSequencer::new);
 
         private final Supplier<AppOption> option;

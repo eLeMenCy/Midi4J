@@ -16,18 +16,19 @@
 package com.elemency.Midi4J.Examples;
 
 /**
- * This sample app demonstrates 3 options on how midi IN messages can be handled in your
- * application. The 4th option is a very simple monodic sequencer.<br><br>
+ * This sample app demonstrates 4 options on how midi IN messages can be handled in your
+ * application. The 5th option is a very simple monodic sequencer.<br><br>
  *
  * Midi4J allows the reception, per device, of midi IN messages, either via a centralised
- * Broadcaster/Listener and/or via user implemented Callback(s).<br><br>
+ * Broadcaster/Listener, a user implemented Callback(s) or via polling.<br><br>
  *
  * To start the sample with one or the other option, type the following arg in your gradle
  * console or in the 'Arguments' field of Intellij [run] Configurations window:<br>
  * &nbsp; &nbsp; run --args="broadcaster" (default - arg not required in that case).<br>
  * &nbsp; &nbsp; run --args="callbacks"<br>
  * &nbsp; &nbsp; run --args="both"<br>
- * &nbsp; &nbsp; run --args="sequencer"<br><br>
+ * &nbsp; &nbsp; run --args="loop"<br><br>
+ * &nbsp; &nbsp; run --args="sequencer"<br>
  *
  * Broadcaster option (default)<br>
  * Handles all midi incoming events from MidiIn source devices thru a centralised
@@ -46,6 +47,10 @@ package com.elemency.Midi4J.Examples;
  * construction time, all messages are received by our app via the implementation of the BroadcasterListener interface
  * and its overridden method.<br>
  * Callback(s) is/are called directly by the native driver and need to be set (one per In device) in user's app.<br><br>
+ *
+ * Loop option<br>
+ * Handles all incoming midi events via polling (i.e. thru a game loop).
+ * Although I didn't try, it should also work in addition to callback(s) and/or a broadcaster.
  *
  * Sequencer option<br>
  * Just a very simple and crude monodic sequencer using a timer as its engine - no MidiIn.

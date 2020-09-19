@@ -32,10 +32,11 @@
 
 package com.elemency.Midi4J;
 
-import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary.size_t;
 import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
 /**
@@ -150,7 +151,7 @@ public class MidiMessage implements Cloneable {
      * @param timeStamp     time stamp
      */
     public MidiMessage(Pointer midiData,
-                       RtMidiLibrary.size_t midiDataSize,
+                       size_t midiDataSize,
                        double timeStamp)
     {
         this.midiDataSize = midiDataSize.intValue();

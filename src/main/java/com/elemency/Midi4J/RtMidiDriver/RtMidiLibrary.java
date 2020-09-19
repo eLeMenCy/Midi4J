@@ -3,7 +3,8 @@ package com.elemency.Midi4J.RtMidiDriver;
 import com.elemency.Midi4J.MidiIn;
 import com.sun.jna.*;
 import com.sun.jna.ptr.ByReference;
-import java.nio.ByteBuffer;
+import com.sun.jna.ptr.PointerByReference;
+
 import java.nio.IntBuffer;
 
 
@@ -276,7 +277,7 @@ public interface RtMidiLibrary extends Library {
      *                <i>native declaration : RtMidi/rtmidi_c.h:213</i>
      * @return        double
      */
-    double rtmidi_in_get_message(RtMidiDevice device, ByteBuffer message, size_tByReference size);
+    double rtmidi_in_get_message(RtMidiDevice device, PointerByReference message, size_tByReference size);
 
     /* *********************************************************************************************************************
      * 											           RtMidiDevice OUT API

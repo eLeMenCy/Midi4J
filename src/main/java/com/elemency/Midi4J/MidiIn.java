@@ -17,14 +17,19 @@ package com.elemency.Midi4J;
 
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
-import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
-import com.sun.jna.*;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary.size_t;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary.size_tByReference;
+import com.sun.jna.Callback;
+import com.sun.jna.CallbackThreadInitializer;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.ByteBuffer;
 
 public class MidiIn extends MidiDevice {
-    protected final Logger logger = LoggerFactory.getLogger(MidiIn.class);
+    private final Logger logger = LoggerFactory.getLogger(MidiIn.class);
+    private boolean hasCallback = false;
 
     /**
      * MidiIn simple constructor.
@@ -83,7 +88,7 @@ public class MidiIn extends MidiDevice {
     }
 
     /**
-     * Called on try with resources exception thrown.
+     * Called when a try with resources exception is thrown.
      */
     @Override
     public void close() {
@@ -139,7 +144,7 @@ public class MidiIn extends MidiDevice {
      * @param userData      user specific info from native
      * @return              boolean
      */
-    public boolean setCallback(MidiInCallback callback, String threadName, Pointer userData)  {
+    public void setCallback(MidiInCallback callback, String threadName, Pointer userData)  {
 
         if (rtMidiDevice == null) {
             throw new MidiException("This IN device is null - can't set its callback.");
@@ -153,10 +158,9 @@ public class MidiIn extends MidiDevice {
         Native.setCallbackThreadInitializer(callback, cti);
 
         lib.rtmidi_in_set_callback(rtMidiDevice, callback, userData);
-//        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
         SmpteTimecode.setStartTime();
 
-        return rtMidiDevice.ok != 0;
+        hasCallback = true;
     }
 
     /**
@@ -164,16 +168,17 @@ public class MidiIn extends MidiDevice {
      *
      * @return boolean
      */
-    public boolean cancelCallback() {
+    public void cancelCallback() {
+
+        if (!hasCallback) return;
 
         if (rtMidiDevice == null) {
-            throw new NullPointerException("This IN device is null - can't cancel is callback.");
+            throw new NullPointerException("This IN device is null - can't cancel its callback.");
         }
 
         logger.info("Cancelling IN callback...");
         lib.rtmidi_in_cancel_callback(rtMidiDevice);
-//        if (midiDevice.ok == 0) throw new MidiException(midiDevice);
-        return rtMidiDevice.ok != 0;
+        hasCallback = false;
     }
 
     /**
@@ -196,17 +201,24 @@ public class MidiIn extends MidiDevice {
     /**
      * Get midi message from native via a polling loop instead of a callback.
      *
-     * @param message   ByteBuffer receiving the native raw midi message
-     * @param size      midi message size
-     * @return          time stamp
+     * @return      MidiMessage or null.
      */
-    //TODO: build another sample app to test this method.
-    public double getMessage(ByteBuffer message, RtMidiLibrary.size_tByReference size) {
+    public MidiMessage getMessage() {
+
         if (rtMidiDevice == null) {
             throw new NullPointerException("This IN device is null - can't poll raw midi messages.");
         }
 
-        double midiMessage = lib.rtmidi_in_get_message(rtMidiDevice, message, size);
+        PointerByReference message = new PointerByReference();
+        size_tByReference size = new size_tByReference();
+        MidiMessage midiMessage = null;
+
+        double timesStamp = lib.rtmidi_in_get_message(rtMidiDevice, message, size);
+
+        if (size.getValue().intValue() > 0) {
+            midiMessage = new MidiMessage(message.getPointer(), size.getValue(), timesStamp);
+        }
+
         return midiMessage;
     }
 
@@ -223,7 +235,7 @@ public class MidiIn extends MidiDevice {
          * @param messageSize Size of the Midi message.
          * @param userData    Additional user data for the callback.
          */
-        void process(double timeStamp, Pointer message, RtMidiLibrary.size_t messageSize, Pointer userData);
+        void process(double timeStamp, Pointer message, size_t messageSize, Pointer userData);
     }
 
     /**
