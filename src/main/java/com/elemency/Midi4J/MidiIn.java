@@ -142,7 +142,6 @@ public class MidiIn extends MidiDevice {
      * @param callback      callback method name
      * @param threadName    callback thread name - this appears in the log
      * @param userData      user specific info from native
-     * @return              boolean
      */
     public void setCallback(MidiInCallback callback, String threadName, Pointer userData)  {
 
@@ -165,8 +164,6 @@ public class MidiIn extends MidiDevice {
 
     /**
      * Cancel the callback
-     *
-     * @return boolean
      */
     public void cancelCallback() {
 
