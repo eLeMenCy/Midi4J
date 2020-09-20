@@ -137,16 +137,16 @@ class MidiMessageTest {
 
     @Test
     void getMidiNoteName() {
-        assertEquals("C3", MidiMessage.getMidiNoteName(60, true, true, 3));
-        assertEquals("--", MidiMessage.getMidiNoteName(129, true, true, 3));
+        assertEquals("C3", MidiMessage.getNoteName(60, true, true, 3));
+        assertEquals("--", MidiMessage.getNoteName(129, true, true, 3));
     }
 
 
     @Test
     void getMidiNoteNumber() {
-        assertEquals(78, MidiMessage.getMidiNoteNumber("F#4", 3));
-        assertEquals(60, MidiMessage.getMidiNoteNumber("C3", 3));
-        assertEquals(61, MidiMessage.getMidiNoteNumber("Db3", 3));
+        assertEquals(78, MidiMessage.getNoteNumber("F#4", 3));
+        assertEquals(60, MidiMessage.getNoteNumber("C3", 3));
+        assertEquals(61, MidiMessage.getNoteNumber("Db3", 3));
     }
 
     @Nested

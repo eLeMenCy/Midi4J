@@ -23,8 +23,6 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
 - Discover:
     - Java development under Linux.
     - The sadly no longer developed [JnAerator](https://github.com/nativelibs4java/JNAerator) JNA utility.
-    
-![Midi4J Diagram](images/midi4j_class_diagram.png)
 
 #####Philosophy:
 One thing has tripped me quite a bit, at the beginning of using RtMidi*, querying devices/ports always results 
@@ -57,8 +55,11 @@ but also for other reasons such as:
 
 this therefore implies that the Midi4J's API is different from RtMidi.
 
+#####Midi4J's class diagram    
+![Midi4J Diagram](images/midi4j_class_diagram.png)
+
 #####Very simple example
-Sends a D4 note on channel 1 for 1 second to IN target device and quit. 
+Sends a D4 note on channel 1 for 1 second to IN target device and quit.<br>
 More advanced samples are available in the 'Examples' package.
 ```javascript
 import com.elemency.Midi4J.MidiMessage;
@@ -75,9 +76,14 @@ public class Main {
         }
 
         midi4jOut.connect("OUT", 0, true); // src Port name, tgt port ID, auto connect
-        midi4jOut.sendMessage(MidiMessage.noteOn(1, 74, 100, 0)); // Channel, note, velocity, time stamp
+
+        // note name, middle C octave number        
+        int noteNumber = MidiMessage.getNoteNumber("D4", 3);
+
+        // channel, note, velocity, time stamp
+        midi4jOut.sendMessage(MidiMessage.noteOn(1, noteNumber, 100, 0));
         Thread.sleep(1000);
-        midi4jOut.sendMessage(MidiMessage.noteOn(1, 74, 0, 0));
+        midi4jOut.sendMessage(MidiMessage.noteOn(1, noteNumber, 0, 0));
     }
 }
 ```
@@ -92,16 +98,16 @@ Further details can be found in the LICENSE file.
 
 
 #####Please Note
-Midi4J is still in its infancy and quite a few bugs are likely to be lurking around. 
+Midi4J is in its infancy and quite a few bugs are likely lurking around.<br>
 Still, right now it seems to hold quite well, at least under Linux (Jack and Alsa Midi API), 
-as I do not have the facility to test on Windows nor on macOs.
+as I do not have the facility to test on Windows nor on MacOs.
 
 Thank you for your interest - have fun with it!
 
 
 #####Known issues
-Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a
-```javascript
+Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:
+```
 java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2.
 ```
 

@@ -198,10 +198,10 @@ public class MidiMessage implements Cloneable {
      * @param noteNumber            the midi note number, 0 to 127
      * @return                      String
      */
-    public static String getMidiNoteName(int noteNumber)
+    public static String getNoteName(int noteNumber)
     {
         if (noteNumber > 0 && noteNumber < 128) {
-            String s = getMidiNoteName(noteNumber, true, true, 3);
+            String s = getNoteName(noteNumber, true, true, 3);
             return s;
         }
 
@@ -218,10 +218,10 @@ public class MidiMessage implements Cloneable {
      * @param octaveNumForMiddleC   if an octave number is being appended, this indicates the number that will be used for middle C's octave
      * @return                      String
      */
-    public static String getMidiNoteName(int noteNumber,
-                                         boolean useSharps,
-                                         boolean includeOctaveNumber,
-                                         int octaveNumForMiddleC)
+    public static String getNoteName(int noteNumber,
+                                     boolean useSharps,
+                                     boolean includeOctaveNumber,
+                                     int octaveNumForMiddleC)
     {
         String[] sharpNoteNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
         String[] flatNoteNames = {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
@@ -246,7 +246,7 @@ public class MidiMessage implements Cloneable {
      *
      * @return                      the corresponding note number.
      */
-    public static int getMidiNoteNumber(String noteName, int octaveNumForMiddleC) {
+    public static int getNoteNumber(String noteName, int octaveNumForMiddleC) {
 
         int noteNumber = -1;
         String[] sharpNoteNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
@@ -573,7 +573,7 @@ public class MidiMessage implements Cloneable {
 
             return String.format(
                     "Note ON  %-4s Velocity %03d Channel %02d",
-                    getMidiNoteName(getNoteNumber(), true, true, 3),
+                    getNoteName(getNoteNumber(), true, true, 3),
                     getVelocity(),
                     getChannel()
             );
@@ -582,7 +582,7 @@ public class MidiMessage implements Cloneable {
         if (isNoteOff(true)) {
             return String.format(
                     "Note OFF %-4s Velocity %03d Channel %02d",
-                    getMidiNoteName(getNoteNumber(), true, true, 3),
+                    getNoteName(getNoteNumber(), true, true, 3),
                     getVelocity(),
                     getChannel()
             );
@@ -607,7 +607,7 @@ public class MidiMessage implements Cloneable {
         if (isPolyAftertouch()) {
             return String.format(
                     "Poly Aftertouch %-4s: %03d Channel %02d",
-                    getMidiNoteName(getNoteNumber(), true, true, 3),
+                    getNoteName(getNoteNumber(), true, true, 3),
                     getPolyAftertouchValue(),
                     getChannel()
             );
