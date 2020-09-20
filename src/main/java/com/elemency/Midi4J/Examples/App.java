@@ -27,8 +27,8 @@ package com.elemency.Midi4J.Examples;
  * &nbsp; &nbsp; run --args="broadcaster" (default - arg not required in that case).<br>
  * &nbsp; &nbsp; run --args="callbacks"<br>
  * &nbsp; &nbsp; run --args="both"<br>
- * &nbsp; &nbsp; run --args="loop"<br><br>
- * &nbsp; &nbsp; run --args="sequencer"<br>
+ * &nbsp; &nbsp; run --args="loop"<br>
+ * &nbsp; &nbsp; run --args="sequencer"<br><br>
  *
  * Broadcaster option (default)<br>
  * Handles all midi incoming events from MidiIn source devices thru a centralised
@@ -46,11 +46,11 @@ package com.elemency.Midi4J.Examples;
  * A Broadcaster, is called by native driver internal callback(s) automatically set within each MidiIn instance at
  * construction time, all messages are received by our app via the implementation of the BroadcasterListener interface
  * and its overridden method.<br>
- * Callback(s) is/are called directly by the native driver and need to be set (one per In device) in user's app.<br><br>
+ * User Callback(s) is/are called directly by the native driver and need to be set (one per In device) in user's app.<br><br>
  *
  * Loop option<br>
  * Handles all incoming midi events via polling (i.e. thru a game loop).
- * Although I didn't try, it should also work in addition to callback(s) and/or a broadcaster.
+ * Although I didn't try, it should also work in addition to callback(s) and/or a broadcaster.<br><br>
  *
  * Sequencer option<br>
  * Just a very simple and crude monodic sequencer using a timer as its engine - no MidiIn.

@@ -220,9 +220,7 @@ public class MidiIn extends MidiDevice {
     }
 
     /**
-     * Midi In interface callback from native.
-     * See ref RtMidiIn::RtMidiCallback.
-     * <i>native declaration : rtmidi_c.h</i>
+     * Implement this interface in your application to receive all midi messages directly from native call(s).
      */
     public interface MidiInCallback extends Callback {
 
@@ -236,9 +234,10 @@ public class MidiIn extends MidiDevice {
     }
 
     /**
-     * Midi In callback from native implementation.
+     * Midi In internal callback implementation - automatically set when creating a MidiIn device<br>
+     * with param 'withUserCallback' set to true.
      */
-    public final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
+    private final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
 
         try {
             /* Create a new MidiMessage (based on incoming native raw data) and
