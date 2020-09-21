@@ -149,7 +149,7 @@ public class MidiIn extends MidiDevice {
             throw new MidiException("This IN device is null - can't set its callback.");
         }
 
-        /**
+        /*
          * The CallbackThreadInitializer ensures that the VM doesn't generate multiple Java Threads for the same
          * native thread. This must be done before attaching the thread to the VM.
          */
