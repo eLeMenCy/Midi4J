@@ -37,7 +37,7 @@ repositories {
 //    mavenLocal()
 
     maven {
-        url = uri("http://oss.sonatype.org/content/groups/public")
+        url = uri("https://oss.sonatype.org/content/groups/public")
     }
 
 //    maven {
