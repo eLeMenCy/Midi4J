@@ -48,11 +48,11 @@ MidiIn midi4jIn = new MidiIn(withUserCallback);
 
 int nPorts = midi4jIn.getTargetDeviceCount();
 ```
-but also for other reasons such as:
+but also:
 - To conform to Java's own naming conventions.
 - Trying to make method names and signatures self-explanatory.
 
-this therefore implies that the Midi4J's API is different from RtMidi.
+the Midi4J's API is different from RtMidi.
 
 #####Midi4J's class diagram    
 ![Midi4J Diagram](images/midi4j_class_diagram.png)
