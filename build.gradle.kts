@@ -6,27 +6,45 @@
  * User Manual available at https://docs.gradle.org/6.1/userguide/java_library_plugin.html
  */
 
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath ("com.netflix.nebula:nebula-publishing-plugin:9.5.4")
+    }
+}
+
+apply {
+    plugin("nebula.maven-publish")
+    plugin("nebula.javadoc-jar")
+    plugin("nebula.source-jar")
+}
+
 plugins {
     // Apply the java-library plugin to add support for Java Library
     `java-library`
 
     // Apply the application plugin to add support for building a CLI application.
     application
+    id("nebula.release") version "15.2.0"
 }
 
 group = "com.elemency"
-version = "1.0-SNAPSHOT"
-description = "- Midi for java library (Midi4J) -\n" +
-        "Midi4J provides client/server facility for Midi messages\n" +
-        "The server is able to handle connections, communication and messages exchange with remote MIDI clients.\n" +
-        "Requires Jack Audio to be installed on user's machine."
+//version = "1.0-SNAPSHOT"
+description = "- Midi4J - (Rt)Midi for java library -\n" +
+        "Small Java library bridged to a (slightly revisited)\n" +
+        "RtMidi cross platform C++ real time midi library via JNA binding."
 
 var javaVersion = JavaVersion.VERSION_1_8
 
 java {
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
-//    withJavadocJar()
 }
 
 repositories {
@@ -34,15 +52,9 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
 
-//    mavenLocal()
-
     maven {
         url = uri("https://oss.sonatype.org/content/groups/public")
     }
-
-//    maven {
-//        url = uri("http://repo.maven.apache.org/maven2")
-//    }
 }
 
 dependencies {
@@ -54,47 +66,16 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("com.google.guava:guava:28.1-jre")
     implementation("net.java.dev.jna:jna:5.5.0")
-//    implementation("net.java.dev.jna:jna-platform:5.5.0")
     implementation("junit:junit:4.12")
     implementation("org.jetbrains:annotations:16.0.2")
 
-
-//    implementation("com.google.guava:guava:29.0-jre")
-//    implementation("com.workable:error-handler:1.1.0")
-
     // Use JUnit test framework
-//    testImplementation("junit:junit:4.12")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.3.1")
 
 }
-
-/********************************************************************************************
- For maven publishing see details here:
- http://bastienpaul.fr/wordpress/2019/02/08/publish-a-kotlin-lib-with-gradle-kotlin-dsl/
-********************************************************************************************/
-// publishing {
-//    publications {
-//        create<MavenPublication>("lib") {
-//            groupId = artifactGroup
-//            artifactId = artifactName
-
-//            // version is gotten from an external plugin
-//            version = project.versioning.info.display
-
-//            // This is the main artifact
-//            from(components["java"])
-
-//            // We are adding documentation artifact
-//            artifact(dokkaJar)
-
-//            // And sources
-//            artifact(sourcesJar)
-//        }
-//    }
-//}
 
 tasks {
     withType<JavaCompile> {

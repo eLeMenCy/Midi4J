@@ -1,10 +1,9 @@
 ####Midi4J - (Rt)Midi for java 
 #####Overview
-W.I.P. of a small Java [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
-library bridged to a *(slightly revisited)*
+W.I.P. of a small Java library bridged to a *(slightly revisited)*
 [RtMidi](http://www.music.mcgill.ca/~gary/rtmidi/index.html)
-cross platform C++ midi library using 
-[JNA](https://github.com/java-native-access/jna). 
+cross platform C++ [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
+library via [JNA](https://github.com/java-native-access/jna) binding.
 
 #####What is RtMidi?
 It is a set of classes providing a common API (Application Programming Interface) for realtime 
