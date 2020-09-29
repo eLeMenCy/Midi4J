@@ -1,4 +1,5 @@
-####Midi4J - (Rt)Midi for java 
+#Midi4J - (Rt)Midi for java
+
 #####Overview
 W.I.P. of a small Java library bridged to a *(slightly revisited)*
 [RtMidi](http://www.music.mcgill.ca/~gary/rtmidi/index.html)
@@ -17,7 +18,7 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
     - How to create a small library with native binding *(my first one)*.
     - JNA *(to bind the C/C++ & Java worlds together)* 
     - The Alsa and Jack API.
-    - Junit, Exceptions, Javadoc, Markdown, UML etc...
+    - Junit, Exceptions, Javadoc, Markdown, Gradle, UML etc...
 
 - Discover:
     - Java development under Linux.
@@ -88,8 +89,9 @@ public class Main {
 ```
 
 #####Licensing
-- Midi4J is licensed under the Apache license V2.0 except for the MidiMessage class which
-incorporates work derived and translated from the JUCE library and licensed under the ISC License.
+- Midi4J is licensed under the Apache license V2.0 but, its MidiMessage class incorporates 
+work, derived and translated from the C++ juce_MidiMessage class part of the JUCE library, 
+which is covered under the ISC License.
 
 - RtMidi is distributed under its own modified MIT License.
 
