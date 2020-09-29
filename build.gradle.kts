@@ -6,36 +6,22 @@
  * User Manual available at https://docs.gradle.org/6.1/userguide/java_library_plugin.html
  */
 
-
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            url = uri("https://plugins.gradle.org/m2/")
-        }
-    }
-    dependencies {
-        classpath ("com.netflix.nebula:nebula-publishing-plugin:9.5.4")
-    }
-}
-
-apply {
-    plugin("nebula.maven-publish")
-    plugin("nebula.javadoc-jar")
-    plugin("nebula.source-jar")
-}
-
 plugins {
     // Apply the java-library plugin to add support for Java Library
     `java-library`
 
     // Apply the application plugin to add support for building a CLI application.
     application
+
+    // Nebula semantic release plugins.
     id("nebula.release") version "15.2.0"
+    id("nebula.javadoc-jar") version "17.3.2"
+    id("nebula.source-jar") version "17.3.2"
 }
 
+apply <nebula.plugin.publishing.maven.MavenNebulaPublishPlugin>()
+
 group = "com.elemency"
-//version = "1.0-SNAPSHOT"
 description = "- Midi4J - (Rt)Midi for java library -\n" +
         "Small Java library bridged to a (slightly revisited)\n" +
         "RtMidi cross platform C++ real time midi library via JNA binding."
@@ -54,6 +40,7 @@ repositories {
 
     maven {
         url = uri("https://oss.sonatype.org/content/groups/public")
+        url = uri("https://plugins.gradle.org/m2/")
     }
 }
 

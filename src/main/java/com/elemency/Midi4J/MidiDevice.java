@@ -143,6 +143,11 @@ public abstract class MidiDevice implements AutoCloseable {
             throw new NullPointerException("This device is null - name can't be changed.");
         }
 
+        if (getCurrentApiName().equals("Jack")) {
+            logger.warn("Changing the name of a Jack port is not currently implemented");
+            return;
+        }
+
         String name = sourceDeviceName;
 
         if (sourceDeviceName.isEmpty()) {

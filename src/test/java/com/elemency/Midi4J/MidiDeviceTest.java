@@ -99,6 +99,10 @@ class MidiDeviceTest {
 
     @Test
     void setDeviceName() {
+        if (midi4jOut.getCurrentApiName().equals("Jack") ||
+                midi4jIn.getCurrentApiName().equals("Jack")) {
+            return;
+        }
         midi4jOut.setSourceDeviceName("DeviceOUT");
         midi4jIn.setSourceDeviceName("DeviceIN");
         assertEquals("DeviceOUT", midi4jOut.getSourceDeviceName());

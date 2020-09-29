@@ -84,7 +84,7 @@ public class RtMidi {
         /**
          * The Advanced Linux Sound Architecture API.<br>
          * <i>native declaration : RtMidi/rtmidi_c.h:65</i>
-         * api name:         alsa
+         * api name:         ALSA
          * api display name: ALSA
          */
         LINUX_ALSA(2),
@@ -92,7 +92,7 @@ public class RtMidi {
         /**
          * The Jack Low-Latency MIDI Server API.<br>
          * <i>native declaration : RtMidi/rtmidi_c.h:66</i>
-         * api name:         jack
+         * api name:         Jack
          * api display name: JACK
          */
         UNIX_JACK(3),
