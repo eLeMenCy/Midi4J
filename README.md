@@ -1,17 +1,17 @@
-#Midi4J - (Rt)Midi for java
+# Midi4J - (Rt)Midi for java
 
-#####Overview
+### Overview
 W.I.P. of a small Java library bridged to a *(slightly revisited)*
 [RtMidi](http://www.music.mcgill.ca/~gary/rtmidi/index.html)
 cross platform C++ [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
 library via [JNA](https://github.com/java-native-access/jna) binding.
 
-#####What is RtMidi?
+### What is RtMidi?
 It is a set of classes providing a common API (Application Programming Interface) for realtime 
 MIDI input/output across Linux *(ALSA, JACK)*, Macintosh OS X *(CoreMIDI, JACK)*, and Windows *(Multimedia Library)* 
 operating systems.
 
-#####Huuuh! Another Java midi library... Why?
+### Huuuh! Another Java midi library... Why?
 Well, it was done in view of future projects and as a fun exercise in my spare time to:
 - Re-level-up my knowledge of the Midi protocol. 
 - Learn:
@@ -24,7 +24,7 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
     - Java development under Linux.
     - The sadly no longer developed [JnAerator](https://github.com/nativelibs4java/JNAerator) JNA utility.
 
-#####Philosophy:
+### Philosophy:
 One thing has tripped me quite a bit, at the beginning of learning RtMidi*, querying devices/ports always results 
 to available **opposite** (target) devices...
 
@@ -55,10 +55,10 @@ but also:
 
 the Midi4J's API is somewhat different from RtMidi.
 
-#####Midi4J's class diagram    
+### Midi4J's class diagram    
 ![Midi4J Diagram](images/midi4j_class_diagram.png)
 
-#####Very simple example
+### Very simple example
 Sends a D4 note on channel 1 for 1 second to IN target device and quit.<br>
 More advanced samples are available in the 'Examples' package.
 ```javascript
@@ -88,7 +88,7 @@ public class Main {
 }
 ```
 
-#####Licensing
+### Licensing
 - Midi4J is licensed under the [Apache license V2.0](http://www.apache.org/licenses/) with exception for its MidiMessage class which incorporates 
 work, derived and translated from the C++ juce_MidiMessage class part of the JUCE library and covered under the very permissive [ISC](http://www.isc.org/downloads/software-support-policy/isc-license) License.
 
@@ -97,7 +97,7 @@ work, derived and translated from the C++ juce_MidiMessage class part of the JUC
 Further details can be found in the LICENSE file.
 
 
-#####Please Note
+### Please Note
 Midi4J is in its infancy and quite a few bugs are likely lurking around.<br>
 Still, right now it seems to hold quite well, at least under Linux (Jack and Alsa Midi API), 
 as I do not have the facility to test on Windows nor on MacOs.
@@ -105,12 +105,11 @@ as I do not have the facility to test on Windows nor on MacOs.
 Thank you for your interest - have fun with it!
 
 
-#####Known issues
+### Known issues
 Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:
 ```
 java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2.
 ```
 
-#####Addendum:
+### Addendum:
 **(this likely applies also to most, if not all, other Sound/Midi libraries)*.
-
