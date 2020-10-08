@@ -106,10 +106,16 @@ Thank you for your interest - have fun with it!
 
 
 ### Known issues
-Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:
+- Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:
 ```
 java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2.
 ```
+- Windows and MacOs RtMidi compiled binaries not yet provided as I do not have the necessary facility to produce them. 
+Please note that Midi4J uses a slightly modified version of RtMidi (small hacks). This implies that the current 
+RtMidi binaries (Windows, MacOs) won't work. 
+The source of my modified version of RtMidi will be made available **asap** as well as a pull request to the original 
+RtMidi developer(s) in case they find them useful. In the meantime though, only the Linux version will be provided!
+
 
 ### Addendum:
 **(this likely applies also to most, if not all, other Sound/Midi libraries)*.
