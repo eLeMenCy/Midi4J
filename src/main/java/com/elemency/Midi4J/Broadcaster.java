@@ -23,8 +23,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The Broadcaster/listener couple when used, receives all messages coming from Midi4J own internal native callback(s),
- * dispatch them to all subscribed listener(s) which themselves reroute them to the relevant connected target device.
+ * The Broadcaster when used, receives all messages coming from Midi4J own internal native callback(s),
+ * publish them to a subscribed user created listener which itself reroutes the received messages toward
+ * the relevant connected target device.
  * See the "WithBroadcaster" sample.
  */
 public class Broadcaster implements Serializable

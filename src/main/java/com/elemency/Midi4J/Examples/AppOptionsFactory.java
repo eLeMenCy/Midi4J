@@ -19,10 +19,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.function.Supplier;
 
+/**
+ * Select the sample app based on the user chosen runtime Option:<br>
+ * run --args="broadcaster" or simply 'run' (without quotes) to launch the sample with 'broadcaster' (default).<br>
+ * run --args="callbacks" to launch the sample with callback(s).<br>
+ * run --args="both" to launch the sample with both a callback and a broadcaster.<br>
+ * run --args="loop" to launch the crude game loop (polling) sample.<br>
+ * run --args="sequencer" to launch the simple sequencer sample.
+ */
 public class AppOptionsFactory {
     private final static Logger logger = LoggerFactory.getLogger(AppOptionsFactory.class);
 
-    //    public static AppOption getAppOption(AppOptionType optionType) {
+    /**
+     *
+     * @param optionType    The argument passed to run --args="broadcaster", "callbacks", "both", "loop" or "sequencer"
+     * @return              user chosen AppOption.
+     */
     public static AppOption getAppOption(String optionType) {
 
         AppOptionType appOptionType;

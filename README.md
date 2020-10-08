@@ -25,7 +25,7 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
     - The sadly no longer developed [JnAerator](https://github.com/nativelibs4java/JNAerator) JNA utility.
 
 #####Philosophy:
-One thing has tripped me quite a bit, at the beginning of using RtMidi*, querying devices/ports always results 
+One thing has tripped me quite a bit, at the beginning of learning RtMidi*, querying devices/ports always results 
 to available **opposite** (target) devices...
 
 For example:
@@ -51,9 +51,9 @@ int nPorts = midi4jIn.getTargetDeviceCount();
 ```
 but also:
 - To conform to Java's own naming conventions.
-- Trying to make method names and signatures self-explanatory.
+- To try to make method names and signatures self-explanatory.
 
-the Midi4J's API is different from RtMidi.
+the Midi4J's API is somewhat different from RtMidi.
 
 #####Midi4J's class diagram    
 ![Midi4J Diagram](images/midi4j_class_diagram.png)
@@ -89,11 +89,10 @@ public class Main {
 ```
 
 #####Licensing
-- Midi4J is licensed under the Apache license V2.0 but, its MidiMessage class incorporates 
-work, derived and translated from the C++ juce_MidiMessage class part of the JUCE library, 
-which is covered under the ISC License.
+- Midi4J is licensed under the [Apache license V2.0](http://www.apache.org/licenses/) with exception for its MidiMessage class which incorporates 
+work, derived and translated from the C++ juce_MidiMessage class part of the JUCE library and covered under the very permissive [ISC](http://www.isc.org/downloads/software-support-policy/isc-license) License.
 
-- RtMidi is distributed under its own modified MIT License.
+- RtMidi is distributed under its own [modified MIT](https://github.com/thestk/rtmidi/blob/master/LICENSE) License.
 
 Further details can be found in the LICENSE file.
 

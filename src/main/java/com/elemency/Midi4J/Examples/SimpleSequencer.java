@@ -27,12 +27,12 @@ import java.util.TimerTask;
 
 /**
  * Simple sequencer inspired from
- * <a href="http://sandsoftwaresound.net/source/arduino-project-source/simple-midi-sequencer/">Sand,software and sound code</a><br><br>
+ * <a href="http://sandsoftwaresound.net/source/arduino-project-source/simple-midi-sequencer/">Sand, software and sound code</a><br><br>
  *
  * The sequence is the intro of one of my favourite tracks by Alan Walker
  * <a href="https://www.youtube.com/watch?v=60ItHLz5WEA"> - Faded - </a><br>
  *
- * Obviously the monodic sequence definitively doesn't do justice to the original but
+ * Obviously the crude monodic sequence definitively doesn't do justice to the original but
  * demonstrates how simple it can be to send midi messages in Midi4J to any connected device(s) using a single timer.<br><br>
  *
  * KNOWN ISSUE:<br>
