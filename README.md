@@ -1,13 +1,13 @@
 # Midi4J - (Rt)Midi for java
 
 ### Overview
-W.I.P. of a small Java library bridged to a *(slightly revisited)*
-[RtMidi](http://www.music.mcgill.ca/~gary/rtmidi/index.html)
-cross platform C++ [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
+Small Java Midi library *(w.i.p.)* bridged to a *'slightly'* revisited
+[RtMidi](https://github.com/thestk/rtmidi)
+cross platform realtime C++ [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
 library via [JNA](https://github.com/java-native-access/jna) binding.
 
 ### What is RtMidi?
-It is a set of classes providing a common API (Application Programming Interface) for realtime 
+RtMidi is a set of classes providing a common API (Application Programming Interface) for realtime 
 MIDI input/output across Linux *(ALSA, JACK)*, Macintosh OS X *(CoreMIDI, JACK)*, and Windows *(Multimedia Library)* 
 operating systems.
 
@@ -106,15 +106,17 @@ Thank you for your interest - have fun with it!
 
 
 ### Known issues
-- Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:
-```
+- The Javadoc lacks a lot of tender and loving care!
+- Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:<br>
+``
 java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2.
-```
-- Windows and MacOs RtMidi compiled binaries not yet provided as I do not have the necessary facility to produce them. 
-Please note that Midi4J uses a slightly modified version of RtMidi (small hacks). This implies that the current 
-RtMidi binaries (Windows, MacOs) won't work. 
-The source of my modified version of RtMidi will be made available **asap** as well as a pull request to the original 
-RtMidi developer(s) in case they find them useful. In the meantime though, only the Linux version will be provided!
+``
+- RtMidi's compiled binaries for Windows and MacOs are not yet provided as I do not have the necessary facility to produce them.<br> 
+As Midi4J uses a slightly modified version of RtMidi (small hacks), (Windows, MacOs) binaries compiled from the original 
+RtMidi won't work.<br>
+The modified version of RtMidi, as well as a pull request to the original RtMidi developer(s), in case they think my 'hacks'
+adds values to their current version, will be made available **asap**, in the meantime though, only the Linux 
+binaries will be provided!
 
 
 ### Addendum:
