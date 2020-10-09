@@ -1,6 +1,6 @@
 # Midi4J - (Rt)Midi for java
 
-### Overview
+
 Small Java Midi library *(w.i.p.)* bridged to a *'slightly'* revisited
 [RtMidi](https://github.com/thestk/rtmidi)
 cross platform realtime C++ [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
@@ -11,7 +11,7 @@ RtMidi is a set of classes providing a common API (Application Programming Inter
 MIDI input/output across Linux *(ALSA, JACK)*, Macintosh OS X *(CoreMIDI, JACK)*, and Windows *(Multimedia Library)* 
 operating systems.
 
-### Huuuh! Another Java midi library... Why?
+## Huuuh! Another Java midi library... Why?
 Well, it was done in view of future projects and as a fun exercise in my spare time to:
 - Re-level-up my knowledge of the Midi protocol. 
 - Learn:
@@ -24,13 +24,13 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
     - Java development under Linux.
     - The sadly no longer developed [JnAerator](https://github.com/nativelibs4java/JNAerator) JNA utility.
 
-### Philosophy:
+### Philosophy
 One thing has tripped me quite a bit, at the beginning of learning RtMidi*, querying devices/ports always results 
 to available **opposite** (target) devices...
 
 For example:
 ```javascript
-// RtMidi C excerpt to get port count.
+// RtMidi C++ excerpt to get port count.
 RtMidiIn *midiin = 0;
 midiin = new RtMidiIn();
 
@@ -88,7 +88,8 @@ public class Main {
 }
 ```
 
-### Licensing
+
+## Licensing
 - Midi4J is licensed under the [Apache license V2.0](http://www.apache.org/licenses/) with exception for its MidiMessage class which incorporates 
 work, derived and translated from the C++ juce_MidiMessage class part of the JUCE library and covered under the very permissive [ISC](http://www.isc.org/downloads/software-support-policy/isc-license) License.
 
@@ -97,15 +98,7 @@ work, derived and translated from the C++ juce_MidiMessage class part of the JUC
 Further details can be found in the LICENSE file.
 
 
-### Please Note
-Midi4J is in its infancy and quite a few bugs are likely lurking around.<br>
-Still, right now it seems to hold quite well, at least under Linux (Jack and Alsa Midi API), 
-as I do not have the facility to test on Windows nor on MacOs.
-
-Thank you for your interest - have fun with it!
-
-
-### Known issues
+## Known issues
 - The Javadoc lacks a lot of tender and loving care!
 - Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:<br>
 ``
@@ -119,5 +112,10 @@ adds values to their current version, will be made available **asap**, in the me
 binaries will be provided!
 
 
-### Addendum:
-**(this likely applies also to most, if not all, other Sound/Midi libraries)*.
+## Addendum
+Midi4J is in its infancy and quite a few bugs are likely lurking around.<br>
+Still, right now it seems to hold quite well, at least under Linux (Jack and Alsa Midi API), 
+as I do not have the facility to test on Windows nor on MacOs.
+
+Thank you for your interest - have fun with it!<br><br><br><br>
+*\*<sub>(this likely applies also to most, if not all, other Sound/Midi libraries)</sub>*.
