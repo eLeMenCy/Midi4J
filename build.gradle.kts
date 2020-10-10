@@ -22,9 +22,9 @@ plugins {
 apply <nebula.plugin.publishing.maven.MavenNebulaPublishPlugin>()
 
 group = "com.elemency"
-description = "- Midi4J - (Rt)Midi for java library -\n" +
-        "Small Java library bridged to a (slightly revisited)\n" +
-        "RtMidi cross platform C++ real time midi library via JNA binding."
+description = "- Midi4J - (Rt)Midi for Java -\n" +
+        "Small Java Midi library (w.i.p.) bridged, via JNA binding, " +
+        "to a slightly revisited RtMidi cross platform realtime C++ Midi library ."
 
 var javaVersion = JavaVersion.VERSION_1_8
 

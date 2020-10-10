@@ -1,10 +1,11 @@
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-green.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
+
+![Midi4J logo](http://www.elemency.com/midi4j/images/lmc_midi4j_logo_border_offset.png)
 # Midi4J - (Rt)Midi for java
-
-
-Small Java Midi library *(w.i.p.)* bridged to a *'slightly'* revisited
-[RtMidi](https://github.com/thestk/rtmidi)
+Small Java Midi library *(w.i.p.)* bridged, via [JNA](https://github.com/java-native-access/jna) binding, 
+to a ***slightly*** revisited [RtMidi](https://github.com/thestk/rtmidi)
 cross platform realtime C++ [Midi](http://www.planetoftunes.com/midi-sequencing/midi-status-and-data-bytes.html) 
-library via [JNA](https://github.com/java-native-access/jna) binding.
+library.
 
 ### What is RtMidi?
 RtMidi is a set of classes providing a common API (Application Programming Interface) for realtime 
@@ -24,7 +25,7 @@ Well, it was done in view of future projects and as a fun exercise in my spare t
     - Java development under Linux.
     - The sadly no longer developed [JnAerator](https://github.com/nativelibs4java/JNAerator) JNA utility.
 
-### Philosophy
+## Philosophy
 One thing has tripped me quite a bit, at the beginning of learning RtMidi*, querying devices/ports always results 
 to available **opposite** (target) devices...
 
@@ -55,8 +56,8 @@ but also:
 
 the Midi4J's API is somewhat different from RtMidi.
 
-### Midi4J's class diagram    
-![Midi4J Diagram](images/midi4j_class_diagram.png)
+### Class diagram    
+![Midi4J class diagram](http://www.elemency.com/midi4j/images/lmc_midi4j_class_diagram.png)
 
 ### Very simple example
 Sends a D4 note on channel 1 for 1 second to IN target device and quit.<br>
@@ -90,7 +91,7 @@ public class Main {
 
 
 ## Licensing
-- Midi4J is licensed under the [Apache license V2.0](http://www.apache.org/licenses/) with exception for its MidiMessage class which incorporates 
+- Midi4J is licensed under the [Apache license V2.0](http://www.apache.org/licenses/) with exception to its MidiMessage class which incorporates 
 work, derived and translated from the C++ juce_MidiMessage class part of the JUCE library and covered under the very permissive [ISC](http://www.isc.org/downloads/software-support-policy/isc-license) License.
 
 - RtMidi is distributed under its own [modified MIT](https://github.com/thestk/rtmidi/blob/master/LICENSE) License.
@@ -99,23 +100,31 @@ Further details can be found in the LICENSE file.
 
 
 ## Known issues
-- The Javadoc lacks a lot of tender and loving care!
-- Receiving a huge amount of events (i.e. channel aftertouch) can sometimes generate a:<br>
+- Receiving a huge amount of events (i.e. channel aftertouch) sometime generates a:<br>
 ``
 java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2.
 ``
-- RtMidi's compiled binaries for Windows and MacOs are not yet provided as I do not have the necessary facility to produce them.<br> 
+
+- RtMidi's compiled binaries for Windows and MacOs are not yet provided as I do not have the necessary facility to 
+produce them.<br> 
 As Midi4J uses a slightly modified version of RtMidi (small hacks), (Windows, MacOs) binaries compiled from the original 
 RtMidi won't work.<br>
-The modified version of RtMidi, as well as a pull request to the original RtMidi developer(s), in case they think my 'hacks'
-adds values to their current version, will be made available **asap**, in the meantime though, only the Linux 
-binaries will be provided!
+The modified version of RtMidi, as well as a pull request to the original RtMidi developer(s), in case they think my 'mods'
+adds values to their current version, will be made available **asap**, in the meantime though, only the Linux binaries 
+will be provided!
+
+- The Javadoc is pretty rough and requires a lot of tender loving care!
 
 
 ## Addendum
 Midi4J is in its infancy and quite a few bugs are likely lurking around.<br>
-Still, right now it seems to hold quite well, at least under Linux (Jack and Alsa Midi API), 
-as I do not have the facility to test on Windows nor on MacOs.
+Still, right now it seems to be pretty stable, at least under Linux (Jack and Alsa Midi API).
 
-Thank you for your interest - have fun with it!<br><br><br><br>
+Thank you for your interest - have fun with it! <br>
+
+eLeMenCy
+
+<br>
+<br>
+
 *\*<sub>(this likely applies also to most, if not all, other Sound/Midi libraries)</sub>*.
