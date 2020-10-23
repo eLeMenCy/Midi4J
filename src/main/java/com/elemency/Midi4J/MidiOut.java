@@ -100,7 +100,7 @@ public class MidiOut extends MidiDevice {
      */
     public int sendMessage(byte[] message, int length) {
         if (rtMidiDevice == null) {
-            throw new NullPointerException("This OUT device is null and - send messages.");
+            throw new NullPointerException("This OUT device is null... can't send messages.");
         }
 
         return lib.rtmidi_out_send_message(rtMidiDevice, message, length);
@@ -115,7 +115,7 @@ public class MidiOut extends MidiDevice {
     public int sendMessage(MidiMessage midiMessage) {
 
         if (rtMidiDevice == null) {
-            throw new NullPointerException("This OUT device is null - can't send messages.");
+            throw new NullPointerException("This OUT device is null... can't send messages.");
         }
 
         return lib.rtmidi_out_send_message(rtMidiDevice, midiMessage.getMidiData(), midiMessage.getMidiDataSize());

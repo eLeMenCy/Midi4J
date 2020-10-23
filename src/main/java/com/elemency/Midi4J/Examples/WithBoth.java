@@ -73,7 +73,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener, AppOptio
 
         try {
             /* Create a new MidiMessage (based on incoming native raw data) and
-            sends it to our application. */
+            sends it. */
             MidiMessage midiMessage = new MidiMessage(midiData, midiDataSize, timeStamp);
 
             midi4j2Out.sendMessage(midiMessage);
@@ -99,7 +99,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener, AppOptio
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
                 MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, false);
                 MidiOut midi4j2Out = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J2");
-                MidiIn midi4j2In = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J2", 100, true);
+                MidiIn midi4j2In = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J2", 100, true)
         ) {
 
             this.midi4jIn = midi4jIn;
@@ -114,7 +114,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener, AppOptio
                 // List all available target Alsa OUT devices.
                 this.midi4jIn.listTargetDevices(false);
 
-                // Attempt to connect source IN devices to their respective target OUT device counterparts.
+                // Attempt to connect a source IN device to a target OUT device.
                 this.midi4jIn.connect("IN", 2, true);
                 this.midi4j2In.connect("IN", 2, true);
 
@@ -127,7 +127,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener, AppOptio
                 // List all available target Jack In devices.
                 this.midi4jOut.listTargetDevices(false);
 
-                // Attempt to connect source OUT devices to their respective target IN device counterparts.
+                // Attempt to connect a source OUT device to a target IN device.
                 this.midi4jOut.connect("OUT", 1, true);
                 this.midi4j2Out.connect("OUT", 2, true);
 
