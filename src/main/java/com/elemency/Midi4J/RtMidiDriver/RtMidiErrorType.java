@@ -47,17 +47,17 @@ public enum RtMidiErrorType {
      */
     RTMIDI_ERROR_INVALID_USE(7),
     /**
-     * A system driver error occured.<br>
+     * A system driver error occurred.<br>
      * <i>native declaration : RtMidi/rtmidi_c.h:82</i>
      */
     RTMIDI_ERROR_DRIVER_ERROR(8),
     /**
-     * A system error occured.<br>
+     * A system error occurred.<br>
      * <i>native declaration : RtMidi/rtmidi_c.h:83</i>
      */
     RTMIDI_ERROR_SYSTEM_ERROR(9),
     /**
-     * A thread error occured.<br>
+     * A thread error occurred.<br>
      * <i>native declaration : RtMidi/rtmidi_c.h:84</i>
      */
     RTMIDI_ERROR_THREAD_ERROR(10);

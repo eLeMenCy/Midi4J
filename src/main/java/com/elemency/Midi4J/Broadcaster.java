@@ -36,7 +36,7 @@ public class Broadcaster implements Serializable
     private static final LinkedList<BroadcastListener> listeners = new LinkedList<>();
 
     /**
-     * Add a Broadcastlistener to the list.
+     * Add a listener to the list.
      *
      * @param listener  BroadcastListener
      */
@@ -46,7 +46,7 @@ public class Broadcaster implements Serializable
     }
 
     /**
-     * Remove a Broadcastlistener from the list.
+     * Remove a listener from the list.
      *
      * @param listener  BroadcastListener
      */
@@ -75,9 +75,7 @@ public class Broadcaster implements Serializable
         for (final BroadcastListener listener : listeners)
         {
             executorService.execute(
-                    () -> {
-                        listener.receiveMessage(uuid, midiMessage, userData);
-                    }
+                    () -> listener.receiveMessage(uuid, midiMessage, userData)
             );
         }
     }

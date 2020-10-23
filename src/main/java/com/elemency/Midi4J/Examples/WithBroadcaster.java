@@ -29,7 +29,7 @@ import java.util.*;
  * to the relevant connected target device.
  */
 public class WithBroadcaster extends KeepRunning implements BroadcastListener, AppOption {
-    private final String sampleTitle = "Method with Broadcaster";
+    private final String SAMPLE_TITLE = "Method with Broadcaster";
     private final Logger logger = LoggerFactory.getLogger(WithBroadcaster.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
@@ -74,7 +74,7 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener, A
     public void init() throws Exception {
 
         System.out.println("---------------------------");
-        System.out.println("| " + sampleTitle + " |");
+        System.out.println("| " + SAMPLE_TITLE + " |");
         System.out.println("---------------------------\n");
 
         try (

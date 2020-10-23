@@ -63,31 +63,10 @@ public class SmpteTimecode {
      * Frequently used SMPTE time rates.
      */
     public enum SmpteTimecodeType {
-        /**
-         * 24 fps
-         * 25 fps
-         * 30 Drop fps
-         * 30 fps
-         */
 
-        /**
-         *
-         */
         SMPTE_24_FPS(0),
-
-        /**
-         *
-         */
         SMPTE_25_FPS(1),
-
-        /**
-         *
-         */
         SMPTE_30_DROP_FPS(2),
-
-        /**
-         *
-         */
         SMPTE_30_FPS(3);
 
         int value;

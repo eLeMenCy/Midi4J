@@ -15,11 +15,7 @@
 
 package com.elemency.Midi4J;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class MidiException extends RuntimeException {
-    private final Logger logger = LoggerFactory.getLogger(MidiException.class);
 
     /**
      * <code>MidiException</code> instance created without detailed message.

@@ -16,8 +16,6 @@
 package com.elemency.Midi4J.Examples;
 
 import com.elemency.Midi4J.SmpteTimecode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Self explanatory.<br>
@@ -26,13 +24,9 @@ import org.slf4j.LoggerFactory;
  * - Any suggestions welcome! -
  */
 public abstract class KeepRunning {
-    private final Logger logger = LoggerFactory.getLogger(KeepRunning.class);
     protected boolean doQuit = false;
     private final boolean DISPLAY_TIMECODE = true;
     private final long DISPLAY_TIMECODE_RATE = 1000;
-
-    protected abstract void init() throws Exception;
-
     public synchronized void doQuit() {
         this.doQuit = true;
     }

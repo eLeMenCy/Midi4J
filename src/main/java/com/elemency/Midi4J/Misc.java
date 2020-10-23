@@ -36,15 +36,6 @@ public class Misc {
         return index;
     }
 
-    public static String clearSymbol(String text) {
-        String result = text;
-
-        int index = getSymbolIndex(text);
-        text.replaceFirst("([^A-Za-z0-9])", " ");
-
-        return result;
-    }
-
     public static String getFirstWord(String name) {
         /* Sentence to decipher:
          Midi Through:Midi Through Port-0 14:0

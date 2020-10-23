@@ -34,8 +34,6 @@ package com.elemency.Midi4J;
 
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary.size_t;
 import com.sun.jna.Pointer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -48,10 +46,9 @@ import java.util.Arrays;
  */
 public class MidiMessage implements Cloneable {
 
-    private final Logger logger = LoggerFactory.getLogger(MidiMessage.class);
-    private int midiDataSize = 0;
+    private final int midiDataSize;
     private byte[] midiData;
-    private double timeStamp = 0;
+    private double timeStamp;
 
     /**
      * Creates a 3-byte short midi message.
@@ -201,8 +198,7 @@ public class MidiMessage implements Cloneable {
     public static String getNoteName(int noteNumber)
     {
         if (noteNumber > 0 && noteNumber < 128) {
-            String s = getNoteName(noteNumber, true, true, 3);
-            return s;
+            return getNoteName(noteNumber, true, true, 3);
         }
 
         return "--";
@@ -306,7 +302,7 @@ public class MidiMessage implements Cloneable {
 
         }
 
-        int sizeIncrease = 0;
+        int sizeIncrease;
 
         // Header or tail byte missing? Increase result array size by one...
         if (headerExist || tailExist) {
@@ -669,29 +665,29 @@ public class MidiMessage implements Cloneable {
      * @return String i.e. "Status 0x9F(159), 0x3D(61), 0x7C(124)"
      */
     public String midiDataToHexString() {
-        String hexString = "No Midi data to process!";
+        StringBuilder hexString = new StringBuilder("No Midi data to process!");
 
         if (midiData == null || (midiData[0] & 0xFF) < 1 || midiDataSize < 1) {
-            return hexString;
+            return hexString.toString();
         }
 
         for (int i = 0; i < midiDataSize; i++) {
 
             if (i == 0)
-                hexString = (midiData[0] & 0xFF) == 0xF0 ? "Header " : "Status ";
+                hexString = new StringBuilder((midiData[0] & 0xFF) == 0xF0 ? "Header " : "Status ");
 
             else if (i == midiDataSize - 1 && isSysEx())
-                hexString += (midiData[0] & 0xFF) == 0xF0 ? "Tail " : " ";
+                hexString.append((midiData[0] & 0xFF) == 0xF0 ? "Tail " : " ");
 
-            hexString += String.format(
+            hexString.append(String.format(
                     "0x%s(%02d)",
                     Integer.toHexString(midiData[i] & 0xFF).toUpperCase(),
                     midiData[i] & 0xFF
-            );
-            hexString += i < midiDataSize - 1 ? ", " : "";
+            ));
+            hexString.append(i < midiDataSize - 1 ? ", " : "");
         }
 
-        return hexString;
+        return hexString.toString();
     }
 
     /***
@@ -729,8 +725,7 @@ public class MidiMessage implements Cloneable {
      * @throws CloneNotSupportedException --
      */
     public MidiMessage withTimeStamp(double newTimestamp) throws CloneNotSupportedException {
-        MidiMessage midiMessage = null;
-        midiMessage = (MidiMessage) this.clone();
+        MidiMessage midiMessage = (MidiMessage) this.clone();
 
         if (midiMessage == null) {
             throw new NullPointerException("Attempt to clone current midiMessage and change its timestamp failed.");
@@ -895,7 +890,6 @@ public class MidiMessage implements Cloneable {
      * @param newNoteNumber the midi note number, in the range 1 to 127
      */
     public void setNoteNumber(int newNoteNumber) {
-        int result = -1;
 
         if (midiData == null) {
             throw new NullPointerException("midiData is 'null' - can't set a new note number.");

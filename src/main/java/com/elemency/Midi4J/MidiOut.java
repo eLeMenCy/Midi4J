@@ -22,8 +22,10 @@ import org.slf4j.LoggerFactory;
 
 public class MidiOut extends MidiDevice {
     protected final Logger logger = LoggerFactory.getLogger(MidiOut.class);
-//    private final RtMidiLibrary lib = super.lib;
 
+    /**
+     * MidiIn default constructor.
+     */
     public MidiOut() {
         int api = RtMidi.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName);

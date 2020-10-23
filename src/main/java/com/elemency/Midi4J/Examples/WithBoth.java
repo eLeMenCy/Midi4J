@@ -28,7 +28,7 @@ import java.util.*;
  * together to handle incoming messages from their respective native MidiIn source device.
  */
 public class WithBoth extends KeepRunning implements BroadcastListener, AppOption {
-    private final String sampleTitle = "Method with both Callback and Broadcaster";
+    private final String SAMPLE_TITLE = "Method with both Callback and Broadcaster";
     private final Logger logger = LoggerFactory.getLogger(WithBoth.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
@@ -92,7 +92,7 @@ public class WithBoth extends KeepRunning implements BroadcastListener, AppOptio
     public void init() throws Exception {
 
         System.out.println("---------------------------------------------");
-        System.out.println("| " + sampleTitle + " |");
+        System.out.println("| " + SAMPLE_TITLE + " |");
         System.out.println("---------------------------------------------\n");
 
         try (

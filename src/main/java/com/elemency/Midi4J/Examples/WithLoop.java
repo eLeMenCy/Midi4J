@@ -46,7 +46,7 @@ public class WithLoop /*extends KeepRunning*/ implements AppOption {
 
         try (
                 MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
-                MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, true);
+                MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, true)
         ) {
 
             this.midi4jIn = midi4jIn;
@@ -98,7 +98,6 @@ public class WithLoop /*extends KeepRunning*/ implements AppOption {
                 if (midiMessage.getControllerNumber() == 89 && midiMessage.getControllerValue() == 127) {
                     logger.info("quitting...");
                     doQuit = true;
-                    return;
                 }
             }
         }

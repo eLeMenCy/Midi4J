@@ -257,7 +257,7 @@ public abstract class MidiDevice implements AutoCloseable {
             if (portIdIsValid) {
                 msg = this.sourceDeviceName + "'s " + sourcePortName +
                         " port and " + getTargetDeviceName(toTargetPortId) + "'s " + getTargetDeviceType() +
-                        " port (id " + toTargetPortId + ") have been opened succesfully" +
+                        " port (id " + toTargetPortId + ") have been opened successfully" +
                         (autoConnect ? " and, at your request, connected together!" : " but, at your request, were left disconnected!");
 
                 connectedTargets.put(toTargetPortId, autoConnect);
@@ -418,6 +418,7 @@ public abstract class MidiDevice implements AutoCloseable {
 
             // Build a logMsg with each map elements separated by '|'.
             StringBuilder logMsg = new StringBuilder();
+            logMsg.append("|");
             for (String value : fullDeviceDetails.values()) {
                 if (value.equals("--"))
                     continue;

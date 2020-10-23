@@ -38,11 +38,11 @@ import java.util.TimerTask;
  * KNOWN ISSUE:<br>
  * Last note sticking when aborting the application while the sequence plays.<br>
  * I have yet to find a way to elegantly shutdown all running threads when hot shutting down the console application.<br>
- * The best way right now is to let the application go thru its
+ * The best way right now is to let the application go through its
  * full cycle (2 loops) until it quits by itself<br>- Any suggestions welcome! -
  */
 public class SimpleSequencer extends KeepRunning implements AppOption {
-    private final String sampleTitle = "Simple Sequencer";
+    private final String SAMPLE_TITLE = "Simple Sequencer";
     private final Logger logger = LoggerFactory.getLogger(SimpleSequencer.class);
     // Midi Out device which will send our messages to an available target Midi In Device.
     private MidiOut midi4jOut = null;
@@ -53,7 +53,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     private int loopAmount = 2;
     private int seqStep = 0;
     private int note = REST;
-    private Timer t = new Timer();
+    private final Timer t = new Timer();
     private int loopIndex = 0;
 
 
@@ -147,7 +147,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     public void init() throws Exception {
 
         System.out.println("--------------------");
-        System.out.println("| " + sampleTitle + " |");
+        System.out.println("| " + SAMPLE_TITLE + " |");
         System.out.println("--------------------\n");
 
         try (
