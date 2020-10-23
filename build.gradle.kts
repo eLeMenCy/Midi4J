@@ -55,6 +55,9 @@ dependencies {
     implementation("net.java.dev.jna:jna:5.5.0")
     implementation("junit:junit:4.13.1")
     implementation("org.jetbrains:annotations:16.0.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.11.3")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.11.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")
 
     // Use JUnit test framework
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
