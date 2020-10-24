@@ -18,7 +18,8 @@ package com.elemency.Midi4J;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import static com.elemency.Midi4J.Misc.getJsonNode;
 
 public abstract class MidiDevice implements AutoCloseable {
     protected final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
@@ -39,7 +38,7 @@ public abstract class MidiDevice implements AutoCloseable {
     protected Map<Integer, Boolean> connectedTargets = new LinkedHashMap<>();
 
     /**
-     * Return a wrapped native Mididevice.
+     * Return a wrapped native Midi device.
      *
      * @return rtMidiDevice
      */
@@ -264,7 +263,7 @@ public abstract class MidiDevice implements AutoCloseable {
             if (portIdIsValid) {
                 msg = this.sourceDeviceName + "'s " + sourcePortName +
                         " port and " + getTargetDeviceName(toTargetPortId) + "'s " + getTargetDeviceType() +
-                        " port (id " + toTargetPortId + ") have been opened succesfully" +
+                        " port (id " + toTargetPortId + ") have been opened successfully" +
                         (autoConnect ? " and, at your request, connected together!" : " but, at your request, were left disconnected!");
 
                 connectedTargets.put(toTargetPortId, autoConnect);
@@ -312,65 +311,63 @@ public abstract class MidiDevice implements AutoCloseable {
     /**
      * Collect and store the full details of a target device based on its ID.
      *
-     * @param id The id of the target device.
-     * @return the selected target device full details.
+     * @param id    The id of the target device.
+     * @return      A Json ObjectNode containing the selected target device full details.
      */
-    public JsonNode getTargetDeviceFullDetails(int id) {
-// -------------------------------------------------------------------------------------------------------------------------------------------------------
-// |     id       | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
-// |--------------|---------|----------------|------------------|-----i----------------|----------------|--------------|------------|----------|----------|
-// |      0       |  ALSA   |     Out/In     |   Midi Through   | Midi Through Port-0 |       14       |      0       |-->  Midi4J |    In    |    IN    |
-// |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
-// |      1       |  Jack   |     Out/In     | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |-->  Midi4J |    Out   |    OUT   |
-// -------------------------------------------------------------------------------------------------------------------------------------------------------
+    public ObjectNode getTargetDeviceFullDetails(int id) {
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// | id | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | sourceDeviceName | sourcePortName | sourcePortType |
+// |----|---------|----------------|------------------|---------------------|----------------|--------------|------------------|----------------|----------------|
+// |  0 |  ALSA   |     Out/In     |   Midi Through   | Midi Through Port-0 |       14       |      0       |    -->Midi4J     |       In       |       IN       |
+// |----|---------|----------------|------------------|---------------------|----------------|--------------|------------------|----------------|----------------|
+// |  1 |  Jack   |     Out/In     | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |    -->Midi4J     |       Out      |       OUT      |
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         if (rtMidiDevice == null) {
             throw new NullPointerException("This device is null, can't get its details.");
         }
 
-        String fullDeviceDetails = "{ ";
+        // Current device full details as a JSon object node.
+        ObjectNode details = new ObjectMapper().createObjectNode();
 
-        fullDeviceDetails += "\"id\":\"" + id + "\", ";
-        fullDeviceDetails += "\"apiName\":\"" + getCurrentApiName() + "\", ";
-        fullDeviceDetails += "\"targetPortType\":\"" + getTargetDeviceType() + "\", ";
+        details.put( "id", Integer.toString(id));
+        details.put("apiName",  getCurrentApiName() );
+        details.put("targetPortType",  getTargetDeviceType() );
 
         String data = lib.rtmidi_get_port_name(rtMidiDevice, id);
 
         int semicolonIndex = data.indexOf(":");
         if (semicolonIndex > -1) {
-            fullDeviceDetails += "\"targetDeviceName\":\"" + data.substring(0, semicolonIndex) + "\", ";
-            fullDeviceDetails += "\"targetPortName\":\"" + data.substring(semicolonIndex + 1) + "\", ";
+            details.put("targetDeviceName", data.substring(0, semicolonIndex));
+            details.put("targetPortName", data.substring(semicolonIndex + 1));
         }
 
-        String other = "\"targetDeviceId\":\"--\", ";
-        other += "\"targetPortId\":\"--\"";
+        details.put("targetDeviceId", "--");
+        details.put("targetPortId", "--");
 
         String ids = Misc.findPattern(data, "\\w+:\\w+$");
         if (!ids.equals("")) {
             data = data.replace((" " + ids), "");
 
-            fullDeviceDetails += "\"targetPortName\":\"" + data.substring(semicolonIndex + 1) + "\", ";
+            details.put("targetPortName", data.substring(semicolonIndex + 1));
 
             semicolonIndex = ids.indexOf(":");
-            other = "\"targetDeviceId\":\"" + ids.substring(0, semicolonIndex) + "\", ";
-            other += "\"targetPortId\":\"" + ids.substring(semicolonIndex + 1) + "\"";
+            details.put("targetDeviceId", ids.substring(0, semicolonIndex));
+            details.put("targetPortId", ids.substring(semicolonIndex + 1));
         }
 
-        fullDeviceDetails += other;
-
-        // Add Source device name/port to which this target device/port is connected.
+        // Add Source device/port details to which this target device/port is connected.
         if (connectedTargets.containsKey(id)) {
             if (connectedTargets.get(id)) {
-                fullDeviceDetails += ", \"sourceDeviceName\":\"" + (getSourceDeviceType().equals("In") ? "-->" : "<--") + this.sourceDeviceName + "\", ";
-                fullDeviceDetails += "\"sourcePortName\":\"" + this.sourcePortName + "\", ";
-                fullDeviceDetails += "\"sourcePortType\":\"" + getSourceDeviceType() + "\"";
+                details.put("sourceDeviceName", (getSourceDeviceType().equals("In") ? "-->" : "<--") + this.sourceDeviceName);
+                details.put("sourcePortName", this.sourcePortName);
+                details.put("sourcePortType", getSourceDeviceType());
 
             }
         }
 
-        fullDeviceDetails += " }";
-
-        return getJsonNode(fullDeviceDetails);
+        return details;
     }
 
     /**
@@ -401,15 +398,15 @@ public abstract class MidiDevice implements AutoCloseable {
      * @param connectedOnly only target devices connected to current source device.
      * @return the selected target device full detail list.
      */
-    public JsonNode listTargetDevices(boolean connectedOnly) {
+    public ObjectNode listTargetDevices(boolean connectedOnly) {
 
-// -------------------------------------------------------------------------------------------------------------------------------------------------------
-// | midiDeviceId | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | deviceName | portName | portType |
-// |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
-// |      0       |  ALSA   |     Out/In     |   Midi Through   | Midi Through Port-0 |       14       |      0       |-->  Midi4J |    In    |    IN    |
-// |--------------|---------|----------------|------------------|---------------------|----------------|--------------|------------|----------|----------|
-// |      1       |  Jack   |     Out/In     | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |-->  Midi4J |    Out   |    OUT   |
-// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// | id | apiName | targetPortType | targetDeviceName |   targetPortName    | targetDeviceId | targetPortId | sourceDeviceName | sourcePortName | sourcePortType |
+// |----|---------|----------------|------------------|---------------------|----------------|--------------|------------------|----------------|----------------|
+// |  0 |  ALSA   |     Out/In     |   Midi Through   | Midi Through Port-0 |       14       |      0       |    -->Midi4J     |       In       |       IN       |
+// |----|---------|----------------|------------------|---------------------|----------------|--------------|------------------|----------------|----------------|
+// |  1 |  Jack   |     Out/In     | Calf Studio Gear |    Organ MIDI In    |       --       |      --      |    -->Midi4J     |       Out      |       OUT      |
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         int deviceCount = getTargetDeviceCount();
         boolean srcNameIsTgt = sourceNameIsTarget(0);
@@ -423,25 +420,19 @@ public abstract class MidiDevice implements AutoCloseable {
         }
 
         // Build our device list and display log.
-        JsonNode fullTargetDeviceDetails;
-        StringBuilder targetDevices = new StringBuilder();
+        ObjectNode targetDevices = new ObjectMapper().createObjectNode();
 
         for (int i = 0; i < deviceCount; i++) {
 
-            fullTargetDeviceDetails = getTargetDeviceFullDetails(i);
+            ObjectNode details = getTargetDeviceFullDetails(i);
 
             // Build a logMsg with each map elements separated by '|'.
             StringBuilder logMsg = new StringBuilder();
+            Iterator<String> fieldNames = getTargetDeviceFullDetails(i).fieldNames();
 
-            if (!fullTargetDeviceDetails.isObject()) {
-                continue;
-            }
-
-            Iterator<String> fieldNames = fullTargetDeviceDetails.fieldNames();
-
+            logMsg.append("|");
             while (fieldNames.hasNext()) {
-                String value;
-                value = fullTargetDeviceDetails.get(fieldNames.next()).textValue();
+                String value = details.get(fieldNames.next()).textValue();
 
                 if (value.equals("--"))
                     continue;
@@ -449,20 +440,21 @@ public abstract class MidiDevice implements AutoCloseable {
                 logMsg.append(value).append("|");
             }
 
-            /* Remove current device and its target from the list to minimise the temptation of doing a midi loop
+            /* Remove current source device and its target from the list to minimise the temptation of doing a midi loop
              * (this has also been done in the connect method to avoid auto connection */
-            if (sourceNameIsTarget(i) || (connectedOnly && !fullTargetDeviceDetails.has("sourceDeviceName"))) {
+            if (sourceNameIsTarget(i) || (connectedOnly && !details.has("sourceDeviceName"))) {
                 continue;
             }
 
-            targetDevices.append(fullTargetDeviceDetails.toString());
+            targetDevices.set("Device " + i + " (" + details.get("targetPortType").textValue() + ")", details);
             logger.info(logMsg.toString());
         }
 
-        if (targetDevices.length() == 0)
+        if (targetDevices.size() == 0) {
             logger.info("There are no " + getTargetDeviceType().toUpperCase() + " target devices connected to " + this.sourceDeviceName);
+        }
 
-        return getJsonNode(targetDevices.toString());
+        return targetDevices;
     }
 
     /**

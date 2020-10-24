@@ -15,11 +15,6 @@
 
 package com.elemency.Midi4J;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,28 +70,5 @@ public class Misc {
 
         return result;
     }
-
-
-    /**
-     * Return a JsonNode tree parsed from a Json String.
-     *
-     * @param data Json string
-     * @return JsonNode
-     */
-    public static JsonNode getJsonNode(String data) {
-
-        ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-        JsonNode jsonNode = null;
-
-        try {
-            jsonNode = objectMapper.readTree(data);
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return jsonNode;
-    }
-
 }
 
