@@ -19,8 +19,12 @@ import com.elemency.Midi4J.MidiException;
 import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.MidiOut;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,12 +37,12 @@ import java.util.TimerTask;
  * <a href="https://www.youtube.com/watch?v=60ItHLz5WEA"> - Faded - </a><br>
  *
  * Obviously the crude monodic sequence definitively doesn't do justice to the original but
- * demonstrates how simple it can be to send midi messages in Midi4J to any connected device(s) using a single timer.<br><br>
+ * demonstrates how simple it can be to send midi messages in Midi4J to any connected target device(s) using a single timer.<br><br>
  *
  * KNOWN ISSUE:<br>
  * Last note sticking when aborting the application while the sequence plays.<br>
- * I have yet to find a way to elegantly shutdown all running threads when hot shutting down the console application.<br>
- * The best way right now is to let the application go thru its
+ * I have yet to find a way to elegantly shutdown all running threads when hot stopping a console application.<br>
+ * The best way right now is to let the application go through its
  * full cycle (2 loops) until it quits by itself<br>- Any suggestions welcome! -
  */
 public class SimpleSequencer extends KeepRunning implements AppOption {
@@ -50,53 +54,19 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     //----- DO NOT CHANGE -----
     private final int REST = -1;
     // Loops the sequence twice (default).
-    private int loopAmount = 2;
     private int seqStep = 0;
     private int note = REST;
     private Timer t = new Timer();
     private int loopIndex = 0;
-
+    private JsonNode sequence;
 
     // ----- CHANGE TO YOUR HEART CONTENT -----
     private final int CHANNEL = 1;
     private final int VELOCITY = 80;
     private final int TEMPO = 110;
-    private final int[][] SEQUENCE = {
-    // Note {number, duration}
-            {65, 4},                // F3
-            {65, 4},                // F3
-            {65, 4},                // F3
-            {69, 4},                // A3
-            {74, 4},                // D4
-            {74, 4},                // D4
-            {74, 4},                // D4
-            {72, 4},                // C4
-            {69, 4},                // A3
-            {69, 4},                // A3
-            {69, 4},                // A3
-            {69, 4},                // A3
-            {64, 4},                // E3
-            {64, 4},                // E3
-            {64, 4},                // E3
-            {62, 4},                // D3
-            {65, 4},                // F3
-            {65, 4},                // F3
-            {65, 4},                // F3
-            {69, 4},                // A3
-            {74, 4},                // D4
-            {74, 4},                // D4
-            {74, 4},                // D4
-            {77, 8},                // C4
-            {74, 8},                // C4
-            {72, 4},                // A3
-            {69, 4},                // A3
-            {69, 4},                // A3
-            {69, 4},                // A3
-            {64, 4},                // E3
-            {64, 4},                // E3
-            {64, 4},                // E3
-            {62, 4}                 // D3
-    };
+    // The number of time the sequence will repeat before quitting.
+    private final int LOOP_AMOUNT = 2;
+
 
     // Sequencer engine
     public class SequencerEngine extends TimerTask {
@@ -107,7 +77,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             if (note > -1) {
                 midiMessage = MidiMessage.noteOn(CHANNEL, note, velocity, 0);
                 midi4jOut.sendMessage(midiMessage);
-                logger.info(midiMessage.getDescription());
+                logger.info("(" + seqStep + ") " + midiMessage.getDescription());
             }
         }
 
@@ -118,11 +88,11 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             playMidiNote(0);
 
             // Set new note and new duration
-            note = SEQUENCE[seqStep][0];
-            long duration = (int)((float)60 * 4 / SEQUENCE[seqStep][1] / TEMPO * 1000);
+            note = sequence.get("Sequence").get(seqStep).get("noteNumber").asInt();
+            long duration = (int)((float)60 * 4 / sequence.get("Sequence").get(seqStep).get("duration").asInt() / TEMPO * 1000);
 
             // Loop amount reached -> quit the application.
-            if (loopIndex == loopAmount) {
+            if ((loopIndex) == LOOP_AMOUNT) {
                 t.cancel();
                 doQuit();
                 return;
@@ -133,8 +103,8 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             playMidiNote(VELOCITY + random.nextInt(127 - VELOCITY));
 
             // Increment sequence to next step
-            if (++seqStep > SEQUENCE.length - 1) {
-                loopIndex ++;
+            if ((seqStep ++) == sequence.get("Sequence").size() - 1) {
+                loopIndex ++ ;
                 seqStep = 0;
             }
 
@@ -142,6 +112,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             t.schedule(new SequencerEngine(), duration);
         }
     }
+
 
     @Override
     public void init() throws Exception {
@@ -167,12 +138,16 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
                 // List connected target device only.
                 this.midi4jOut.listTargetDevices(true);
 
+                // Load Sequence to memory from Json file.
+                File file = new File("src/main/resources/sequence.json");
+                if (!file.exists())
+                    logger.error("File 'sequence.json' doesn't exist");
+
+                sequence = new ObjectMapper().readTree(file);
+
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();
             }
-
-            // The number of time our sequence will repeat before quitting.
-            loopAmount = 2;
 
             // Start playing the sequence within 1 second.
             t.schedule(new SequencerEngine(), 1000);
