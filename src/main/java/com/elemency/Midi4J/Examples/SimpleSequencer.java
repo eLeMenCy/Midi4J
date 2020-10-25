@@ -88,8 +88,8 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             playMidiNote(0);
 
             // Set new note and new duration
-            note = sequence.get("Sequence").get(seqStep).get("noteNumber").asInt();
-            long duration = (int)((float)60 * 4 / sequence.get("Sequence").get(seqStep).get("duration").asInt() / TEMPO * 1000);
+            note = sequence.get(seqStep).get("noteNumber").asInt();
+            long duration = (int)((float)60 * 4 / sequence.get(seqStep).get("duration").asInt() / TEMPO * 1000);
 
             // Loop amount reached -> quit the application.
             if ((loopIndex) == LOOP_AMOUNT) {
@@ -103,7 +103,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             playMidiNote(VELOCITY + random.nextInt(127 - VELOCITY));
 
             // Increment sequence to next step
-            if ((seqStep ++) == sequence.get("Sequence").size() - 1) {
+            if ((seqStep ++) == sequence.size() - 1) {
                 loopIndex ++ ;
                 seqStep = 0;
             }

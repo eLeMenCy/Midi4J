@@ -1,169 +1,167 @@
-{
-  "Sequence": [
-    {
-      "noteName": "F3",
-      "noteNumber": 65,
-      "duration": 4
-    },
-    {
-      "noteName": "F3",
-      "noteNumber": 65,
-      "duration": 4
-    },
-    {
-      "noteName": "F3",
-      "noteNumber": 65,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 74,
-      "duration": 4
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 74,
-      "duration": 4
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 74,
-      "duration": 4
-    },
-    {
-      "noteName": "C4",
-      "noteNumber": 72,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "E3",
-      "noteNumber": 64,
-      "duration": 4
-    },
-    {
-      "noteName": "E3",
-      "noteNumber": 64,
-      "duration": 4
-    },
-    {
-      "noteName": "E3",
-      "noteNumber": 64,
-      "duration": 4
-    },
-    {
-      "noteName": "D3",
-      "noteNumber": 62,
-      "duration": 4
-    },
-    {
-      "noteName": "F3",
-      "noteNumber": 65,
-      "duration": 4
-    },
-    {
-      "noteName": "F3",
-      "noteNumber": 65,
-      "duration": 4
-    },
-    {
-      "noteName": "F3",
-      "noteNumber": 65,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 74,
-      "duration": 4
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 74,
-      "duration": 4
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 74,
-      "duration": 4
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 77,
-      "duration": 8
-    },
-    {
-      "noteName": "D4",
-      "noteNumber": 74,
-      "duration": 8
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 72,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "A3",
-      "noteNumber": 69,
-      "duration": 4
-    },
-    {
-      "noteName": "E3",
-      "noteNumber": 64,
-      "duration": 4
-    },
-    {
-      "noteName": "E3",
-      "noteNumber": 64,
-      "duration": 4
-    },
-    {
-      "noteName": "E3",
-      "noteNumber": 64,
-      "duration": 4
-    },
-    {
-      "noteName": "D3",
-      "noteNumber": 62,
-      "duration": 4
-    }
-  ]
-}
+[
+  {
+    "noteName": "F3",
+    "noteNumber": 65,
+    "duration": 4
+  },
+  {
+    "noteName": "F3",
+    "noteNumber": 65,
+    "duration": 4
+  },
+  {
+    "noteName": "F3",
+    "noteNumber": 65,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 74,
+    "duration": 4
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 74,
+    "duration": 4
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 74,
+    "duration": 4
+  },
+  {
+    "noteName": "C4",
+    "noteNumber": 72,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "E3",
+    "noteNumber": 64,
+    "duration": 4
+  },
+  {
+    "noteName": "E3",
+    "noteNumber": 64,
+    "duration": 4
+  },
+  {
+    "noteName": "E3",
+    "noteNumber": 64,
+    "duration": 4
+  },
+  {
+    "noteName": "D3",
+    "noteNumber": 62,
+    "duration": 4
+  },
+  {
+    "noteName": "F3",
+    "noteNumber": 65,
+    "duration": 4
+  },
+  {
+    "noteName": "F3",
+    "noteNumber": 65,
+    "duration": 4
+  },
+  {
+    "noteName": "F3",
+    "noteNumber": 65,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 74,
+    "duration": 4
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 74,
+    "duration": 4
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 74,
+    "duration": 4
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 77,
+    "duration": 8
+  },
+  {
+    "noteName": "D4",
+    "noteNumber": 74,
+    "duration": 8
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 72,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "A3",
+    "noteNumber": 69,
+    "duration": 4
+  },
+  {
+    "noteName": "E3",
+    "noteNumber": 64,
+    "duration": 4
+  },
+  {
+    "noteName": "E3",
+    "noteNumber": 64,
+    "duration": 4
+  },
+  {
+    "noteName": "E3",
+    "noteNumber": 64,
+    "duration": 4
+  },
+  {
+    "noteName": "D3",
+    "noteNumber": 62,
+    "duration": 4
+  }
+]
