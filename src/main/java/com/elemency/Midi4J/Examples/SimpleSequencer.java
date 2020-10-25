@@ -58,7 +58,6 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     private int loopIndex = 0;
     private List<Note> sequence;
 
-
     // ----- CHANGE TO YOUR HEART CONTENT -----
     private final int CHANNEL = 1;
     private final int VELOCITY = 80;
@@ -113,9 +112,9 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     }
 
     private static class Note {
-        String noteName = "C3";
-        int noteNumber = 60;
-        int noteDuration = 4;
+        private String noteName = "C3";
+        private int noteNumber = 60;
+        private int noteDuration = 4;
 
         public String getNoteName() {
             return noteName;
@@ -170,7 +169,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
                 // List all available target Jack In devices.
                 this.midi4jOut.listTargetDevices(false);
 
-                // Attempt to connect source OUT device to its target IN device counterpart.
+                // Attempt to connect a source OUT device to a target IN device.
                 this.midi4jOut.connect("OUT", 2, true);
 
                 // List connected target device only.
