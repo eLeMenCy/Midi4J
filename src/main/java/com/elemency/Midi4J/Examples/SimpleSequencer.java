@@ -19,15 +19,13 @@ import com.elemency.Midi4J.MidiException;
 import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.MidiOut;
 import com.elemency.Midi4J.RtMidiDriver.RtMidi;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Simple sequencer inspired from
@@ -58,7 +56,8 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     private int note = REST;
     private final Timer t = new Timer();
     private int loopIndex = 0;
-    private JsonNode sequence;
+    private List<Note> sequence;
+
 
     // ----- CHANGE TO YOUR HEART CONTENT -----
     private final int CHANNEL = 1;
@@ -88,8 +87,8 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             playMidiNote(0);
 
             // Set new note and new duration
-            note = sequence.get(seqStep).get("noteNumber").asInt();
-            long duration = (int)((float)60 * 4 / sequence.get(seqStep).get("duration").asInt() / TEMPO * 1000);
+            note = sequence.get(seqStep).noteNumber;
+            long duration = (int)((float)60 * 4 / sequence.get(seqStep).noteDuration / TEMPO * 1000);
 
             // Loop amount reached -> quit the application.
             if ((loopIndex) == LOOP_AMOUNT) {
@@ -113,6 +112,45 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
         }
     }
 
+    private static class Note {
+        String noteName = "C3";
+        int noteNumber = 60;
+        int noteDuration = 4;
+
+        public String getNoteName() {
+            return noteName;
+        }
+
+        public void setNoteName(String noteName) {
+            this.noteName = noteName;
+        }
+
+        public int getNoteNumber() {
+            return noteNumber;
+        }
+
+        public void setNoteNumber(int noteNumber) {
+            this.noteNumber = noteNumber;
+        }
+
+        public int getNoteDuration() {
+            return noteDuration;
+        }
+
+        public void setNoteDuration(int noteDuration) {
+            this.noteDuration = noteDuration;
+        }
+
+        @Override
+        public String toString() {
+            return "Note{" +
+                    "name='" + noteName + '\'' +
+                    ", value=" + noteNumber +
+                    ", duration=" + noteDuration +
+                    '}';
+        }
+
+    }
 
     @Override
     public void init() throws Exception {
@@ -140,10 +178,14 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
 
                 // Load Sequence to memory from Json file.
                 File file = new File("src/main/resources/sequence.json");
-                if (!file.exists())
-                    logger.error("File 'sequence.json' doesn't exist");
+                if (!file.exists()) {
+                    logger.error("File 'sequence.json' doesn't exist quitting");
+                    t.cancel();
+                    doQuit();
+                }
 
-                sequence = new ObjectMapper().readTree(file);
+                sequence = new ObjectMapper().readValue(file,
+                        new TypeReference<List<Note>>() {});
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();
