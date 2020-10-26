@@ -47,16 +47,12 @@ repositories {
 dependencies {
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("junit:junit:4.12")
+    api("junit:junit:4.13.1")
 
     // These dependencies are used internally, and not exposed to consumers on their own compile classpath.
     implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("com.google.guava:guava:28.1-jre")
     implementation("net.java.dev.jna:jna:5.5.0")
     implementation("junit:junit:4.13.1")
-    implementation("org.jetbrains:annotations:16.0.2")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.11.3")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.11.3")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")
 
     // Use JUnit test framework
@@ -64,7 +60,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.3.1")
-
 }
 
 tasks {
