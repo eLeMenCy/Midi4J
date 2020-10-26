@@ -148,7 +148,6 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
                     ", duration=" + noteDuration +
                     '}';
         }
-
     }
 
     @Override

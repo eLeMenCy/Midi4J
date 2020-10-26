@@ -15,6 +15,9 @@
 
 package com.elemency.Midi4J.Examples;
 
+import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
+import com.sun.jna.NativeLibrary;
+
 /**
  * This sample app demonstrates 4 options on how midi IN messages can be handled in your
  * application. The 5th option is a very simple monodic sequencer.<br><br>
@@ -63,9 +66,10 @@ public class App {
         // Launch the correct sample (WithBroadcaster, WithCallbacks, WithBoth, WithLoop or SimpleSequencer)
         // based on respective args ('broadcaster', 'callbacks', 'both', 'loop' or 'sequencer') passed thru args[0]
         // with 'broadcaster' being the default.
-        AppOption option = AppOptionsFactory.getAppOption(args.length > 0 ? args[0] : "broadcaster");
         try {
+            AppOption option = AppOptionsFactory.getAppOption(args.length > 0 ? args[0] : "broadcaster");
             option.init();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
