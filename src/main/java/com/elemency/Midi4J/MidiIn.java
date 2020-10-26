@@ -15,7 +15,7 @@
 
 package com.elemency.Midi4J;
 
-import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiSysApiMgr;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary.size_t;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary.size_tByReference;
@@ -46,7 +46,7 @@ public class MidiIn extends MidiDevice {
      *                          device instances will be sent.
      */
     public MidiIn(boolean withUserCallback) {
-        int api = RtMidi.Api.UNSPECIFIED.getIntValue();
+        int api = RtMidiSysApiMgr.Api.UNSPECIFIED.getIntValue();
         super.rtMidiDevice = create(api, super.sourceDeviceName, 100);
 
         if (!withUserCallback) {

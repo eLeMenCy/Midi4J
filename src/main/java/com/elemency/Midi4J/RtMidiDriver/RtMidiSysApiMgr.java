@@ -5,7 +5,7 @@ import java.nio.IntBuffer;
 /**
  * Midi APIs
  */
-public class RtMidi {
+public class RtMidiSysApiMgr {
 
     private final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
 

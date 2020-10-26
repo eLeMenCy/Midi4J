@@ -65,7 +65,7 @@ More advanced samples are available in the 'Examples' package.
 ```javascript
 import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.MidiOut;
-import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiSysApiMgr;
 
 public class Main {
     public static void main(String[] args) {

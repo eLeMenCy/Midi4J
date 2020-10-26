@@ -15,7 +15,7 @@
 
 package com.elemency.Midi4J;
 
-import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiSysApiMgr;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiDevice;
 import com.elemency.Midi4J.RtMidiDriver.RtMidiLibrary;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -106,7 +106,7 @@ public abstract class MidiDevice implements AutoCloseable {
      * @return the midi api name used by current device instance.
      */
     public String getCurrentApiName() {
-        return new RtMidi().getApiLabel(getCurrentApiId());
+        return new RtMidiSysApiMgr().getApiLabel(getCurrentApiId());
     }
 
     /**

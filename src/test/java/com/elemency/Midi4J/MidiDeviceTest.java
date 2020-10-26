@@ -15,7 +15,7 @@
 
 package com.elemency.Midi4J;
 
-import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiSysApiMgr;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -32,10 +32,8 @@ class MidiDeviceTest {
     @BeforeEach
     void init()
     {
-        MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
-        MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, false);
-        this.midi4jIn = midi4jIn;
-        this.midi4jOut = midi4jOut;
+        this.midi4jOut = new MidiOut(RtMidiSysApiMgr.Api.UNIX_JACK.getIntValue(), "Midi4J");
+        this.midi4jIn = new MidiIn(RtMidiSysApiMgr.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, false);
     }
 
     @AfterEach

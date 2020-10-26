@@ -16,7 +16,7 @@
 package com.elemency.Midi4J.Examples;
 
 import com.elemency.Midi4J.*;
-import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiSysApiMgr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,10 +92,10 @@ public class WithCallbacks extends KeepRunning implements AppOption {
         System.out.println("------------------------------\n");
 
         try (
-                MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J");
-                MidiIn midi4jIn = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, true);
-                MidiOut midi4j2Out = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J2");
-                MidiIn midi4j2In = new MidiIn(RtMidi.Api.LINUX_ALSA.getIntValue(), "Midi4J2", 100, true)
+                MidiOut midi4jOut = new MidiOut(RtMidiSysApiMgr.Api.UNIX_JACK.getIntValue(), "Midi4J");
+                MidiIn midi4jIn = new MidiIn(RtMidiSysApiMgr.Api.LINUX_ALSA.getIntValue(), "Midi4J", 100, true);
+                MidiOut midi4j2Out = new MidiOut(RtMidiSysApiMgr.Api.UNIX_JACK.getIntValue(), "Midi4J2");
+                MidiIn midi4j2In = new MidiIn(RtMidiSysApiMgr.Api.LINUX_ALSA.getIntValue(), "Midi4J2", 100, true)
         ) {
 
             this.midi4jIn = midi4jIn;

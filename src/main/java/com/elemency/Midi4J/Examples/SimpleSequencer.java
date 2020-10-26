@@ -18,7 +18,7 @@ package com.elemency.Midi4J.Examples;
 import com.elemency.Midi4J.MidiException;
 import com.elemency.Midi4J.MidiMessage;
 import com.elemency.Midi4J.MidiOut;
-import com.elemency.Midi4J.RtMidiDriver.RtMidi;
+import com.elemency.Midi4J.RtMidiDriver.RtMidiSysApiMgr;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -158,7 +158,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
         System.out.println("--------------------\n");
 
         try (
-                MidiOut midi4jOut = new MidiOut(RtMidi.Api.UNIX_JACK.getIntValue(), "Midi4J")
+                MidiOut midi4jOut = new MidiOut(RtMidiSysApiMgr.Api.UNIX_JACK.getIntValue(), "Midi4J")
         ) {
             this.midi4jOut = midi4jOut;
 
