@@ -1,8 +1,11 @@
 Midi4J
 ------
-Small realtime Java Midi library bridged to RtMidi.
+Small Java Midi library (w.i.p.) bridged, via JNA binding, to a slightly
+    revisited RtMidi cross platform realtime C++ Midi library.
+
     Released under the Apache License v2.0:
     Copyright (C) 2020 - eLeMenCy, All Rights Reserved
+
 
 
 Java Native Access (JNA)
@@ -19,6 +22,7 @@ JNA, is used under the Apache License v2.0
 
     A copy is also included in the downloadable source code package
     containing JNA, in file "AL2.0".
+
 
 
 RtMidi

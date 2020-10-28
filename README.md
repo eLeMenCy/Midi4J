@@ -96,7 +96,7 @@ work, derived and translated from the C++ juce_MidiMessage class part of the JUC
 
 - RtMidi is distributed under its own [modified MIT](https://github.com/thestk/rtmidi/blob/master/LICENSE) License.
 
-Further details can be found in the LICENSE file.
+Further details can be found in the NOTICE file.
 
 
 ## Known issues
