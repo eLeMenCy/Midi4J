@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -174,10 +174,14 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
                 // List connected target device only.
                 this.midi4jOut.listTargetDevices(true);
 
-                // Load Sequence to memory from Json file.
-                File file = new File("src/main/resources/sequence.json");
-                if (!file.exists()) {
-                    logger.error("File 'sequence.json' doesn't exist quitting");
+                // Load Sequence into memory from a Json file.
+                String fileName = "sequence.json";
+                ClassLoader classLoader = getClass().getClassLoader();
+                try {
+                    InputStream inputStream = classLoader.getResourceAsStream(fileName);
+                    sequence = new ObjectMapper().readValue(inputStream, new TypeReference<List<Note>>() {});
+                } catch (IllegalArgumentException iae) {
+                    logger.error("File '"+ fileName + "' doesn't exist - quitting...");
                     t.cancel();
                     doQuit();
                 }

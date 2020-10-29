@@ -62,6 +62,11 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.3.1")
 }
 
+application {
+    // Define the main class for the application.
+    mainClassName = "com.elemency.Midi4J.Examples.App"
+}
+
 tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
@@ -70,21 +75,13 @@ tasks {
     jar {
         manifest {
             attributes(
-                mapOf(
-		            "Implementation-Title" to project.name,
-                    "Implementation-Version" to project.version
-		        )
+                    mapOf("Implementation-Title" to project.name,
+                    "Implementation-Version" to project.version)
             )
         }
     }
 
     test {
-        useJUnitPlatform()
+            useJUnitPlatform()
     }
 }
-
-application {
-    // Define the main class for the application.
-    mainClassName = "com.elemency.Midi4J.Examples.App"
-}
-
