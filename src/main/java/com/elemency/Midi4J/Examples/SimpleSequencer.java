@@ -186,8 +186,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
                     doQuit();
                 }
 
-                sequence = new ObjectMapper().readValue(file,
-                        new TypeReference<List<Note>>() {});
+                displayTimecode = false;
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();

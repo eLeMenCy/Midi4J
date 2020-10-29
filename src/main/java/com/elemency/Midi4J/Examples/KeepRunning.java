@@ -25,17 +25,19 @@ import com.elemency.Midi4J.SmpteTimecode;
  */
 public abstract class KeepRunning {
     protected boolean doQuit = false;
-    private final boolean DISPLAY_TIMECODE = true;
+    protected boolean displayTimecode = true;
     private final long DISPLAY_TIMECODE_RATE = 1000;
     public synchronized void doQuit() {
         this.doQuit = true;
     }
 
     public void keepRunning() throws InterruptedException {
+
         while (!doQuit) {
             long timeTillNextDisplayChange = DISPLAY_TIMECODE_RATE - (SmpteTimecode.getElapsedTimeSinceStartTime() % DISPLAY_TIMECODE_RATE);
             Thread.sleep(timeTillNextDisplayChange);
-            if (DISPLAY_TIMECODE) {
+
+            if (displayTimecode) {
                 System.out.println(SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()));
             }
         }
