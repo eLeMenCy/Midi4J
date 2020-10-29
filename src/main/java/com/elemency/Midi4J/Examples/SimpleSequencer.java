@@ -59,6 +59,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     private List<Note> sequence;
 
     // ----- CHANGE TO YOUR HEART CONTENT -----
+    private final boolean LOG_NOTE_OFF = false;
     private final int CHANNEL = 1;
     private final int VELOCITY = 80;
     private final int TEMPO = 110;
@@ -75,7 +76,10 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
             if (note > -1) {
                 midiMessage = MidiMessage.noteOn(CHANNEL, note, velocity, 0);
                 midi4jOut.sendMessage(midiMessage);
-                logger.info("(" + seqStep + ") " + midiMessage.getDescription());
+
+                if (velocity > 0 || (LOG_NOTE_OFF && velocity == 0)) {
+                    logger.info("(" + seqStep + ") " + midiMessage.getDescription());
+                }
             }
         }
 
