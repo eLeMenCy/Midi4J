@@ -464,7 +464,7 @@ public abstract class MidiDevice implements AutoCloseable {
      * @return              True if target device name is the same as current device instance name, false otherwise.
      */
     private boolean sourceNameIsTarget(int targetDeviceId) {
-        // To Minimise Midi loops, bypasses current Midi4J source device to be listed as a possible target devices.
+        // To Minimise the risk of Midi loops, bypasses current Midi4J source device to be listed as a possible target devices.
         String tgtName = getTargetDeviceFullDetails(targetDeviceId).get("targetDeviceName").textValue();
         return (tgtName != null) && (tgtName.contains(this.sourceDeviceName));
     }
