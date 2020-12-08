@@ -24,9 +24,9 @@ import com.elemency.Midi4J.SmpteTimecode;
  * - Any suggestions welcome! -
  */
 public abstract class KeepRunning {
-    protected boolean doQuit = false;
-    protected boolean displayTimecode = true;
+    protected final boolean DISPLAY_LOG = true; // Set this to false to stop displaying midi log in console.
     private final long DISPLAY_TIMECODE_RATE = 1000;
+    protected boolean doQuit = false;
     public synchronized void doQuit() {
         this.doQuit = true;
     }
@@ -37,7 +37,7 @@ public abstract class KeepRunning {
             long timeTillNextDisplayChange = DISPLAY_TIMECODE_RATE - (SmpteTimecode.getElapsedTimeSinceStartTime() % DISPLAY_TIMECODE_RATE);
             Thread.sleep(timeTillNextDisplayChange);
 
-            if (displayTimecode) {
+            if (DISPLAY_LOG) {
                 System.out.println(SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()));
             }
         }

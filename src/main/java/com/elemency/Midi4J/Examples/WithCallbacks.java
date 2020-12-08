@@ -52,10 +52,12 @@ public class WithCallbacks extends KeepRunning implements AppOption {
 
             midi4jOut.sendMessage(midiMessage);
 
-            logger.info(
-                    SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
-                            midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
-            );
+            if (DISPLAY_LOG) {
+                logger.info(
+                        SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
+                                midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
+                );
+            }
 
         } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();
@@ -74,10 +76,12 @@ public class WithCallbacks extends KeepRunning implements AppOption {
 
             midi4j2Out.sendMessage(midiMessage);
 
-            logger.info(
-                    SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
-                            midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
-            );
+            if (DISPLAY_LOG) {
+                logger.info(
+                        SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
+                                midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
+                );
+            }
 
         } catch (MidiException | NullPointerException me) {
             me.printStackTrace();

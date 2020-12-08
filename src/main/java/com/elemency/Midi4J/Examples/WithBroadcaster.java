@@ -60,10 +60,12 @@ public class WithBroadcaster extends KeepRunning implements BroadcastListener, A
                 midi4j2Out.sendMessage(midiMessage);
             }
 
-            logger.info(
-                    SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
-                            midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
-            );
+            if (DISPLAY_LOG) {
+                logger.info(
+                        SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
+                                midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
+                );
+            }
 
         } catch (MidiException | NullPointerException | IllegalStateException me) {
                 me.printStackTrace();

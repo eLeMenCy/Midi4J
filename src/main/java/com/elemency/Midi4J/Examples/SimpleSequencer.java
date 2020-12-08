@@ -59,7 +59,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
     private List<Note> sequence;
 
     // ----- CHANGE TO YOUR HEART CONTENT -----
-    private final boolean LOG_NOTE_OFF = false;
+    private final boolean LOG_NOTE_OFF = false; // Set this to false to stop displaying note OFF info in logs.
     private final int CHANNEL = 1;
     private final int VELOCITY = 80;
     private final int TEMPO = 110;
@@ -77,7 +77,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
                 midiMessage = MidiMessage.noteOn(CHANNEL, note, velocity, 0);
                 midi4jOut.sendMessage(midiMessage);
 
-                if (velocity > 0 || (LOG_NOTE_OFF && velocity == 0)) {
+                if ((velocity > 0 || (LOG_NOTE_OFF && velocity == 0)) && DISPLAY_LOG) {
                     logger.info("(" + seqStep + ") " + midiMessage.getDescription());
                 }
             }
@@ -190,7 +190,7 @@ public class SimpleSequencer extends KeepRunning implements AppOption {
                     doQuit();
                 }
 
-                displayTimecode = false;
+//                displayTimecode = false;
 
             } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();

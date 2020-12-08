@@ -56,10 +56,12 @@ public class WithBoth extends KeepRunning implements BroadcastListener, AppOptio
                 midi4jOut.sendMessage(midiMessage);
             }
 
-            logger.info(
-                    SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
-                            midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
-            );
+            if (DISPLAY_LOG) {
+                logger.info(
+                        SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
+                                midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
+                );
+            }
 
         } catch (MidiException | NullPointerException | IllegalStateException me) {
                 me.printStackTrace();
@@ -78,10 +80,12 @@ public class WithBoth extends KeepRunning implements BroadcastListener, AppOptio
 
             midi4j2Out.sendMessage(midiMessage);
 
-            logger.info(
-                    SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
-                            midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
-            );
+            if (DISPLAY_LOG) {
+                logger.info(
+                        SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
+                                midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
+                );
+            }
 
         } catch (MidiException | NullPointerException me) {
                 me.printStackTrace();

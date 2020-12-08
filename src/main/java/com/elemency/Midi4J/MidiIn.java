@@ -59,7 +59,7 @@ public class MidiIn extends MidiDevice {
      *
      * @param api               The Api id (0= Unknown, 1=CoreMidi, 2=ALSA, 3=JACK, 4=Winmm, 5=Dummy)
      * @param sourceDeviceName  The name of this Midi source instance.
-     * @param queueSizeLimit    Maximum buffer size.
+     * @param queueSizeLimit    Maximum buffer size, 100 generally gives good results.
      * @param withUserCallback  boolean
      *                          Set to 'true':
      *                              Allows users to set the MidiIn callback method directly in their applications
@@ -235,7 +235,7 @@ public class MidiIn extends MidiDevice {
 
     /**
      * Midi In internal callback implementation - automatically set when creating a MidiIn device<br>
-     * with param 'withUserCallback' set to true.
+     * with param 'withUserCallback' set to false.
      */
     private final MidiInCallback fromNative = (timeStamp, midiData, midiDataSize, userData) -> {
 

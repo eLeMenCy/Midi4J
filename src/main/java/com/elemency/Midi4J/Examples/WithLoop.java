@@ -26,8 +26,11 @@ import org.slf4j.LoggerFactory;
 /**
  * This sample illustrates how midi messages can be gathered via a crude game loop (polling).
  */
-public class WithLoop /*extends KeepRunning*/ implements AppOption {
-    private final String sampleTitle = "Method with Game Loop";
+public class WithLoop implements AppOption {
+    private final String SAMPLE_TITLE = "Method with Game Loop";
+
+    private final boolean DISPLAY_LOG = true; // Set this to false to stop displaying note info in console.
+
     private final Logger logger = LoggerFactory.getLogger(WithLoop.class);
     private MidiIn midi4jIn = null;
     private MidiOut midi4jOut = null;
@@ -41,7 +44,7 @@ public class WithLoop /*extends KeepRunning*/ implements AppOption {
     public void init() throws Exception {
 
         System.out.println("-------------------------");
-        System.out.println("| " + sampleTitle + " |");
+        System.out.println("| " + SAMPLE_TITLE + " |");
         System.out.println("-------------------------\n");
 
         try (
@@ -111,7 +114,7 @@ public class WithLoop /*extends KeepRunning*/ implements AppOption {
     }
 
     private void render() {
-        if (midiMessage != null && !doQuit) {
+        if (midiMessage != null && !doQuit && DISPLAY_LOG) {
             logger.info(
                     SmpteTimecode.getTimecode(SmpteTimecode.getElapsedTimeSinceStartTime()) +
                             midiMessage.timeStampAsTimecode() + midiMessage.getDescription()
