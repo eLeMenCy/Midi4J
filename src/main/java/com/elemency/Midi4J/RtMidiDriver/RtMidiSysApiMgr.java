@@ -1,6 +1,8 @@
 package com.elemency.Midi4J.RtMidiDriver;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Midi APIs
@@ -8,6 +10,7 @@ import java.nio.IntBuffer;
 public class RtMidiSysApiMgr {
 
     private final RtMidiLibrary lib = RtMidiLibrary.INSTANCE;
+
 
     /**
      *  Determine the available compiled MIDI APIs.
@@ -23,6 +26,29 @@ public class RtMidiSysApiMgr {
      */
     public int getAvailableApis(IntBuffer apis, int apis_size) {
         return lib.rtmidi_get_compiled_api(apis, apis_size);
+    }
+
+    /**
+     *  List all compiled Midi APIS available on the current machine.
+     *
+     * @return a list of all available compiled Api names.
+     */
+    public List<String> getApiNames() {
+        List<String> names = new ArrayList<>();
+
+        // Get the number of available (compiled) audio apis installed on this machine.
+        int availableAudioApis = this.getAvailableApis(null, 0);
+
+        // Build the list of available (compiled) audio api installed on this machine.
+        IntBuffer audioApiNames = IntBuffer.allocate(availableAudioApis);
+        this.getAvailableApis(audioApiNames, availableAudioApis);
+
+        for (int i = 0; i < availableAudioApis; i++) {
+            names.add(this.getApiLabel(audioApiNames.get(i)));
+        }
+
+//        System.out.println("Available Audio Apis: " + names);
+        return names;
     }
 
     /**
